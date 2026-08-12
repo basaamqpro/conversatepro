@@ -1544,6 +1544,294 @@
 
     }
 
+ /* ==================================================
+   CONVERSATE PRO AUDIO
+================================================== */
+
+
+/* Translation sentence needs positioning
+   so the audio button can sit inside it. */
+
+.translation_sentence.audio_enabled {
+    position: relative;
+}
+
+
+/* ==================================================
+   INDIVIDUAL 🔊 BUTTON
+================================================== */
+
+.chat_audio_button {
+
+    position: absolute;
+
+    top: 6px;
+    right: 6px;
+
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid rgba(0, 0, 0, 0.08);
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.95);
+
+    cursor: pointer;
+
+    font-size: 15px;
+
+    line-height: 1;
+
+    z-index: 5;
+
+    box-shadow:
+        0 1px 5px
+        rgba(0, 0, 0, 0.10);
+}
+
+
+.chat_audio_button:hover {
+    transform: scale(1.06);
+}
+
+
+.chat_audio_button:active {
+    transform: scale(0.95);
+}
+
+
+/* Give the message a little space
+   so the button does not cover words. */
+
+.translation_sentence.audio_enabled {
+    padding-right: 42px;
+}
+
+
+/* RTL */
+
+.translation_sentence[dir="rtl"]
+.chat_audio_button {
+
+    right: auto;
+    left: 6px;
+}
+
+
+.translation_sentence[dir="rtl"].audio_enabled {
+    padding-right: initial;
+    padding-left: 42px;
+}
+
+
+/* ==================================================
+   AUDIO STATES
+================================================== */
+
+.translation_sentence.audio_loading {
+
+    opacity: 0.82;
+}
+
+
+.translation_sentence.audio_loading
+.chat_audio_button {
+
+    animation:
+        audioPulse 0.8s infinite alternate;
+}
+
+
+.translation_sentence.audio_playing {
+
+    outline:
+        2px solid #2563eb;
+
+    outline-offset:
+        2px;
+}
+
+
+.translation_sentence.audio_playing
+.chat_audio_button {
+
+    background:
+        #eff6ff;
+}
+
+
+.translation_sentence.audio_error {
+
+    outline:
+        2px solid #dc2626;
+
+    outline-offset:
+        2px;
+}
+
+
+@keyframes audioPulse {
+
+    from {
+        opacity: 0.55;
+    }
+
+    to {
+        opacity: 1;
+    }
+
+}
+
+
+/* ==================================================
+   GLOBAL AUDIO SPEED CONTROL
+================================================== */
+
+.chat_audio_settings {
+
+    position: fixed;
+
+    right: 14px;
+    bottom: 92px;
+
+    z-index: 1000;
+}
+
+
+/* Main 🔊 settings button */
+
+.chat_audio_speed_button {
+
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid #ddd;
+
+    border-radius: 50%;
+
+    background: white;
+
+    font-size: 20px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 4px 16px
+        rgba(0, 0, 0, 0.15);
+}
+
+
+.chat_audio_speed_button:hover {
+
+    transform: scale(1.04);
+}
+
+
+/* Slider popup */
+
+.chat_audio_speed_panel {
+
+    position: absolute;
+
+    right: 0;
+    bottom: 54px;
+
+    width: 220px;
+
+    padding: 14px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 14px;
+
+    background: white;
+
+    box-shadow:
+        0 8px 30px
+        rgba(0, 0, 0, 0.18);
+}
+
+
+.chat_audio_speed_panel[hidden] {
+    display: none;
+}
+
+
+.chat_audio_speed_title {
+
+    margin-bottom: 4px;
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+
+.chat_audio_speed_value {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 20px;
+
+    font-weight: 700;
+}
+
+
+.chat_audio_speed_slider {
+
+    width: 100%;
+
+    cursor: pointer;
+}
+
+
+.chat_audio_speed_labels {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-top: 5px;
+
+    font-size: 10px;
+
+    color: #777;
+}
+
+
+/* Mobile */
+
+@media (max-width: 600px) {
+
+    .chat_audio_settings {
+
+        right: 10px;
+        bottom: 88px;
+    }
+
+
+    .chat_audio_speed_panel {
+
+        width: 200px;
+    }
+
+}
+
   </style>
 
 </head>
@@ -6362,7 +6650,8 @@
 
   </script>
 
-
+<script src="audio.js"></script>
+<script src="chatAudio.js"></script>
 </body>
 
 </html>
