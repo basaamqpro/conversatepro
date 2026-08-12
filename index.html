@@ -1,0 +1,6368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Conversate Pro</title>
+
+
+  <style>
+
+    /*
+    ==================================================
+    BASIC
+    ==================================================
+    */
+
+    * {
+      box-sizing: border-box;
+    }
+
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+    }
+
+
+    body {
+      font-family: Arial, sans-serif;
+      color: #111827;
+      background: #f8fafc;
+    }
+
+
+    button,
+    textarea,
+    select,
+    input {
+      font: inherit;
+    }
+
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+
+
+    /*
+    ==================================================
+    TOP BAR
+    ==================================================
+    */
+
+    .top_bar {
+
+      position: sticky;
+
+      top: 0;
+
+      z-index: 20;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 10px;
+
+      padding: 10px 12px;
+
+      border-bottom:
+        1px solid #e5e7eb;
+
+      background:
+        rgba(
+          248,
+          250,
+          252,
+          0.96
+        );
+
+      backdrop-filter:
+        blur(8px);
+
+    }
+
+
+    .top_bar button {
+
+      padding:
+        9px 12px;
+
+      border-radius:
+        9px;
+
+      background:
+        #e5e7eb;
+
+      color:
+        #111827;
+
+      font-weight:
+        700;
+
+    }
+
+
+    .room_information {
+
+      min-width: 0;
+
+      flex: 1;
+
+      text-align: right;
+
+    }
+
+
+    .room_name {
+
+      overflow: hidden;
+
+      color:
+        #111827;
+
+      font-size:
+        14px;
+
+      font-weight:
+        700;
+
+      text-overflow:
+        ellipsis;
+
+      white-space:
+        nowrap;
+
+    }
+
+
+    .room_languages {
+
+      overflow: hidden;
+
+      margin-top:
+        2px;
+
+      color:
+        #64748b;
+
+      font-size:
+        12px;
+
+      font-weight:
+        700;
+
+      text-overflow:
+        ellipsis;
+
+      white-space:
+        nowrap;
+
+    }
+
+
+
+    /*
+    ==================================================
+    CHAT AREA
+    ==================================================
+    */
+
+    #chat_page_id {
+
+      width:
+        100%;
+
+      max-width:
+        1000px;
+
+      margin:
+        0 auto;
+
+      padding:
+        12px 10px 190px;
+
+    }
+
+
+
+    /*
+    ==================================================
+    EMPTY CHAT
+    ==================================================
+    */
+
+    .empty_chat {
+
+      max-width:
+        500px;
+
+      margin:
+        55px auto;
+
+      padding:
+        25px;
+
+      border:
+        1px dashed #cbd5e1;
+
+      border-radius:
+        16px;
+
+      background:
+        #ffffff;
+
+      color:
+        #64748b;
+
+      text-align:
+        center;
+
+      line-height:
+        1.55;
+
+    }
+
+
+    .empty_chat strong {
+
+      display:
+        block;
+
+      margin-bottom:
+        8px;
+
+      color:
+        #111827;
+
+      font-size:
+        18px;
+
+    }
+
+
+
+    /*
+    ==================================================
+    MESSAGE ROW
+    ==================================================
+    */
+
+    .message_row {
+
+      display:
+        flex;
+
+      width:
+        100%;
+
+      margin:
+        10px 0 20px;
+
+    }
+
+
+    .message_row.right {
+
+      justify-content:
+        flex-end;
+
+    }
+
+
+    .message_row.left {
+
+      justify-content:
+        flex-start;
+
+    }
+
+
+
+    /*
+    ==================================================
+    MESSAGE BUBBLE
+    ==================================================
+    */
+
+    .message_bubble {
+
+      width:
+        min(
+          78%,
+          720px
+        );
+
+      max-width:
+        100%;
+
+    }
+
+
+
+    /*
+    ==================================================
+    SPEAKER LABEL
+    ==================================================
+    */
+
+    .speaker_label {
+
+      margin:
+        0 5px 5px;
+
+      color:
+        #64748b;
+
+      font-size:
+        11px;
+
+      font-weight:
+        700;
+
+    }
+
+
+    .message_row.right
+    .speaker_label {
+
+      text-align:
+        right;
+
+    }
+
+
+    .message_row.left
+    .speaker_label {
+
+      text-align:
+        left;
+
+    }
+
+
+
+    /*
+    ==================================================
+    TRANSLATION SENTENCE
+
+    This keeps the original
+    LingoGPT visual structure.
+    ==================================================
+    */
+
+    .translation_sentence {
+
+      display:
+        flex;
+
+      flex-wrap:
+        nowrap;
+
+      gap:
+        8px;
+
+      width:
+        100%;
+
+      padding:
+        12px 10px;
+
+      overflow-x:
+        auto;
+
+      overflow-y:
+        hidden;
+
+      border-radius:
+        16px;
+
+      background:
+        #ffffff;
+
+      box-shadow:
+        0 2px 10px
+        rgba(
+          15,
+          23,
+          42,
+          0.07
+        );
+
+      scrollbar-width:
+        thin;
+
+      -webkit-overflow-scrolling:
+        touch;
+
+    }
+
+
+    .translation_sentence[
+      dir="rtl"
+    ] {
+
+      direction:
+        rtl;
+
+    }
+
+
+    .translation_sentence[
+      dir="ltr"
+    ] {
+
+      direction:
+        ltr;
+
+    }
+
+
+    .message_row.right
+    .translation_sentence {
+
+      border-bottom-right-radius:
+        4px;
+
+    }
+
+
+    .message_row.left
+    .translation_sentence {
+
+      border-bottom-left-radius:
+        4px;
+
+    }
+
+
+
+    /*
+    ==================================================
+    AI MESSAGE CAN BE CLICKED
+
+    Clicking it will later open
+    options.js suggestions.
+    ==================================================
+    */
+
+    .translation_sentence.assistable {
+
+      cursor:
+        pointer;
+
+      transition:
+        transform 0.12s ease,
+        box-shadow 0.12s ease;
+
+    }
+
+
+    .translation_sentence.assistable:hover {
+
+      box-shadow:
+        0 4px 15px
+        rgba(
+          15,
+          23,
+          42,
+          0.12
+        );
+
+    }
+
+
+    .translation_sentence.assistable:active {
+
+      transform:
+        scale(0.995);
+
+    }
+
+
+
+    /*
+    ==================================================
+    TRANSLATION GROUP
+    ==================================================
+    */
+
+    .translation_group {
+
+      display:
+        inline-flex;
+
+      flex:
+        0 0 auto;
+
+      min-width:
+        max-content;
+
+      flex-direction:
+        column;
+
+      align-items:
+        center;
+
+      justify-content:
+        flex-end;
+
+      padding:
+        4px 6px 7px;
+
+      border-bottom:
+        4px solid #4363d8;
+
+      text-align:
+        center;
+
+    }
+
+
+    .translation_group span {
+
+      display:
+        block;
+
+      margin:
+        0;
+
+      white-space:
+        nowrap;
+
+    }
+
+
+
+    /*
+    Pronunciation
+    */
+
+    .group_pronunciation {
+
+      margin-bottom:
+        3px !important;
+
+      color:
+        #0369a1;
+
+      font-size:
+        13px;
+
+      font-weight:
+        500;
+
+    }
+
+
+
+    /*
+    Practice language
+    */
+
+    .group_translation {
+
+      color:
+        #111827;
+
+      font-size:
+        20px;
+
+      font-weight:
+        700;
+
+    }
+
+
+
+    /*
+    User/helper language meaning
+    */
+
+    .group_source {
+
+      margin-top:
+        3px !important;
+
+      color:
+        #64748b;
+
+      font-size:
+        13px;
+
+      font-weight:
+        500;
+
+    }
+
+
+
+    /*
+    ==================================================
+    MESSAGE ACTIONS
+    ==================================================
+    */
+
+    .chat_actions {
+
+      display:
+        flex;
+
+      flex-wrap:
+        wrap;
+
+      gap:
+        6px;
+
+      margin-top:
+        6px;
+
+    }
+
+
+    .message_row.right
+    .chat_actions {
+
+      justify-content:
+        flex-end;
+
+    }
+
+
+    .message_row.left
+    .chat_actions {
+
+      justify-content:
+        flex-start;
+
+    }
+
+
+    .chat_actions button {
+
+      width:
+        auto;
+
+      padding:
+        6px 9px;
+
+      border-radius:
+        8px;
+
+      background:
+        #e5e7eb;
+
+      color:
+        #334155;
+
+      font-size:
+        12px;
+
+      font-weight:
+        700;
+
+    }
+
+
+    .chat_actions
+    .reverse_button {
+
+      background:
+        #dbeafe;
+
+      color:
+        #1d4ed8;
+
+    }
+
+
+    .chat_actions
+    .delete_button {
+
+      background:
+        #fee2e2;
+
+      color:
+        #b91c1c;
+
+    }
+
+
+
+    /*
+    ==================================================
+    OPTIONS PANEL
+
+    This will be populated by options.js.
+    Nothing inside this panel is stored
+    in Firestore.
+    ==================================================
+    */
+
+    .message_assist_panel {
+
+      display:
+        none;
+
+      width:
+        100%;
+
+      margin-top:
+        10px;
+
+      padding:
+        10px;
+
+      border:
+        1px solid #dbeafe;
+
+      border-radius:
+        12px;
+
+      background:
+        #f8fbff;
+
+    }
+
+
+    .message_assist_panel.visible {
+
+      display:
+        block;
+
+    }
+
+
+    .assist_title {
+
+      margin:
+        0 0 8px;
+
+      color:
+        #1e3a8a;
+
+      font-size:
+        13px;
+
+      font-weight:
+        700;
+
+    }
+
+
+    .assist_message {
+
+      margin:
+        5px 0;
+
+      color:
+        #64748b;
+
+      font-size:
+        13px;
+
+      line-height:
+        1.45;
+
+    }
+
+
+
+    /*
+    ==================================================
+    OPTION CARD
+    ==================================================
+    */
+
+    .response_option {
+
+      margin:
+        10px 0;
+
+      padding:
+        10px;
+
+      border:
+        1px solid #e2e8f0;
+
+      border-radius:
+        11px;
+
+      background:
+        #ffffff;
+
+    }
+
+
+    .option_number {
+
+      margin:
+        0 0 8px;
+
+      color:
+        #334155;
+
+      font-size:
+        12px;
+
+      font-weight:
+        700;
+
+    }
+
+
+    .response_option
+    .translation_sentence {
+
+      border-radius:
+        11px;
+
+      box-shadow:
+        none;
+
+      background:
+        #f8fafc;
+
+    }
+
+
+    .option_actions {
+
+      display:
+        flex;
+
+      flex-wrap:
+        wrap;
+
+      gap:
+        7px;
+
+      margin-top:
+        8px;
+
+    }
+
+
+    .option_actions button {
+
+      width:
+        auto;
+
+      padding:
+        7px 11px;
+
+      border-radius:
+        8px;
+
+      font-size:
+        12px;
+
+      font-weight:
+        700;
+
+    }
+
+
+    .use_option_button {
+
+      background:
+        #2563eb;
+
+      color:
+        #ffffff;
+
+    }
+
+
+    .teach_option_button {
+
+      background:
+        #ede9fe;
+
+      color:
+        #6d28d9;
+
+    }
+
+
+
+    /*
+    ==================================================
+    TEACH BOX
+
+    teach.js output is temporary.
+    It is not part of the conversation.
+    ==================================================
+    */
+
+    .teach_box {
+
+      display:
+        none;
+
+      margin-top:
+        9px;
+
+      padding:
+        10px;
+
+      border:
+        1px solid #ddd6fe;
+
+      border-radius:
+        9px;
+
+      background:
+        #faf5ff;
+
+    }
+
+
+    .teach_box.visible {
+
+      display:
+        block;
+
+    }
+
+
+    .teach_answer {
+
+      margin:
+        0;
+
+      color:
+        #4c1d95;
+
+      font-size:
+        13px;
+
+      line-height:
+        1.5;
+
+      white-space:
+        pre-wrap;
+
+    }
+
+
+    .teach_question_row {
+
+      display:
+        flex;
+
+      gap:
+        6px;
+
+      margin-top:
+        9px;
+
+    }
+
+
+    .teach_question_input {
+
+      flex:
+        1;
+
+      min-width:
+        0;
+
+      padding:
+        8px;
+
+      border:
+        1px solid #c4b5fd;
+
+      border-radius:
+        8px;
+
+      outline:
+        none;
+
+      background:
+        #ffffff;
+
+      font-size:
+        12px;
+
+    }
+
+
+    .teach_question_button {
+
+      width:
+        auto;
+
+      padding:
+        8px 10px;
+
+      border-radius:
+        8px;
+
+      background:
+        #7c3aed;
+
+      color:
+        #ffffff;
+
+      font-size:
+        12px;
+
+      font-weight:
+        700;
+
+    }
+
+
+
+    /*
+    ==================================================
+    FIXED COMPOSER
+    ==================================================
+    */
+
+    #inputform_div {
+
+      position:
+        fixed;
+
+      right:
+        0;
+
+      bottom:
+        0;
+
+      left:
+        0;
+
+      z-index:
+        30;
+
+      padding:
+        9px
+        max(
+          10px,
+          env(
+            safe-area-inset-right
+          )
+        )
+        calc(
+          9px +
+          env(
+            safe-area-inset-bottom
+          )
+        )
+        max(
+          10px,
+          env(
+            safe-area-inset-left
+          )
+        );
+
+      border-top:
+        1px solid #d1d5db;
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.97
+        );
+
+      backdrop-filter:
+        blur(10px);
+
+    }
+
+
+
+    /*
+    ==================================================
+    STATUS
+    ==================================================
+    */
+
+    #translationStatus {
+
+      display:
+        none;
+
+      width:
+        100%;
+
+      max-width:
+        1000px;
+
+      margin:
+        0 auto 7px;
+
+      padding:
+        7px 10px;
+
+      border-radius:
+        8px;
+
+      font-size:
+        13px;
+
+      font-weight:
+        700;
+
+    }
+
+
+    #translationStatus.visible {
+
+      display:
+        block;
+
+      background:
+        #dbeafe;
+
+      color:
+        #1d4ed8;
+
+    }
+
+
+    #translationStatus.error {
+
+      background:
+        #fee2e2;
+
+      color:
+        #991b1b;
+
+    }
+
+
+
+    /*
+    ==================================================
+    COMPOSER
+    ==================================================
+    */
+
+    .composer {
+
+      display:
+        flex;
+
+      flex-direction:
+        column;
+
+      gap:
+        7px;
+
+      width:
+        100%;
+
+      max-width:
+        1000px;
+
+      margin:
+        0 auto;
+
+    }
+
+
+
+    /*
+    Languages
+    */
+
+    .composer_languages {
+
+      display:
+        grid;
+
+      grid-template-columns:
+        1fr 1fr;
+
+      gap:
+        7px;
+
+      width:
+        100%;
+
+    }
+
+
+    select {
+
+      width:
+        100%;
+
+      height:
+        36px;
+
+      padding:
+        0 8px;
+
+      border:
+        1px solid #cbd5e1;
+
+      border-radius:
+        9px;
+
+      background:
+        #ffffff;
+
+      outline:
+        none;
+
+      font-size:
+        13px;
+
+    }
+
+
+
+    /*
+    Input
+    */
+
+    #sourceText {
+
+      display:
+        block;
+
+      width:
+        100%;
+
+      min-width:
+        0;
+
+      min-height:
+        52px;
+
+      max-height:
+        120px;
+
+      padding:
+        10px 11px;
+
+      border:
+        1px solid #cbd5e1;
+
+      border-radius:
+        11px;
+
+      resize:
+        none;
+
+      outline:
+        none;
+
+      background:
+        #ffffff;
+
+      line-height:
+        1.35;
+
+      font-size:
+        15px;
+
+    }
+
+
+    #sourceText:focus,
+    select:focus {
+
+      border-color:
+        #2563eb;
+
+      outline:
+        2px solid
+        rgba(
+          37,
+          99,
+          235,
+          0.12
+        );
+
+    }
+
+
+
+    /*
+    ==================================================
+    COMPOSER ACTIONS
+    ==================================================
+    */
+
+    .composer_actions {
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      justify-content:
+        flex-end;
+
+      gap:
+        7px;
+
+      width:
+        100%;
+
+    }
+
+
+    #sendButton,
+    #interactPlusButton,
+    #cancelEditButton {
+
+      width:
+        auto;
+
+      min-width:
+        72px;
+
+      height:
+        36px;
+
+      padding:
+        0 12px;
+
+      border-radius:
+        9px;
+
+      font-size:
+        13px;
+
+      font-weight:
+        700;
+
+    }
+
+
+    #sendButton {
+
+      background:
+        #111827;
+
+      color:
+        #ffffff;
+
+    }
+
+
+    /*
+    InteractPlus starts / continues
+    the AI conversation.
+    */
+
+    #interactPlusButton {
+
+      background:
+        #2563eb;
+
+      color:
+        #ffffff;
+
+    }
+
+
+    #sendButton:disabled,
+    #interactPlusButton:disabled {
+
+      cursor:
+        not-allowed;
+
+      opacity:
+        0.55;
+
+    }
+
+
+    #cancelEditButton {
+
+      display:
+        none;
+
+      background:
+        #e5e7eb;
+
+      color:
+        #111827;
+
+    }
+
+
+    #cancelEditButton.visible {
+
+      display:
+        block;
+
+    }
+
+
+
+    /*
+    ==================================================
+    MOBILE
+    ==================================================
+    */
+
+    @media (
+      max-width: 760px
+    ) {
+
+      #chat_page_id {
+
+        padding:
+          8px 7px 220px;
+
+      }
+
+
+      .message_bubble {
+
+        width:
+          88%;
+
+      }
+
+
+      .translation_sentence {
+
+        padding:
+          10px 8px;
+
+      }
+
+
+      .group_translation {
+
+        font-size:
+          18px;
+
+      }
+
+
+      .group_pronunciation,
+      .group_source {
+
+        font-size:
+          12px;
+
+      }
+
+
+      .composer_languages {
+
+        gap:
+          6px;
+
+      }
+
+
+      select {
+
+        height:
+          34px;
+
+        padding:
+          0 6px;
+
+        font-size:
+          12px;
+
+      }
+
+
+      #sourceText {
+
+        min-height:
+          50px;
+
+        font-size:
+          14px;
+
+      }
+
+
+      .composer_actions {
+
+        gap:
+          6px;
+
+      }
+
+
+      #sendButton,
+      #interactPlusButton,
+      #cancelEditButton {
+
+        min-width:
+          68px;
+
+        height:
+          34px;
+
+        padding:
+          0 10px;
+
+        font-size:
+          12px;
+
+      }
+
+
+      .teach_question_row {
+
+        flex-direction:
+          column;
+
+      }
+
+
+      .teach_question_button {
+
+        width:
+          100%;
+
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+
+  <!--
+  ==================================================
+  TOP BAR
+  ==================================================
+  -->
+
+  <header class="top_bar">
+
+
+    <button
+      id="backButton"
+      type="button"
+    >
+      ‹ Conversations
+    </button>
+
+
+    <div class="room_information">
+
+      <div
+        id="roomName"
+        class="room_name"
+      ></div>
+
+      <div
+        id="roomLanguages"
+        class="room_languages"
+      ></div>
+
+    </div>
+
+
+  </header>
+
+
+
+  <!--
+  ==================================================
+  CHAT
+  ==================================================
+  -->
+
+  <main
+    id="chat_page_id"
+  ></main>
+
+
+
+  <!--
+  ==================================================
+  FIXED COMPOSER
+  ==================================================
+  -->
+
+  <div id="inputform_div">
+
+
+    <div
+      id="translationStatus"
+      role="status"
+      aria-live="polite"
+    ></div>
+
+
+    <div class="composer">
+
+
+      <!-- Languages -->
+
+      <div
+        class="composer_languages"
+      >
+
+        <select
+          id="sourceLang"
+          aria-label="Your language"
+        ></select>
+
+
+        <select
+          id="targetLang"
+          aria-label="Practice language"
+        ></select>
+
+      </div>
+
+
+
+      <!-- User response -->
+
+      <textarea
+        id="sourceText"
+        rows="1"
+        placeholder="Type your response..."
+      ></textarea>
+
+
+
+      <!-- Actions -->
+
+      <div
+        class="composer_actions"
+      >
+
+
+        <button
+          id="cancelEditButton"
+          type="button"
+        >
+          Cancel edit
+        </button>
+
+
+        <button
+          id="sendButton"
+          type="button"
+        >
+          Send
+        </button>
+
+
+        <button
+          id="interactPlusButton"
+          type="button"
+        >
+          InteractPlus
+        </button>
+
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!--
+  ==================================================
+  SAME LINGOGPT TRANSLATION ENGINE
+
+  Keep your existing results5.js
+  unchanged.
+  ==================================================
+  -->
+
+  <script src="results5.js"></script>
+
+
+
+  <script type="module">
+
+
+    /*
+    ==================================================
+    FIREBASE
+    ==================================================
+    */
+
+    import "./firebase.js";
+
+
+    "use strict";
+
+
+
+    /*
+    ==================================================
+    STATE
+    ==================================================
+    */
+
+    const palette = [
+
+      "#e6194b",
+      "#3cb44b",
+      "#b59b00",
+      "#4363d8",
+      "#f58231",
+      "#911eb4",
+      "#008b8b",
+      "#f032e6"
+
+    ];
+
+
+    let currentRoom =
+      null;
+
+
+    let currentRoomIdx =
+      "";
+
+
+    let editingChatIdx =
+      "";
+
+
+    let activeController =
+      null;
+
+
+    let activeAssistController =
+      null;
+
+
+
+    /*
+    ==================================================
+    BASIC HELPERS
+    ==================================================
+    */
+
+    function createId(
+      prefix
+    ) {
+
+      return (
+
+        prefix +
+
+        "_" +
+
+        Date.now() +
+
+        "_" +
+
+        Math.floor(
+          Math.random() * 10000
+        )
+
+      );
+
+    }
+
+
+
+    function color(
+      index
+    ) {
+
+      return palette[
+
+        Math.abs(
+          Number(index) || 0
+        )
+
+        %
+
+        palette.length
+
+      ];
+
+    }
+
+
+
+    function getRoom() {
+
+      return currentRoom;
+
+    }
+
+
+
+    async function refreshCurrentRoom() {
+
+      currentRoom =
+
+        await window
+          .ConversateFirebase
+          .getCurrentRoom();
+
+
+      return currentRoom;
+
+    }
+
+
+
+    /*
+    ==================================================
+    OPTIONAL MODULE LOADER
+
+    These files will be created next:
+
+    understandInput.js
+    interactPlus.js
+    options.js
+    teach.js
+
+    They are loaded only when required.
+
+    This means index.html itself can exist
+    before all four files are finished.
+    ==================================================
+    */
+
+    async function loadOptionalModule(
+      fileName,
+      globalName
+    ) {
+
+
+      /*
+      Already loaded.
+      */
+
+      if (
+        window[
+          globalName
+        ]
+      ) {
+
+        return window[
+          globalName
+        ];
+
+      }
+
+
+
+      try {
+
+
+        await import(
+          "./" + fileName
+        );
+
+
+        return (
+
+          window[
+            globalName
+          ]
+
+          ||
+
+          null
+
+        );
+
+
+      } catch (error) {
+
+
+        console.warn(
+
+          fileName +
+          " is not available yet.",
+
+          error
+
+        );
+
+
+        return null;
+
+      }
+
+    }
+
+
+
+    /*
+    ==================================================
+    LANGUAGES
+    ==================================================
+    */
+
+    const supportedLanguages =
+
+      window.LingoGPTResults
+
+        ? window
+            .LingoGPTResults
+            .supportedLanguages
+
+        : [];
+
+
+
+    function populateSelect(
+      selectId,
+      selectedLanguage
+    ) {
+
+
+      const select =
+        document.getElementById(
+          selectId
+        );
+
+
+      select.innerHTML =
+        "";
+
+
+
+      supportedLanguages.forEach(
+
+        function(language) {
+
+
+          const option =
+            document.createElement(
+              "option"
+            );
+
+
+          option.value =
+            language;
+
+
+          option.textContent =
+            language;
+
+
+          option.selected =
+
+            language ===
+            selectedLanguage;
+
+
+          select.appendChild(
+            option
+          );
+
+        }
+
+      );
+
+    }
+
+
+
+    /*
+    ==================================================
+    TEXT DIRECTION
+    ==================================================
+    */
+
+    function isRTLLanguage(
+      language
+    ) {
+
+
+      const rtlLanguages = [
+
+        "Arabic",
+        "Hebrew",
+        "Persian",
+        "Urdu"
+
+      ];
+
+
+      return rtlLanguages.includes(
+
+        String(
+          language || ""
+        )
+
+      );
+
+    }
+
+
+
+    /*
+    ==================================================
+    NORMALIZE FLOW
+    ==================================================
+    */
+
+    function normalizeFlow(
+      items
+    ) {
+
+
+      if (
+        !Array.isArray(
+          items
+        )
+      ) {
+
+        return [];
+
+      }
+
+
+
+      return items
+
+        .map(
+
+          function(
+            item,
+            index
+          ) {
+
+
+            return {
+
+              index:
+                index,
+
+
+              source:
+
+                String(
+
+                  item?.source ||
+
+                  ""
+
+                ).trim(),
+
+
+              target:
+
+                String(
+
+                  item?.target ??
+
+                  item?.translation ??
+
+                  ""
+
+                ).trim(),
+
+
+              pronunciation:
+
+                String(
+
+                  item?.pronunciation ||
+
+                  ""
+
+                ).trim()
+
+            };
+
+          }
+
+        )
+
+
+        .filter(
+
+          function(item) {
+
+            return (
+
+              item.source ||
+
+              item.target ||
+
+              item.pronunciation
+
+            );
+
+          }
+
+        );
+
+    }
+
+
+
+    /*
+    ==================================================
+    STORED RESULT
+    ==================================================
+    */
+
+    function getStoredResult(
+      chat
+    ) {
+
+
+      if (
+
+        !Array.isArray(
+          chat.prompts_and_answers
+        )
+
+        ||
+
+        !chat
+          .prompts_and_answers
+          .length
+
+      ) {
+
+        return null;
+
+      }
+
+
+
+      const last =
+
+        chat
+          .prompts_and_answers[
+
+            chat
+              .prompts_and_answers
+              .length - 1
+
+          ];
+
+
+
+      return (
+
+        last
+
+        &&
+
+        typeof last
+          .gpt_api_answer ===
+          "object"
+
+      )
+
+        ? last.gpt_api_answer
+
+        : null;
+
+    }
+
+
+
+    /*
+    ==================================================
+    TARGET FLOW
+    ==================================================
+    */
+
+    function getTargetFlow(
+      chat
+    ) {
+
+
+      const result =
+        getStoredResult(
+          chat
+        );
+
+
+      return normalizeFlow(
+
+        chat.target_flow ||
+
+        chat.targetFlow ||
+
+        result?.targetFlow ||
+
+        result?.target_flow ||
+
+        chat.groups
+
+      );
+
+    }
+
+
+
+    /*
+    ==================================================
+    SOURCE FLOW
+    ==================================================
+    */
+
+    function getSourceFlow(
+      chat
+    ) {
+
+
+      const result =
+        getStoredResult(
+          chat
+        );
+
+
+      return normalizeFlow(
+
+        chat.source_flow ||
+
+        chat.sourceFlow ||
+
+        result?.sourceFlow ||
+
+        result?.source_flow ||
+
+        chat.groups
+
+      );
+
+    }
+
+
+
+    /*
+    ==================================================
+    CREATE TRANSLATION SENTENCE
+
+    Shared by:
+
+    - normal conversation messages
+    - future suggested response options
+
+    This guarantees the same visual layout.
+    ==================================================
+    */
+
+    function createTranslationSentence(
+      flow,
+      displayedLanguage
+    ) {
+
+
+      const sentence =
+        document.createElement(
+          "div"
+        );
+
+
+      sentence.className =
+        "translation_sentence";
+
+
+      sentence.dir =
+
+        isRTLLanguage(
+          displayedLanguage
+        )
+
+          ? "rtl"
+
+          : "ltr";
+
+
+
+      flow.forEach(
+
+        function(
+          item,
+          index
+        ) {
+
+
+          const group =
+            document.createElement(
+              "span"
+            );
+
+
+          group.className =
+            "translation_group";
+
+
+          group.style
+            .borderBottomColor =
+            color(
+              index
+            );
+
+
+
+          /*
+          ------------------------------
+          PRONUNCIATION
+          ------------------------------
+          */
+
+          const pronunciation =
+            document.createElement(
+              "span"
+            );
+
+
+          pronunciation.className =
+            "group_pronunciation";
+
+
+          pronunciation.dir =
+            "ltr";
+
+
+          pronunciation.textContent =
+
+            item.pronunciation ||
+
+            "\u00A0";
+
+
+
+          /*
+          ------------------------------
+          TARGET / PRACTICE LANGUAGE
+          ------------------------------
+          */
+
+          const translation =
+            document.createElement(
+              "span"
+            );
+
+
+          translation.className =
+            "group_translation";
+
+
+          translation.dir =
+            "auto";
+
+
+          translation.textContent =
+
+            item.target ||
+
+            "\u00A0";
+
+
+
+          /*
+          ------------------------------
+          SOURCE MEANING
+          ------------------------------
+          */
+
+          const source =
+            document.createElement(
+              "span"
+            );
+
+
+          source.className =
+            "group_source";
+
+
+          source.dir =
+            "auto";
+
+
+          source.textContent =
+
+            item.source ||
+
+            "\u00A0";
+
+
+
+          group.append(
+
+            pronunciation,
+
+            translation,
+
+            source
+
+          );
+
+
+          sentence.appendChild(
+            group
+          );
+
+        }
+
+      );
+
+
+      return sentence;
+
+    }
+
+
+
+    /*
+    ==================================================
+    RENDER CHAT
+    ==================================================
+    */
+
+    function renderChat() {
+
+
+      const room =
+        getRoom();
+
+
+      if (
+        !room
+      ) {
+
+        return;
+
+      }
+
+
+
+      if (
+        !Array.isArray(
+          room.room_data
+        )
+      ) {
+
+        room.room_data =
+          [];
+
+      }
+
+
+
+      /*
+      Room information.
+      */
+
+      document.getElementById(
+        "roomName"
+      ).textContent =
+
+        room.room_name ||
+
+        "Conversation";
+
+
+
+      document.getElementById(
+        "roomLanguages"
+      ).textContent =
+
+        room.source_language +
+
+        " → " +
+
+        room.target_language;
+
+
+
+      const container =
+        document.getElementById(
+          "chat_page_id"
+        );
+
+
+      container.innerHTML =
+        "";
+
+
+
+      /*
+      ==================================================
+      EMPTY CONVERSATION
+      ==================================================
+
+      InteractPlus starts the conversation.
+      */
+
+      if (
+        !room.room_data.length
+      ) {
+
+
+        const empty =
+          document.createElement(
+            "div"
+          );
+
+
+        empty.className =
+          "empty_chat";
+
+
+        empty.innerHTML =
+
+          "<strong>Start your conversation</strong>" +
+
+          "Click <b>InteractPlus</b> and your conversation partner will speak first.";
+
+
+        container.appendChild(
+          empty
+        );
+
+
+        return;
+
+      }
+
+
+
+      /*
+      ==================================================
+      MESSAGES
+      ==================================================
+      */
+
+      room.room_data.forEach(
+
+        function(
+          chat,
+          chatIndex
+        ) {
+
+
+          const sourceFlowActive =
+
+            chat.display_flow ===
+            "source";
+
+
+
+          const flow =
+
+            sourceFlowActive
+
+              ? getSourceFlow(
+                  chat
+                )
+
+              : getTargetFlow(
+                  chat
+                );
+
+
+
+          const displayedLanguage =
+
+            sourceFlowActive
+
+              ? chat.source_language
+
+              : chat.target_language;
+
+
+
+          /*
+          ==================================================
+          MESSAGE SIDE
+
+          USER = right
+
+          INTERACTION / AI =
+          left
+          ==================================================
+          */
+
+          const interactionMessage =
+
+            chat.message_type ===
+              "interaction"
+
+            ||
+
+            chat.is_interaction ===
+              true;
+
+
+
+          const messageSide =
+
+            interactionMessage
+
+              ? "left"
+
+              : chat.message_type ===
+                  "user"
+
+                ? "right"
+
+                : (
+
+                    chatIndex % 2 === 0
+
+                      ? "right"
+
+                      : "left"
+
+                  );
+
+
+
+          /*
+          Row.
+          */
+
+          const row =
+            document.createElement(
+              "div"
+            );
+
+
+          row.className =
+
+            "message_row " +
+
+            messageSide;
+
+
+
+          /*
+          Bubble.
+          */
+
+          const bubble =
+            document.createElement(
+              "div"
+            );
+
+
+          bubble.className =
+            "message_bubble";
+
+
+
+          /*
+          Speaker.
+          */
+
+          const speaker =
+            document.createElement(
+              "p"
+            );
+
+
+          speaker.className =
+            "speaker_label";
+
+
+          speaker.textContent =
+
+            interactionMessage
+
+              ? "Conversation partner"
+
+              : "You";
+
+
+
+          /*
+          Sentence.
+          */
+
+          const sentence =
+
+            createTranslationSentence(
+
+              flow,
+
+              displayedLanguage
+
+            );
+
+
+
+          /*
+          ==================================================
+          CLICK AI MESSAGE
+
+          Clicking an AI message will later
+          request suggested responses from
+          options.js.
+          ==================================================
+          */
+
+          if (
+            interactionMessage
+          ) {
+
+
+            sentence.classList.add(
+              "assistable"
+            );
+
+
+            sentence.title =
+              "Click for response options";
+
+
+            sentence.addEventListener(
+
+              "click",
+
+              function() {
+
+                openResponseOptions(
+                  chat.chat_idx
+                );
+
+              }
+
+            );
+
+          }
+
+
+
+          /*
+          ==================================================
+          CHAT ACTIONS
+          ==================================================
+          */
+
+          const actions =
+            document.createElement(
+              "div"
+            );
+
+
+          actions.className =
+            "chat_actions";
+
+
+
+          /*
+          ------------------------------
+          REVERSE
+          ------------------------------
+          */
+
+          const reverseButton =
+            document.createElement(
+              "button"
+            );
+
+
+          reverseButton.type =
+            "button";
+
+
+          reverseButton.className =
+            "reverse_button";
+
+
+          reverseButton.textContent =
+            "Reverse";
+
+
+          reverseButton.onclick =
+
+            async function() {
+
+
+              const oldFlow =
+
+                chat.display_flow ||
+
+                "target";
+
+
+
+              chat.display_flow =
+
+                sourceFlowActive
+
+                  ? "target"
+
+                  : "source";
+
+
+
+              renderChat();
+
+
+
+              try {
+
+
+                await window
+                  .ConversateFirebase
+                  .saveChat(
+
+                    currentRoomIdx,
+
+                    chat
+
+                  );
+
+
+                await refreshCurrentRoom();
+
+
+              } catch (error) {
+
+
+                console.error(
+                  error
+                );
+
+
+                chat.display_flow =
+                  oldFlow;
+
+
+                renderChat();
+
+
+                setStatus(
+
+                  error.message ||
+
+                  "Could not save Reverse state.",
+
+                  "error"
+
+                );
+
+              }
+
+            };
+
+
+
+          /*
+          ------------------------------
+          EDIT
+          ------------------------------
+          */
+
+          const editButton =
+            document.createElement(
+              "button"
+            );
+
+
+          editButton.type =
+            "button";
+
+
+          editButton.textContent =
+            "Edit";
+
+
+          editButton.onclick =
+
+            function() {
+
+              startEdit(
+                chat.chat_idx
+              );
+
+            };
+
+
+
+          /*
+          ------------------------------
+          DELETE
+          ------------------------------
+          */
+
+          const deleteButton =
+            document.createElement(
+              "button"
+            );
+
+
+          deleteButton.type =
+            "button";
+
+
+          deleteButton.className =
+            "delete_button";
+
+
+          deleteButton.textContent =
+            "Delete";
+
+
+          deleteButton.onclick =
+
+            function() {
+
+              deleteChat(
+                chat.chat_idx
+              );
+
+            };
+
+
+
+          actions.append(
+
+            reverseButton,
+
+            editButton,
+
+            deleteButton
+
+          );
+
+
+
+          /*
+          ==================================================
+          RESPONSE OPTIONS PANEL
+
+          Only useful for AI messages.
+
+          options.js later fills this.
+          ==================================================
+          */
+
+          const assistPanel =
+            document.createElement(
+              "div"
+            );
+
+
+          assistPanel.className =
+            "message_assist_panel";
+
+
+          assistPanel.id =
+
+            "assist_" +
+
+            chat.chat_idx;
+
+
+
+          bubble.append(
+
+            speaker,
+
+            sentence,
+
+            actions,
+
+            assistPanel
+
+          );
+
+
+          row.appendChild(
+            bubble
+          );
+
+
+          container.appendChild(
+            row
+          );
+
+        }
+
+      );
+
+
+
+      /*
+      Scroll to latest real message.
+      */
+
+      window.requestAnimationFrame(
+
+        function() {
+
+
+          window.scrollTo({
+
+            top:
+              document.body
+                .scrollHeight,
+
+            behavior:
+              "smooth"
+
+          });
+
+        }
+
+      );
+
+    }
+
+
+
+    /*
+    ==================================================
+    OPTIONS.JS
+    ==================================================
+
+    Clicking an AI conversation message
+    calls this function.
+
+    Expected future global:
+
+    window.ConversateOptions
+
+    with:
+
+    generateOptions({
+      room,
+      chat,
+      signal,
+      onStatus
+    })
+
+    Options are NOT saved by this page
+    to Firestore.
+    ==================================================
+    */
+
+    async function openResponseOptions(
+      chatIdx
+    ) {
+
+
+      const panel =
+        document.getElementById(
+
+          "assist_" +
+          chatIdx
+
+        );
+
+
+      if (
+        !panel
+      ) {
+
+        return;
+
+      }
+
+
+
+      /*
+      Toggle already-loaded panel.
+      */
+
+      if (
+        panel.dataset.loaded ===
+          "true"
+      ) {
+
+
+        panel.classList.toggle(
+          "visible"
+        );
+
+
+        return;
+
+      }
+
+
+
+      panel.classList.add(
+        "visible"
+      );
+
+
+      panel.innerHTML =
+        "";
+
+
+      const title =
+        document.createElement(
+          "p"
+        );
+
+
+      title.className =
+        "assist_title";
+
+
+      title.textContent =
+        "Ways you could respond";
+
+
+      const loading =
+        document.createElement(
+          "p"
+        );
+
+
+      loading.className =
+        "assist_message";
+
+
+      loading.textContent =
+        "Preparing response options...";
+
+
+      panel.append(
+
+        title,
+
+        loading
+
+      );
+
+
+
+      /*
+      Load options.js only now.
+      */
+
+      const module =
+
+        await loadOptionalModule(
+
+          "options.js",
+
+          "ConversateOptions"
+
+        );
+
+
+
+      if (
+        !module
+
+        ||
+
+        typeof module
+          .generateOptions !==
+          "function"
+      ) {
+
+
+        loading.textContent =
+          "options.js has not been created yet.";
+
+
+        return;
+
+      }
+
+
+
+      const room =
+        getRoom();
+
+
+      const chat =
+
+        room?.room_data?.find(
+
+          function(item) {
+
+            return (
+              item.chat_idx ===
+              chatIdx
+            );
+
+          }
+
+        );
+
+
+
+      if (
+        !room ||
+        !chat
+      ) {
+
+
+        loading.textContent =
+          "This message could not be found.";
+
+
+        return;
+
+      }
+
+
+
+      if (
+        activeAssistController
+      ) {
+
+        activeAssistController
+          .abort();
+
+      }
+
+
+
+      const controller =
+        new AbortController();
+
+
+      activeAssistController =
+        controller;
+
+
+
+      try {
+
+
+        const results =
+
+          await module
+            .generateOptions({
+
+              room:
+                room,
+
+              chat:
+                chat,
+
+              signal:
+                controller.signal,
+
+              onStatus:
+
+                function(message) {
+
+                  if (
+                    message
+                  ) {
+
+                    loading.textContent =
+                      message;
+
+                  }
+
+                }
+
+            });
+
+
+
+        if (
+          activeAssistController !==
+          controller
+        ) {
+
+          return;
+
+        }
+
+
+
+        const options =
+
+          Array.isArray(
+            results?.options
+          )
+
+            ? results.options
+
+            : (
+
+                Array.isArray(
+                  results
+                )
+
+                  ? results
+
+                  : []
+
+              );
+
+
+
+        if (
+          !options.length
+        ) {
+
+
+          loading.textContent =
+            "No response options were returned.";
+
+
+          return;
+
+        }
+
+
+
+        panel.innerHTML =
+          "";
+
+
+        panel.appendChild(
+          title
+        );
+
+
+        options.forEach(
+
+          function(
+            option,
+            index
+          ) {
+
+
+            renderResponseOption(
+
+              panel,
+
+              room,
+
+              chat,
+
+              option,
+
+              index
+
+            );
+
+          }
+
+        );
+
+
+        panel.dataset.loaded =
+          "true";
+
+
+      } catch (error) {
+
+
+        if (
+          error.name !==
+          "AbortError"
+        ) {
+
+
+          console.error(
+            error
+          );
+
+
+          loading.textContent =
+
+            error.message ||
+
+            "Could not generate response options.";
+
+        }
+
+
+      } finally {
+
+
+        if (
+          activeAssistController ===
+          controller
+        ) {
+
+          activeAssistController =
+            null;
+
+        }
+
+      }
+
+    }
+
+
+
+    /*
+    ==================================================
+    RENDER ONE RESPONSE OPTION
+    ==================================================
+    */
+
+    function renderResponseOption(
+      panel,
+      room,
+      chat,
+      option,
+      index
+    ) {
+
+
+      const card =
+        document.createElement(
+          "div"
+        );
+
+
+      card.className =
+        "response_option";
+
+
+
+      /*
+      Option heading.
+      */
+
+      const heading =
+        document.createElement(
+          "p"
+        );
+
+
+      heading.className =
+        "option_number";
+
+
+      heading.textContent =
+
+        "Option " +
+
+        (index + 1);
+
+
+
+      /*
+      Translation flow.
+      */
+
+      const optionFlow =
+
+        normalizeFlow(
+
+          option.targetFlow ||
+
+          option.target_flow ||
+
+          option.groups ||
+
+          []
+
+        );
+
+
+
+      if (
+        optionFlow.length
+      ) {
+
+
+        const sentence =
+
+          createTranslationSentence(
+
+            optionFlow,
+
+            room.target_language
+
+          );
+
+
+        card.append(
+
+          heading,
+
+          sentence
+
+        );
+
+
+      } else {
+
+
+        const text =
+          document.createElement(
+            "p"
+          );
+
+
+        text.className =
+          "assist_message";
+
+
+        text.textContent =
+
+          option.text ||
+
+          option.targetText ||
+
+          option.useText ||
+
+          "Response option";
+
+
+        card.append(
+
+          heading,
+
+          text
+
+        );
+
+      }
+
+
+
+      /*
+      Buttons.
+      */
+
+      const actions =
+        document.createElement(
+          "div"
+        );
+
+
+      actions.className =
+        "option_actions";
+
+
+
+      /*
+      USE
+      */
+
+      const useButton =
+        document.createElement(
+          "button"
+        );
+
+
+      useButton.type =
+        "button";
+
+
+      useButton.className =
+        "use_option_button";
+
+
+      useButton.textContent =
+        "Use";
+
+
+      useButton.onclick =
+
+        function() {
+
+          useResponseOption(
+            option
+          );
+
+        };
+
+
+
+      /*
+      TEACH
+      */
+
+      const teachButton =
+        document.createElement(
+          "button"
+        );
+
+
+      teachButton.type =
+        "button";
+
+
+      teachButton.className =
+        "teach_option_button";
+
+
+      teachButton.textContent =
+        "Teach";
+
+
+
+      /*
+      Teach box.
+      */
+
+      const teachBox =
+        document.createElement(
+          "div"
+        );
+
+
+      teachBox.className =
+        "teach_box";
+
+
+
+      const teachAnswer =
+        document.createElement(
+          "p"
+        );
+
+
+      teachAnswer.className =
+        "teach_answer";
+
+
+
+      const questionRow =
+        document.createElement(
+          "div"
+        );
+
+
+      questionRow.className =
+        "teach_question_row";
+
+
+
+      const questionInput =
+        document.createElement(
+          "input"
+        );
+
+
+      questionInput.type =
+        "text";
+
+
+      questionInput.className =
+        "teach_question_input";
+
+
+      questionInput.placeholder =
+        "Ask about this response...";
+
+
+
+      const questionButton =
+        document.createElement(
+          "button"
+        );
+
+
+      questionButton.type =
+        "button";
+
+
+      questionButton.className =
+        "teach_question_button";
+
+
+      questionButton.textContent =
+        "Ask";
+
+
+
+      questionRow.append(
+
+        questionInput,
+
+        questionButton
+
+      );
+
+
+      teachBox.append(
+
+        teachAnswer,
+
+        questionRow
+
+      );
+
+
+
+      teachButton.onclick =
+
+        function() {
+
+          teachResponseOption({
+
+            room:
+              room,
+
+            chat:
+              chat,
+
+            option:
+              option,
+
+            box:
+              teachBox,
+
+            answer:
+              teachAnswer,
+
+            question:
+              ""
+
+          });
+
+        };
+
+
+
+      questionButton.onclick =
+
+        function() {
+
+
+          const question =
+            questionInput
+              .value
+              .trim();
+
+
+          if (
+            !question
+          ) {
+
+            return;
+
+          }
+
+
+          teachResponseOption({
+
+            room:
+              room,
+
+            chat:
+              chat,
+
+            option:
+              option,
+
+            box:
+              teachBox,
+
+            answer:
+              teachAnswer,
+
+            question:
+              question
+
+          });
+
+        };
+
+
+
+      questionInput.addEventListener(
+
+        "keydown",
+
+        function(event) {
+
+
+          if (
+            event.key ===
+            "Enter"
+          ) {
+
+
+            event.preventDefault();
+
+
+            questionButton.click();
+
+          }
+
+        }
+
+      );
+
+
+
+      actions.append(
+
+        useButton,
+
+        teachButton
+
+      );
+
+
+      card.append(
+
+        actions,
+
+        teachBox
+
+      );
+
+
+      panel.appendChild(
+        card
+      );
+
+    }
+
+
+
+    /*
+    ==================================================
+    USE OPTION
+    ==================================================
+
+    The option is NOT sent automatically.
+
+    It goes into the main composer so the
+    learner can:
+
+    - read it
+    - change it
+    - extend it
+    - then press Send
+    ==================================================
+    */
+
+    function useResponseOption(
+      option
+    ) {
+
+
+      let text =
+
+        String(
+
+          option.useText ||
+
+          option.targetText ||
+
+          option.text ||
+
+          ""
+
+        ).trim();
+
+
+
+      /*
+      If no simple text exists,
+      reconstruct target sentence
+      from targetFlow.
+      */
+
+      if (
+        !text
+      ) {
+
+
+        const flow =
+
+          normalizeFlow(
+
+            option.targetFlow ||
+
+            option.target_flow ||
+
+            []
+
+          );
+
+
+        text = flow
+
+          .map(
+            function(item) {
+
+              return item.target;
+
+            }
+          )
+
+          .filter(Boolean)
+
+          .join(" ");
+
+      }
+
+
+
+      if (
+        !text
+      ) {
+
+        return;
+
+      }
+
+
+
+      const textarea =
+        document.getElementById(
+          "sourceText"
+        );
+
+
+      textarea.value =
+        text;
+
+
+      textarea.focus();
+
+
+      resizeComposer();
+
+
+      setStatus(
+        "Response placed in the composer. Edit it if you want, then press Send."
+      );
+
+    }
+
+
+
+    /*
+    ==================================================
+    TEACH.JS
+    ==================================================
+
+    Expected future global:
+
+    window.ConversateTeach
+
+    with:
+
+    explain({
+      room,
+      chat,
+      option,
+      question,
+      signal,
+      onStatus
+    })
+
+    Teach data stays temporary.
+    ==================================================
+    */
+
+    async function teachResponseOption(
+      settings
+    ) {
+
+
+      const box =
+        settings.box;
+
+
+      const answer =
+        settings.answer;
+
+
+      box.classList.add(
+        "visible"
+      );
+
+
+      answer.textContent =
+        "Preparing explanation...";
+
+
+
+      const module =
+
+        await loadOptionalModule(
+
+          "teach.js",
+
+          "ConversateTeach"
+
+        );
+
+
+
+      if (
+        !module
+
+        ||
+
+        typeof module
+          .explain !==
+          "function"
+      ) {
+
+
+        answer.textContent =
+          "teach.js has not been created yet.";
+
+
+        return;
+
+      }
+
+
+
+      try {
+
+
+        const result =
+
+          await module
+            .explain({
+
+              room:
+                settings.room,
+
+              chat:
+                settings.chat,
+
+              option:
+                settings.option,
+
+              question:
+                settings.question || "",
+
+              onStatus:
+
+                function(message) {
+
+                  if (
+                    message
+                  ) {
+
+                    answer.textContent =
+                      message;
+
+                  }
+
+                }
+
+            });
+
+
+
+        const text =
+
+          typeof result ===
+            "string"
+
+            ? result
+
+            : (
+
+                result?.text ||
+
+                result?.answer ||
+
+                result?.explanation ||
+
+                ""
+
+              );
+
+
+
+        answer.textContent =
+
+          text ||
+
+          "No explanation was returned.";
+
+
+      } catch (error) {
+
+
+        console.error(
+          error
+        );
+
+
+        answer.textContent =
+
+          error.message ||
+
+          "Teach could not answer.";
+
+      }
+
+    }
+
+
+
+    /*
+    ==================================================
+    GET ORIGINAL / EDITABLE TEXT
+    ==================================================
+    */
+
+    function getPrompt(
+      chat
+    ) {
+
+
+      /*
+      Conversate Pro preserves exactly
+      what the learner originally typed.
+      */
+
+      if (
+        chat.original_input
+      ) {
+
+        return String(
+          chat.original_input
+        );
+
+      }
+
+
+
+      if (
+
+        Array.isArray(
+          chat.prompts_and_answers
+        )
+
+        &&
+
+        chat
+          .prompts_and_answers
+          .length
+
+      ) {
+
+
+        return String(
+
+          chat
+            .prompts_and_answers[
+              chat
+                .prompts_and_answers
+                .length - 1
+            ]
+            .user_prompt
+
+          ||
+
+          ""
+
+        );
+
+      }
+
+
+      return "";
+
+    }
+
+
+
+    /*
+    ==================================================
+    START EDIT
+    ==================================================
+    */
+
+    function startEdit(
+      chatIdx
+    ) {
+
+
+      const room =
+        getRoom();
+
+
+
+      const chat =
+
+        room?.room_data.find(
+
+          function(item) {
+
+            return (
+              item.chat_idx ===
+              chatIdx
+            );
+
+          }
+
+        );
+
+
+
+      if (
+        !chat
+      ) {
+
+        return;
+
+      }
+
+
+
+      editingChatIdx =
+        chat.chat_idx;
+
+
+
+      document.getElementById(
+        "sourceText"
+      ).value =
+        getPrompt(
+          chat
+        );
+
+
+
+      populateSelect(
+
+        "sourceLang",
+
+        chat.source_language ||
+
+        room.source_language
+
+      );
+
+
+
+      populateSelect(
+
+        "targetLang",
+
+        chat.target_language ||
+
+        room.target_language
+
+      );
+
+
+
+      document.getElementById(
+        "sendButton"
+      ).textContent =
+        "Update";
+
+
+
+      document.getElementById(
+        "cancelEditButton"
+      ).classList.add(
+        "visible"
+      );
+
+
+
+      document.getElementById(
+        "sourceText"
+      ).focus();
+
+
+
+      resizeComposer();
+
+    }
+
+
+
+    /*
+    ==================================================
+    CANCEL EDIT
+    ==================================================
+    */
+
+    function cancelEdit() {
+
+
+      editingChatIdx =
+        "";
+
+
+
+      document.getElementById(
+        "sourceText"
+      ).value =
+        "";
+
+
+
+      document.getElementById(
+        "sendButton"
+      ).textContent =
+        "Send";
+
+
+
+      document.getElementById(
+        "cancelEditButton"
+      ).classList.remove(
+        "visible"
+      );
+
+
+
+      setComposerLanguages();
+
+
+      setStatus("");
+
+
+      resizeComposer();
+
+    }
+
+
+
+    /*
+    ==================================================
+    DELETE CHAT
+    ==================================================
+    */
+
+    async function deleteChat(
+      chatIdx
+    ) {
+
+
+      if (
+
+        !confirm(
+          "Delete this conversation message?"
+        )
+
+      ) {
+
+        return;
+
+      }
+
+
+
+      if (
+        editingChatIdx ===
+        chatIdx
+      ) {
+
+        cancelEdit();
+
+      }
+
+
+
+      setStatus(
+        "Deleting..."
+      );
+
+
+
+      try {
+
+
+        await window
+          .ConversateFirebase
+          .deleteChat(
+
+            currentRoomIdx,
+
+            chatIdx
+
+          );
+
+
+
+        await refreshCurrentRoom();
+
+
+        setStatus("");
+
+
+        renderChat();
+
+
+      } catch (error) {
+
+
+        console.error(
+          error
+        );
+
+
+        setStatus(
+
+          error.message ||
+
+          "Could not delete message.",
+
+          "error"
+
+        );
+
+      }
+
+    }
+
+
+
+    /*
+    ==================================================
+    STATUS
+    ==================================================
+    */
+
+    function setStatus(
+      message,
+      type
+    ) {
+
+
+      const box =
+        document.getElementById(
+          "translationStatus"
+        );
+
+
+      box.textContent =
+        message || "";
+
+
+      box.className =
+        "";
+
+
+
+      if (
+        message
+      ) {
+
+
+        box.classList.add(
+          "visible"
+        );
+
+
+        if (
+          type === "error"
+        ) {
+
+
+          box.classList.add(
+            "error"
+          );
+
+        }
+
+      }
+
+    }
+
+
+
+    /*
+    ==================================================
+    UNDERSTAND USER INPUT
+    ==================================================
+
+    Future understandInput.js should expose:
+
+    window.ConversateInput.understand(...)
+
+    It will understand:
+
+    I'm fine
+
+    ana bikhair
+
+    ana bee-khair
+
+    أنا بخير
+
+    mixed forms, etc.
+
+    Expected result:
+
+    {
+      originalText,
+      inputForm,
+      sourceText,
+      targetText,
+      detectedLanguage
+    }
+
+    sourceText should be the canonical
+    meaning in the user's language.
+
+    Example:
+
+    originalText:
+      "ana bikhair"
+
+    sourceText:
+      "I am fine"
+
+    targetText:
+      "أنا بخير"
+    ==================================================
+    */
+
+    async function understandUserInput(
+      options
+    ) {
+
+
+      const module =
+
+        await loadOptionalModule(
+
+          "understandInput.js",
+
+          "ConversateInput"
+
+        );
+
+
+
+      /*
+      ==================================================
+      TEMPORARY FALLBACK
+
+      Until understandInput.js is created,
+      normal source-language messages will
+      continue using results5.js directly.
+      ==================================================
+      */
+
+      if (
+        !module
+
+        ||
+
+        typeof module
+          .understand !==
+          "function"
+      ) {
+
+
+        return {
+
+          originalText:
+            options.text,
+
+          inputForm:
+            "direct",
+
+          sourceText:
+            options.text,
+
+          targetText:
+            "",
+
+          detectedLanguage:
+            options.sourceLanguage
+
+        };
+
+      }
+
+
+
+      return await module
+        .understand({
+
+          text:
+            options.text,
+
+          room:
+            getRoom(),
+
+          sourceLanguage:
+            options.sourceLanguage,
+
+          targetLanguage:
+            options.targetLanguage,
+
+          signal:
+            options.signal,
+
+          onStatus:
+            options.onStatus
+
+        });
+
+    }
+
+
+
+    /*
+    ==================================================
+    SEND / UPDATE USER MESSAGE
+    ==================================================
+    */
+
+    async function sendConversationMessage() {
+
+
+      const room =
+        getRoom();
+
+
+
+      if (
+        !room
+      ) {
+
+        return;
+
+      }
+
+
+
+      const originalText =
+
+        document
+          .getElementById(
+            "sourceText"
+          )
+          .value
+          .trim();
+
+
+
+      const sourceLanguage =
+
+        document.getElementById(
+          "sourceLang"
+        ).value;
+
+
+
+      const targetLanguage =
+
+        document.getElementById(
+          "targetLang"
+        ).value;
+
+
+
+      const sendButton =
+        document.getElementById(
+          "sendButton"
+        );
+
+
+
+      const interactButton =
+        document.getElementById(
+          "interactPlusButton"
+        );
+
+
+
+      if (
+        !originalText
+      ) {
+
+
+        setStatus(
+          "Enter a response.",
+          "error"
+        );
+
+
+        return;
+
+      }
+
+
+
+      if (
+        sourceLanguage ===
+        targetLanguage
+      ) {
+
+
+        setStatus(
+          "Choose different languages.",
+          "error"
+        );
+
+
+        return;
+
+      }
+
+
+
+      /*
+      Was this an existing message?
+      */
+
+      const wasEditing =
+        Boolean(
+          editingChatIdx
+        );
+
+
+
+      if (
+        activeController
+      ) {
+
+        activeController.abort();
+
+      }
+
+
+
+      const controller =
+        new AbortController();
+
+
+      activeController =
+        controller;
+
+
+
+      sendButton.disabled =
+        true;
+
+
+      interactButton.disabled =
+        true;
+
+
+
+      sendButton.textContent =
+
+        wasEditing
+
+          ? "Updating..."
+
+          : "Sending...";
+
+
+
+      setStatus(
+        "Understanding your response..."
+      );
+
+
+
+      let shouldAutoReply =
+        false;
+
+
+
+      try {
+
+
+        /*
+        ==================================================
+        STEP 1
+
+        Understand whether the learner wrote:
+
+        English
+        Arabic
+        Arabic transliteration
+        pronunciation-style text
+        ==================================================
+        */
+
+        const understood =
+
+          await understandUserInput({
+
+            text:
+              originalText,
+
+            sourceLanguage:
+              sourceLanguage,
+
+            targetLanguage:
+              targetLanguage,
+
+            signal:
+              controller.signal,
+
+            onStatus:
+
+              function(message) {
+
+                if (
+                  activeController ===
+                    controller
+
+                  &&
+
+                  message
+                ) {
+
+                  setStatus(
+                    message
+                  );
+
+                }
+
+              }
+
+          });
+
+
+
+        if (
+          activeController !==
+          controller
+        ) {
+
+          return;
+
+        }
+
+
+
+        /*
+        Canonical source-language meaning.
+
+        Example:
+
+        "ana bikhair"
+             ↓
+        "I am fine"
+        */
+
+        const canonicalSourceText =
+
+          String(
+
+            understood?.sourceText ||
+
+            understood?.interpretedSourceText ||
+
+            understood?.sourceMeaning ||
+
+            originalText
+
+          ).trim();
+
+
+
+        /*
+        ==================================================
+        STEP 2
+
+        Use the SAME results5.js system
+        as LingoGPT.
+
+        This guarantees the same:
+        - translation
+        - pronunciation
+        - target flow
+        - source flow
+        - display structure
+        ==================================================
+        */
+
+        setStatus(
+          "Preparing the conversation breakdown..."
+        );
+
+
+
+        const results =
+
+          await window
+            .LingoGPTResults
+            .generateResults({
+
+              text:
+                canonicalSourceText,
+
+              sourceLanguage:
+                sourceLanguage,
+
+              targetLanguage:
+                targetLanguage,
+
+              signal:
+                controller.signal,
+
+              onStatus:
+
+                function(message) {
+
+                  if (
+
+                    activeController ===
+                      controller
+
+                    &&
+
+                    message !==
+                      "Complete."
+
+                  ) {
+
+                    setStatus(
+                      message
+                    );
+
+                  }
+
+                }
+
+            });
+
+
+
+        if (
+          activeController !==
+          controller
+        ) {
+
+          return;
+
+        }
+
+
+
+        /*
+        Existing chat when editing.
+        */
+
+        const oldChat =
+
+          editingChatIdx
+
+            ? room
+                .room_data
+                .find(
+
+                  function(chat) {
+
+                    return (
+                      chat.chat_idx ===
+                      editingChatIdx
+                    );
+
+                  }
+
+                )
+
+            : null;
+
+
+
+        /*
+        ==================================================
+        NEW CONVERSATE PRO CHAT DATA
+
+        It retains the original LingoGPT
+        fields and adds interpretation fields.
+        ==================================================
+        */
+
+        const chatData = {
+
+
+          chat_idx:
+
+            editingChatIdx ||
+
+            createId(
+              "chat"
+            ),
+
+
+
+          message_type:
+
+            oldChat &&
+            oldChat.message_type
+
+              ? oldChat.message_type
+
+              : "user",
+
+
+
+          is_interaction:
+
+            oldChat &&
+            oldChat.is_interaction ===
+              true,
+
+
+
+          /*
+          Exactly what the learner typed.
+          */
+
+          original_input:
+            originalText,
+
+
+
+          /*
+          Example:
+          direct
+          target_script
+          target_transliteration
+          target_pronunciation
+          mixed
+          */
+
+          input_form:
+
+            understood?.inputForm ||
+
+            understood?.input_form ||
+
+            "direct",
+
+
+
+          /*
+          Canonical helper-language meaning.
+          */
+
+          interpreted_source_text:
+            canonicalSourceText,
+
+
+
+          /*
+          Canonical practice-language sentence,
+          when understandInput.js provides it.
+          */
+
+          interpreted_target_text:
+
+            String(
+
+              understood?.targetText ||
+
+              understood?.interpretedTargetText ||
+
+              ""
+
+            ),
+
+
+
+          source_language:
+
+            results.detectedLanguage ||
+
+            sourceLanguage,
+
+
+
+          target_language:
+
+            results.targetLanguage ||
+
+            targetLanguage,
+
+
+
+          target_flow:
+
+            Array.isArray(
+              results.targetFlow
+            )
+
+              ? results.targetFlow
+
+              : [],
+
+
+
+          source_flow:
+
+            Array.isArray(
+              results.sourceFlow
+            )
+
+              ? results.sourceFlow
+
+              : [],
+
+
+
+          groups:
+
+            Array.isArray(
+              results.groups
+            )
+
+              ? results.groups
+
+              : [],
+
+
+
+          display_flow:
+
+            oldChat &&
+            oldChat.display_flow ===
+              "source"
+
+              ? "source"
+
+              : "target",
+
+
+
+          prompts_and_answers: [
+
+            {
+
+              /*
+              Canonical sentence allows
+              the future interaction engine
+              to read clean conversation
+              history.
+              */
+
+              user_prompt:
+                canonicalSourceText,
+
+
+              /*
+              Preserve what the learner
+              actually entered too.
+              */
+
+              original_user_input:
+                originalText,
+
+
+              gpt_api_answer:
+                results
+
+            }
+
+          ],
+
+
+
+          generated_at:
+
+            results.generatedAt ||
+
+            new Date()
+              .toISOString()
+
+        };
+
+
+
+        /*
+        Save real conversation message
+        to conversate_Data.
+        */
+
+        await window
+          .ConversateFirebase
+          .saveChat(
+
+            currentRoomIdx,
+
+            chatData
+
+          );
+
+
+
+        await refreshCurrentRoom();
+
+
+
+        editingChatIdx =
+          "";
+
+
+
+        document.getElementById(
+          "sourceText"
+        ).value =
+          "";
+
+
+
+        document.getElementById(
+          "cancelEditButton"
+        ).classList.remove(
+          "visible"
+        );
+
+
+
+        setComposerLanguages();
+
+
+        setStatus("");
+
+
+        renderChat();
+
+
+        resizeComposer();
+
+
+
+        /*
+        ==================================================
+        AUTOMATIC CONVERSATION
+
+        Only a NEW learner message triggers
+        the automatic AI response.
+
+        Editing an old message does not.
+        ==================================================
+        */
+
+        shouldAutoReply =
+          !wasEditing;
+
+
+      } catch (error) {
+
+
+        if (
+          error.name !==
+          "AbortError"
+        ) {
+
+
+          console.error(
+            error
+          );
+
+
+          setStatus(
+
+            error.message ||
+
+            "Could not send your response.",
+
+            "error"
+
+          );
+
+        }
+
+
+      } finally {
+
+
+        if (
+          activeController ===
+          controller
+        ) {
+
+
+          activeController =
+            null;
+
+
+          sendButton.disabled =
+            false;
+
+
+          interactButton.disabled =
+            false;
+
+
+          sendButton.textContent =
+
+            editingChatIdx
+
+              ? "Update"
+
+              : "Send";
+
+        }
+
+      }
+
+
+
+      /*
+      ==================================================
+      STEP 3
+
+      AUTOMATIC AI RESPONSE
+
+      No second InteractPlus click required.
+      ==================================================
+      */
+
+      if (
+        shouldAutoReply
+      ) {
+
+
+        await generateInteractionResponse(
+          "continue"
+        );
+
+      }
+
+    }
+
+
+
+    /*
+    ==================================================
+    INTERACT PLUS
+    ==================================================
+
+    Future interactPlus.js should expose:
+
+    window.ConversateInteractPlus.interact({
+
+      room,
+      mode,
+      signal,
+      onStatus
+
+    })
+
+    MODE:
+
+    "start"
+      = empty conversation
+
+    "continue"
+      = reply to conversation
+
+    It may return either:
+
+    1. full results5.js-style data
+
+    OR
+
+    2. just interactionText
+
+    index.html supports both.
+    ==================================================
+    */
+
+    async function generateInteractionResponse(
+      mode
+    ) {
+
+
+      if (
+        editingChatIdx
+      ) {
+
+
+        setStatus(
+          "Finish or cancel editing first.",
+          "error"
+        );
+
+
+        return;
+
+      }
+
+
+
+      /*
+      Refresh room first.
+
+      This guarantees the AI sees
+      the latest user message.
+      */
+
+      await refreshCurrentRoom();
+
+
+
+      const room =
+        getRoom();
+
+
+
+      if (
+        !room
+      ) {
+
+        return;
+
+      }
+
+
+
+      const sendButton =
+        document.getElementById(
+          "sendButton"
+        );
+
+
+      const interactButton =
+        document.getElementById(
+          "interactPlusButton"
+        );
+
+
+
+      if (
+        activeController
+      ) {
+
+        activeController.abort();
+
+      }
+
+
+
+      const controller =
+        new AbortController();
+
+
+      activeController =
+        controller;
+
+
+
+      sendButton.disabled =
+        true;
+
+
+      interactButton.disabled =
+        true;
+
+
+      interactButton.textContent =
+        "Thinking...";
+
+
+
+      setStatus(
+
+        mode === "start"
+
+          ? "Starting the conversation..."
+
+          : "Conversation partner is responding..."
+
+      );
+
+
+
+      try {
+
+
+        /*
+        Load interactPlus.js.
+        */
+
+        const module =
+
+          await loadOptionalModule(
+
+            "interactPlus.js",
+
+            "ConversateInteractPlus"
+
+          );
+
+
+
+        if (
+
+          !module
+
+          ||
+
+          typeof module.interact !==
+            "function"
+
+        ) {
+
+
+          setStatus(
+
+            "interactPlus.js has not been created yet.",
+
+            "error"
+
+          );
+
+
+          return;
+
+        }
+
+
+
+        /*
+        ==================================================
+        GENERATE CONVERSATION PARTNER RESPONSE
+        ==================================================
+        */
+
+        let results =
+
+          await module
+            .interact({
+
+              room:
+                room,
+
+              mode:
+                mode,
+
+              signal:
+                controller.signal,
+
+              onStatus:
+
+                function(message) {
+
+                  if (
+
+                    activeController ===
+                      controller
+
+                    &&
+
+                    message
+
+                    &&
+
+                    message !==
+                      "Complete."
+
+                  ) {
+
+                    setStatus(
+                      message
+                    );
+
+                  }
+
+                }
+
+            });
+
+
+
+        if (
+          activeController !==
+          controller
+        ) {
+
+          return;
+
+        }
+
+
+
+        /*
+        ==================================================
+        INTERACTION TEXT
+
+        This should normally be in the
+        helper/source language internally.
+
+        results5.js converts it to the
+        practice language for display.
+        ==================================================
+        */
+
+        const interactionText =
+
+          String(
+
+            results?.interactionText ||
+
+            results?.request?.text ||
+
+            results?.text ||
+
+            ""
+
+          ).trim();
+
+
+
+        if (
+          !interactionText
+        ) {
+
+
+          throw new Error(
+            "No conversation response was generated."
+          );
+
+        }
+
+
+
+        /*
+        ==================================================
+        SAFETY FALLBACK
+
+        If interactPlus.js returned only
+        plain text instead of translation
+        flows, run it through results5.js here.
+        ==================================================
+        */
+
+        if (
+
+          !Array.isArray(
+            results?.targetFlow
+          )
+
+          ||
+
+          !results.targetFlow.length
+
+        ) {
+
+
+          setStatus(
+            "Preparing the conversation breakdown..."
+          );
+
+
+
+          const translated =
+
+            await window
+              .LingoGPTResults
+              .generateResults({
+
+                text:
+                  interactionText,
+
+                sourceLanguage:
+                  room.source_language,
+
+                targetLanguage:
+                  room.target_language,
+
+                signal:
+                  controller.signal,
+
+                onStatus:
+
+                  function(message) {
+
+                    if (
+
+                      activeController ===
+                        controller
+
+                      &&
+
+                      message !==
+                        "Complete."
+
+                    ) {
+
+                      setStatus(
+                        message
+                      );
+
+                    }
+
+                  }
+
+              });
+
+
+
+          results = {
+
+            ...results,
+
+            ...translated,
+
+            interactionText:
+              interactionText
+
+          };
+
+        }
+
+
+
+        /*
+        ==================================================
+        SAVE REAL AI CONVERSATION MESSAGE
+        ==================================================
+        */
+
+        const chatData = {
+
+
+          chat_idx:
+            createId(
+              "chat"
+            ),
+
+
+          message_type:
+            "interaction",
+
+
+          is_interaction:
+            true,
+
+
+          interaction_type:
+
+            mode === "start"
+
+              ? "opening"
+
+              : "automatic",
+
+
+
+          /*
+          Canonical AI response.
+          */
+
+          interaction_text:
+            interactionText,
+
+
+
+          source_language:
+
+            results.detectedLanguage ||
+
+            room.source_language,
+
+
+
+          target_language:
+
+            results.targetLanguage ||
+
+            room.target_language,
+
+
+
+          target_flow:
+
+            Array.isArray(
+              results.targetFlow
+            )
+
+              ? results.targetFlow
+
+              : [],
+
+
+
+          source_flow:
+
+            Array.isArray(
+              results.sourceFlow
+            )
+
+              ? results.sourceFlow
+
+              : [],
+
+
+
+          groups:
+
+            Array.isArray(
+              results.groups
+            )
+
+              ? results.groups
+
+              : [],
+
+
+
+          display_flow:
+            "target",
+
+
+
+          prompts_and_answers: [
+
+            {
+
+              user_prompt:
+                interactionText,
+
+              gpt_api_answer:
+                results
+
+            }
+
+          ],
+
+
+
+          generated_at:
+
+            results.generatedAt ||
+
+            new Date()
+              .toISOString()
+
+        };
+
+
+
+        await window
+          .ConversateFirebase
+          .saveChat(
+
+            currentRoomIdx,
+
+            chatData
+
+          );
+
+
+
+        await refreshCurrentRoom();
+
+
+
+        setStatus("");
+
+
+        renderChat();
+
+
+      } catch (error) {
+
+
+        if (
+          error.name !==
+          "AbortError"
+        ) {
+
+
+          console.error(
+            error
+          );
+
+
+          setStatus(
+
+            error.message ||
+
+            "The conversation partner could not respond.",
+
+            "error"
+
+          );
+
+        }
+
+
+      } finally {
+
+
+        if (
+          activeController ===
+          controller
+        ) {
+
+
+          activeController =
+            null;
+
+
+          sendButton.disabled =
+            false;
+
+
+          interactButton.disabled =
+            false;
+
+
+          interactButton.textContent =
+            "InteractPlus";
+
+        }
+
+      }
+
+    }
+
+
+
+    /*
+    ==================================================
+    INTERACTPLUS BUTTON
+
+    EMPTY ROOM:
+      Starts conversation.
+
+    NON-EMPTY ROOM:
+      Generates another conversation response.
+
+    Normal user messages automatically
+    trigger a reply without this button.
+    ==================================================
+    */
+
+    async function interactPlus() {
+
+
+      const room =
+        getRoom();
+
+
+
+      if (
+        !room
+      ) {
+
+        return;
+
+      }
+
+
+
+      const emptyConversation =
+
+        !Array.isArray(
+          room.room_data
+        )
+
+        ||
+
+        room.room_data.length ===
+          0;
+
+
+
+      await generateInteractionResponse(
+
+        emptyConversation
+
+          ? "start"
+
+          : "continue"
+
+      );
+
+    }
+
+
+
+    /*
+    ==================================================
+    COMPOSER LANGUAGES
+    ==================================================
+    */
+
+    function setComposerLanguages() {
+
+
+      const room =
+        getRoom();
+
+
+
+      if (
+        !room
+      ) {
+
+        return;
+
+      }
+
+
+
+      populateSelect(
+
+        "sourceLang",
+
+        room.source_language ||
+
+        "English"
+
+      );
+
+
+
+      populateSelect(
+
+        "targetLang",
+
+        room.target_language ||
+
+        "Arabic"
+
+      );
+
+    }
+
+
+
+    /*
+    ==================================================
+    RESIZE TEXTAREA
+    ==================================================
+    */
+
+    function resizeComposer() {
+
+
+      const textarea =
+        document.getElementById(
+          "sourceText"
+        );
+
+
+      textarea.style.height =
+        "44px";
+
+
+      textarea.style.height =
+
+        Math.min(
+
+          textarea.scrollHeight,
+
+          120
+
+        )
+
+        +
+
+        "px";
+
+    }
+
+
+
+    /*
+    ==================================================
+    START PAGE
+    ==================================================
+    */
+
+    async function startPage() {
+
+
+      setStatus(
+        "Loading conversation..."
+      );
+
+
+
+      try {
+
+
+        /*
+        ==================================================
+        1. SAME ACCOUNT
+
+        account_Details
+
+        2. CONVERSATE DATA
+
+        conversate_Data
+
+        3. LOCAL CACHE
+
+        conversate_user_data
+        ==================================================
+        */
+
+        const synced =
+
+          await window
+            .ConversateFirebase
+            .sync();
+
+
+
+        if (
+
+          !synced
+
+          ||
+
+          !synced.user
+
+        ) {
+
+
+          window.location.replace(
+            "loginregister.html"
+          );
+
+
+          return;
+
+        }
+
+
+
+        currentRoomIdx =
+
+          window
+            .ConversateFirebase
+            .getCurrentRoomIdx();
+
+
+
+        if (
+          !currentRoomIdx
+        ) {
+
+
+          window.location.replace(
+            "welcome.html"
+          );
+
+
+          return;
+
+        }
+
+
+
+        currentRoom =
+
+          await window
+            .ConversateFirebase
+            .getCurrentRoom();
+
+
+
+        if (
+          !currentRoom
+        ) {
+
+
+          window.location.replace(
+            "welcome.html"
+          );
+
+
+          return;
+
+        }
+
+
+
+        if (
+          !Array.isArray(
+            currentRoom.room_data
+          )
+        ) {
+
+
+          currentRoom.room_data =
+            [];
+
+        }
+
+
+
+        setComposerLanguages();
+
+
+        renderChat();
+
+
+        resizeComposer();
+
+
+        setStatus("");
+
+
+      } catch (error) {
+
+
+        console.error(
+          error
+        );
+
+
+        setStatus(
+
+          error.message ||
+
+          "Could not load this conversation.",
+
+          "error"
+
+        );
+
+      }
+
+    }
+
+
+
+    /*
+    ==================================================
+    EVENTS
+    ==================================================
+    */
+
+    document.getElementById(
+      "backButton"
+    ).addEventListener(
+
+      "click",
+
+      function() {
+
+
+        window.location.href =
+          "welcome.html";
+
+      }
+
+    );
+
+
+
+    document.getElementById(
+      "sendButton"
+    ).addEventListener(
+
+      "click",
+
+      sendConversationMessage
+
+    );
+
+
+
+    document.getElementById(
+      "interactPlusButton"
+    ).addEventListener(
+
+      "click",
+
+      interactPlus
+
+    );
+
+
+
+    document.getElementById(
+      "cancelEditButton"
+    ).addEventListener(
+
+      "click",
+
+      cancelEdit
+
+    );
+
+
+
+    document.getElementById(
+      "sourceText"
+    ).addEventListener(
+
+      "input",
+
+      resizeComposer
+
+    );
+
+
+
+    /*
+    Enter = send
+
+    Shift + Enter =
+    new line.
+    */
+
+    document.getElementById(
+      "sourceText"
+    ).addEventListener(
+
+      "keydown",
+
+      function(event) {
+
+
+        if (
+
+          event.key ===
+            "Enter"
+
+          &&
+
+          !event.shiftKey
+
+        ) {
+
+
+          event.preventDefault();
+
+
+          sendConversationMessage();
+
+        }
+
+      }
+
+    );
+
+
+
+    /*
+    ==================================================
+    START
+    ==================================================
+    */
+
+    startPage();
+
+
+  </script>
+
+
+</body>
+
+</html>
