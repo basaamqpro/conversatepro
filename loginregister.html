@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>LingoGPT - Login</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      color: #111827;
+      background: #f8fafc;
+    }
+
+    .auth_page {
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .app_title {
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    .app_title h1 {
+      margin-bottom: 7px;
+    }
+
+    .app_title p {
+      margin: 0;
+      color: #64748b;
+    }
+
+    .auth_tabs {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .auth_tabs button {
+      width: auto;
+      min-width: 120px;
+    }
+
+    .auth_tabs button.active {
+      background: #111827;
+      color: white;
+    }
+
+    .auth_tabs button:not(.active) {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .auth_container {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .panel {
+      display: none;
+      padding: 25px;
+      border: 1px solid #d1d5db;
+      border-radius: 15px;
+      background: white;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .panel h2 {
+      margin-top: 0;
+    }
+
+    label {
+      display: block;
+      margin: 14px 0 6px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 9px;
+      background: white;
+      font: inherit;
+      font-size: 16px;
+    }
+
+    input:focus {
+      border-color: #2563eb;
+      outline: 2px solid rgba(37, 99, 235, 0.12);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px 15px;
+      border: 0;
+      border-radius: 9px;
+      background: #111827;
+      color: white;
+      cursor: pointer;
+      font: inherit;
+      font-size: 16px;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .submit_button {
+      margin-top: 20px;
+    }
+
+    .message {
+      display: none;
+      margin-bottom: 18px;
+      padding: 12px;
+      border-radius: 9px;
+      font-weight: bold;
+    }
+
+    .message.visible {
+      display: block;
+    }
+
+    .message.error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .message.success {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .muted {
+      color: #64748b;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .switch_text {
+      margin-top: 20px;
+      text-align: center;
+      color: #64748b;
+    }
+
+    .text_button {
+      width: auto;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #2563eb;
+      font-weight: bold;
+    }
+
+    .password_wrapper {
+      position: relative;
+    }
+
+    .password_wrapper input {
+      padding-right: 75px;
+    }
+
+    .show_password_button {
+      position: absolute;
+      top: 50%;
+      right: 8px;
+      width: auto;
+      padding: 6px 9px;
+      transform: translateY(-50%);
+      background: #e5e7eb;
+      color: #111827;
+      font-size: 12px;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        align-items: flex-start;
+        padding: 15px;
+      }
+
+      .auth_page {
+        margin-top: 30px;
+      }
+
+      .panel {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="auth_page">
+
+    <div class="app_title">
+      <h1>LingoGPT</h1>
+
+      <p>
+        Learn languages through translation,
+        pronunciation and sentence breakdown.
+      </p>
+    </div>
+
+    <div
+      id="authMessage"
+      class="message"
+      role="status"
+      aria-live="polite"
+    ></div>
+
+    <div class="auth_tabs">
+
+      <button
+        id="showLoginButton"
+        class="active"
+        type="button"
+      >
+        Login
+      </button>
+
+      <button
+        id="showRegisterButton"
+        type="button"
+      >
+        Register
+      </button>
+
+    </div>
+
+    <div class="auth_container">
+
+      <form
+        id="loginForm"
+        class="panel active"
+      >
+
+        <h2>Login</h2>
+
+        <p class="muted">
+          Login to access your saved rooms and translations.
+        </p>
+
+        <label for="loginUsername">
+          Username
+        </label>
+
+        <input
+          id="loginUsername"
+          name="username"
+          type="text"
+          autocomplete="username"
+          required
+        >
+
+        <label for="loginPassword">
+          Password
+        </label>
+
+        <div class="password_wrapper">
+
+          <input
+            id="loginPassword"
+            name="password"
+            type="password"
+            autocomplete="current-password"
+            required
+          >
+
+          <button
+            class="show_password_button"
+            type="button"
+            data-password-input="loginPassword"
+          >
+            Show
+          </button>
+
+        </div>
+
+        <button
+          id="loginButton"
+          class="submit_button"
+          type="submit"
+        >
+          Login
+        </button>
+
+        <p class="switch_text">
+          Don't have an account?
+
+          <button
+            id="openRegisterButton"
+            class="text_button"
+            type="button"
+          >
+            Register
+          </button>
+        </p>
+
+      </form>
+
+
+      <form
+        id="registerForm"
+        class="panel"
+      >
+
+        <h2>Create Account</h2>
+
+        <p class="muted">
+          Create an account to save your language rooms
+          and translations.
+        </p>
+
+        <label for="registerName">
+          Full name
+        </label>
+
+        <input
+          id="registerName"
+          name="name"
+          type="text"
+          autocomplete="name"
+          required
+        >
+
+        <label for="registerUsername">
+          Username
+        </label>
+
+        <input
+          id="registerUsername"
+          name="username"
+          type="text"
+          autocomplete="username"
+          required
+        >
+
+        <label for="registerEmail">
+          Email
+        </label>
+
+        <input
+          id="registerEmail"
+          name="email"
+          type="email"
+          autocomplete="email"
+          required
+        >
+
+        <label for="registerPassword">
+          Password
+        </label>
+
+        <div class="password_wrapper">
+
+          <input
+            id="registerPassword"
+            name="password"
+            type="password"
+            autocomplete="new-password"
+            required
+          >
+
+          <button
+            class="show_password_button"
+            type="button"
+            data-password-input="registerPassword"
+          >
+            Show
+          </button>
+
+        </div>
+
+        <label for="confirmPassword">
+          Confirm password
+        </label>
+
+        <div class="password_wrapper">
+
+          <input
+            id="confirmPassword"
+            name="confirmPassword"
+            type="password"
+            autocomplete="new-password"
+            required
+          >
+
+          <button
+            class="show_password_button"
+            type="button"
+            data-password-input="confirmPassword"
+          >
+            Show
+          </button>
+
+        </div>
+
+        <button
+          id="registerButton"
+          class="submit_button"
+          type="submit"
+        >
+          Create Account
+        </button>
+
+        <p class="switch_text">
+          Already have an account?
+
+          <button
+            id="openLoginButton"
+            class="text_button"
+            type="button"
+          >
+            Login
+          </button>
+        </p>
+
+      </form>
+
+    </div>
+
+  </main>
+
+
+  <!--
+    firebase.js will handle:
+
+    - Firebase configuration
+    - Firestore connection
+    - loading users
+    - registration
+    - login check
+    - saving the logged-in user to localStorage
+    - redirecting to welcome.html
+  -->
+
+  <script type="module" src="firebase.js"></script>
+
+
+  <script>
+    "use strict";
+
+
+    /*
+    ==================================================
+    MESSAGE UI
+
+    firebase.js can call:
+
+    window.showAuthMessage(
+      "Login successful.",
+      "success"
+    );
+    ==================================================
+    */
+
+    function showAuthMessage(
+      message,
+      type
+    ) {
+      const box =
+        document.getElementById(
+          "authMessage"
+        );
+
+      box.textContent =
+        message || "";
+
+      box.className =
+        "message";
+
+      if (message) {
+        box.classList.add(
+          "visible",
+          type === "error"
+            ? "error"
+            : "success"
+        );
+      }
+    }
+
+
+    window.showAuthMessage =
+      showAuthMessage;
+
+
+    /*
+    ==================================================
+    LOGIN / REGISTER UI
+    ==================================================
+    */
+
+    function showLogin() {
+      showAuthMessage("");
+
+      document
+        .getElementById(
+          "loginForm"
+        )
+        .classList.add(
+          "active"
+        );
+
+      document
+        .getElementById(
+          "registerForm"
+        )
+        .classList.remove(
+          "active"
+        );
+
+      document
+        .getElementById(
+          "showLoginButton"
+        )
+        .classList.add(
+          "active"
+        );
+
+      document
+        .getElementById(
+          "showRegisterButton"
+        )
+        .classList.remove(
+          "active"
+        );
+
+      document
+        .getElementById(
+          "loginUsername"
+        )
+        .focus();
+    }
+
+
+    function showRegister() {
+      showAuthMessage("");
+
+      document
+        .getElementById(
+          "loginForm"
+        )
+        .classList.remove(
+          "active"
+        );
+
+      document
+        .getElementById(
+          "registerForm"
+        )
+        .classList.add(
+          "active"
+        );
+
+      document
+        .getElementById(
+          "showLoginButton"
+        )
+        .classList.remove(
+          "active"
+        );
+
+      document
+        .getElementById(
+          "showRegisterButton"
+        )
+        .classList.add(
+          "active"
+        );
+
+      document
+        .getElementById(
+          "registerName"
+        )
+        .focus();
+    }
+
+
+    /*
+    ==================================================
+    SHOW / HIDE PASSWORD
+    ==================================================
+    */
+
+    function togglePassword(button) {
+      const input =
+        document.getElementById(
+          button.dataset.passwordInput
+        );
+
+      if (!input) {
+        return;
+      }
+
+      const hidden =
+        input.type ===
+        "password";
+
+      input.type =
+        hidden
+          ? "text"
+          : "password";
+
+      button.textContent =
+        hidden
+          ? "Hide"
+          : "Show";
+    }
+
+
+    /*
+    ==================================================
+    UI EVENTS
+
+    firebase.js will attach the actual:
+    - loginForm submit
+    - registerForm submit
+
+    This HTML only controls the interface.
+    ==================================================
+    */
+
+    document
+      .getElementById(
+        "showLoginButton"
+      )
+      .addEventListener(
+        "click",
+        showLogin
+      );
+
+
+    document
+      .getElementById(
+        "showRegisterButton"
+      )
+      .addEventListener(
+        "click",
+        showRegister
+      );
+
+
+    document
+      .getElementById(
+        "openLoginButton"
+      )
+      .addEventListener(
+        "click",
+        showLogin
+      );
+
+
+    document
+      .getElementById(
+        "openRegisterButton"
+      )
+      .addEventListener(
+        "click",
+        showRegister
+      );
+
+
+    document
+      .querySelectorAll(
+        ".show_password_button"
+      )
+      .forEach(
+        function(button) {
+          button.addEventListener(
+            "click",
+            function() {
+              togglePassword(
+                button
+              );
+            }
+          );
+        }
+      );
+  </script>
+
+</body>
+</html>
