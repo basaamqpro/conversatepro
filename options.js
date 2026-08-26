@@ -1090,8 +1090,6 @@ RULES:
 - Usually use one sentence.
 - Two very short sentences are acceptable.
 - Each option must be something the LEARNER could actually say next.
-- Respond to the clicked conversation-partner message.
-- Respect earlier conversation context.
 - Do not contradict known information unnecessarily.
 - Do not invent specific personal facts unless presented as a generic possible response.
 - Keep options distinct from each other.

@@ -1610,9 +1610,7 @@
 /* Give the message a little space
    so the button does not cover words. */
 
-.translation_sentence.audio_enabled {
-    padding-right: 42px;
-}
+
 
 
 /* RTL */
@@ -1830,6 +1828,245 @@
         width: 200px;
     }
 
+}
+
+/* ==================================================
+   TEACH BUTTON ON REAL CHATS
+================================================== */
+
+.chat_teach_controls {
+    display: flex;
+    justify-content: flex-end;
+
+    margin-top: 7px;
+
+    position: relative;
+    z-index: 6;
+}
+
+
+.chat_teach_button {
+    padding: 5px 11px;
+
+    border: 1px solid rgba(0, 0, 0, 0.10);
+
+    border-radius: 999px;
+
+    background: rgba(255, 255, 255, 0.92);
+
+    color: #222;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.chat_teach_button:hover {
+    background: #f3f4f6;
+}
+
+
+.chat_teach_button:active {
+    transform: scale(0.97);
+}
+
+
+/* ==================================================
+   TEACH PANEL
+================================================== */
+
+.chat_teach_panel {
+    margin-top: 9px;
+
+    padding: 12px;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 12px;
+
+    background: #fff;
+
+    color: #222;
+
+    text-align: left;
+
+    font-size: 13px;
+
+    line-height: 1.55;
+
+    position: relative;
+
+    z-index: 8;
+}
+
+
+.chat_teach_panel[hidden] {
+    display: none;
+}
+
+
+.chat_teach_header {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+
+    margin-bottom: 8px;
+}
+
+
+.chat_teach_close {
+    width: 26px;
+    height: 26px;
+
+    padding: 0;
+
+    border: 0;
+
+    border-radius: 50%;
+
+    background: #f3f4f6;
+
+    cursor: pointer;
+
+    font-size: 18px;
+
+    line-height: 1;
+}
+
+
+.chat_teach_status {
+    margin-bottom: 7px;
+
+    color: #666;
+
+    font-size: 11px;
+}
+
+
+.chat_teach_explanation {
+    white-space: pre-wrap;
+}
+
+
+/* ==================================================
+   TEACH QUESTIONS
+================================================== */
+
+.chat_teach_questions {
+    margin-top: 10px;
+}
+
+
+.chat_teach_qa {
+    margin-top: 8px;
+
+    padding-top: 8px;
+
+    border-top: 1px solid #eee;
+}
+
+
+.chat_teach_question {
+    margin-bottom: 4px;
+
+    font-weight: 600;
+}
+
+
+.chat_teach_answer {
+    white-space: pre-wrap;
+}
+
+
+.chat_teach_form {
+    display: flex;
+
+    gap: 6px;
+
+    margin-top: 12px;
+}
+
+
+.chat_teach_input {
+    flex: 1;
+
+    min-width: 0;
+
+    padding: 8px 10px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 9px;
+
+    font: inherit;
+}
+
+
+.chat_teach_ask {
+    padding: 8px 12px;
+
+    border: 0;
+
+    border-radius: 9px;
+
+    background: #111827;
+
+    color: white;
+
+    cursor: pointer;
+
+    font-weight: 600;
+}
+
+
+/* Keep panel readable even inside RTL chat */
+
+.chat_teach_panel {
+    direction: ltr;
+}
+
+/* Container around the chat box */
+.audio_button_host {
+    position: relative;
+}
+
+
+/* Audio button OUTSIDE the chat box */
+.chat_audio_button {
+    position: absolute;
+
+    top: -15px;
+    right: -8px;
+
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 50%;
+
+    background: #ffffff;
+
+    cursor: pointer;
+
+    font-size: 15px;
+    line-height: 1;
+
+    z-index: 20;
+
+    box-shadow:
+        0 2px 7px
+        rgba(0, 0, 0, 0.15);
 }
 
   </style>
@@ -6652,6 +6889,7 @@
 
 <script src="audio.js"></script>
 <script src="chatAudio.js"></script>
+<script src="addElement_teach.js"></script>
 </body>
 
 </html>

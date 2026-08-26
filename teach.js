@@ -5,53 +5,50 @@
 
   /*
   ==================================================
-  SETTINGS
+  CONVERSATE PRO
+  TEACH.JS
+
+  VERSION 2
   ==================================================
 
-  teach.js explains a suggested response.
+  PURPOSE:
 
-  It does NOT:
+  Explain a selected response/message in detail.
 
-  - continue the conversation
-  - create response options
-  - modify a real conversation message
-  - save anything to Firestore
+  Used by:
 
-  Everything created here remains temporary
-  inside localStorage:
+  1. Options → Teach
+  2. Real chat messages → Teach
+  3. Follow-up Ask questions
 
-  conversate_teach
+
+  IMPORTANT:
+
+  Teach data stays in localStorage.
+
+  It does NOT enter Firestore.
   ==================================================
   */
+
 
   const API_ENDPOINT =
     "/api/translate";
 
 
-  const TEACH_STORAGE_KEY =
-    "conversate_teach";
-
-
   /*
-  Keep explanations deliberately short.
+  Changing this version automatically invalidates
+  old short cached explanations.
 
-  Conversate Pro should teach inside
-  the conversation rather than turning
-  every click into a full lesson.
+  Therefore you do NOT need to manually clear
+  conversate_teach from localStorage.
   */
 
-  const MAX_HISTORY_MESSAGES =
-    8;
+  const TEACH_VERSION =
+    "teach_v2_detailed_pronunciation";
 
 
 
-  /*
-  ==================================================
-  STATE
-  ==================================================
-  */
-
-  let latestTeachResult =
+  let latestResult =
     null;
 
 
@@ -84,7 +81,118 @@
 
   /*
   ==================================================
-  EXTRACT API OUTPUT
+  STORAGE KEY
+  ==================================================
+  */
+
+  function getStorageKey() {
+
+    return (
+
+      global
+        .ConversateFirebase
+        ?.storageKeys
+        ?.teach
+
+      ||
+
+      "conversate_teach"
+
+    );
+
+  }
+
+
+
+  /*
+  ==================================================
+  READ LOCAL STORAGE
+  ==================================================
+  */
+
+  function readStore() {
+
+    try {
+
+      const value =
+
+        JSON.parse(
+
+          localStorage.getItem(
+            getStorageKey()
+          )
+
+          ||
+
+          "{}"
+
+        );
+
+
+      return (
+
+        value
+
+        &&
+
+        typeof value ===
+          "object"
+
+        &&
+
+        !Array.isArray(
+          value
+        )
+
+      )
+
+        ? value
+
+        : {};
+
+    } catch (error) {
+
+      console.warn(
+        "Invalid Teach localStorage:",
+        error
+      );
+
+
+      return {};
+
+    }
+
+  }
+
+
+
+  /*
+  ==================================================
+  WRITE LOCAL STORAGE
+  ==================================================
+  */
+
+  function writeStore(
+    value
+  ) {
+
+    localStorage.setItem(
+
+      getStorageKey(),
+
+      JSON.stringify(
+        value
+      )
+
+    );
+
+  }
+
+
+
+  /*
+  ==================================================
+  EXTRACT OPENAI OUTPUT
   ==================================================
   */
 
@@ -101,6 +209,7 @@
       return "";
 
     }
+
 
 
     return data.output
@@ -161,82 +270,7 @@
 
   /*
   ==================================================
-  CLEAN TEXT
-  ==================================================
-
-  Teach returns plain text.
-
-  No JSON is necessary because index.html
-  simply needs a short explanation.
-  ==================================================
-  */
-
-  function cleanText(
-    text
-  ) {
-
-    let result =
-
-      String(
-        text || ""
-      )
-
-        .trim()
-
-        .replace(
-          /^```[\w-]*\s*/i,
-          ""
-        )
-
-        .replace(
-          /\s*```$/i,
-          ""
-        )
-
-        .trim();
-
-
-
-    /*
-    Remove unnecessary surrounding quotes.
-    */
-
-    if (
-
-      (
-        result.startsWith('"')
-        &&
-        result.endsWith('"')
-      )
-
-      ||
-
-      (
-        result.startsWith("'")
-        &&
-        result.endsWith("'")
-      )
-
-    ) {
-
-      result =
-        result.slice(
-          1,
-          -1
-        );
-
-    }
-
-
-    return result.trim();
-
-  }
-
-
-
-  /*
-  ==================================================
-  API CALL
+  CALL API
   ==================================================
   */
 
@@ -261,12 +295,14 @@
           method:
             "POST",
 
+
           headers: {
 
             "Content-Type":
               "application/json"
 
           },
+
 
           body:
             JSON.stringify({
@@ -275,6 +311,7 @@
                 prompt
 
             }),
+
 
           signal:
             settings.signal
@@ -293,11 +330,10 @@
       data =
         await response.json();
 
-
     } catch (error) {
 
       throw new Error(
-        "The server returned invalid JSON."
+        "The Teach server returned invalid JSON."
       );
 
     }
@@ -310,9 +346,13 @@
 
       const message =
 
-        data?.error?.message ||
+        data?.error?.message
 
-        data?.error ||
+        ||
+
+        data?.error
+
+        ||
 
         "Teach request failed.";
 
@@ -350,9 +390,7 @@
     }
 
 
-    return cleanText(
-      output
-    );
+    return output;
 
   }
 
@@ -360,246 +398,35 @@
 
   /*
   ==================================================
-  GET STORED CHAT TEXT
+  NORMALIZE FLOW
   ==================================================
   */
 
-  function getStoredPrompt(
-    chat
+  function normalizeTargetFlow(
+    option
   ) {
 
-    if (
+    const flow =
 
-      Array.isArray(
-        chat?.prompts_and_answers
-      )
-
-      &&
-
-      chat
-        .prompts_and_answers
-        .length
-
-    ) {
-
-      const last =
-
-        chat
-          .prompts_and_answers[
-            chat
-              .prompts_and_answers
-              .length - 1
-          ];
-
-
-      if (
-        last?.user_prompt
-      ) {
-
-        return String(
-          last.user_prompt
-        ).trim();
-
-      }
-
-    }
-
-
-    return "";
-
-  }
-
-
-
-  /*
-  ==================================================
-  CHAT TEXT
-  ==================================================
-  */
-
-  function getChatText(
-    chat
-  ) {
-
-    if (
-      !chat
-    ) {
-
-      return "";
-
-    }
-
-
-
-    /*
-    AI message.
-    */
-
-    if (
-
-      chat.message_type ===
-        "interaction"
+      option?.targetFlow
 
       ||
 
-      chat.is_interaction ===
-        true
-
-    ) {
-
-      if (
-        chat.interaction_text
-      ) {
-
-        return String(
-          chat.interaction_text
-        ).trim();
-
-      }
-
-
-      if (
-        chat.interactionText
-      ) {
-
-        return String(
-          chat.interactionText
-        ).trim();
-
-      }
-
-    }
-
-
-
-    /*
-    User canonical meaning.
-    */
-
-    if (
-      chat.interpreted_source_text
-    ) {
-
-      return String(
-        chat.interpreted_source_text
-      ).trim();
-
-    }
-
-
-    if (
-      chat.interpretedSourceText
-    ) {
-
-      return String(
-        chat.interpretedSourceText
-      ).trim();
-
-    }
-
-
-
-    const stored =
-      getStoredPrompt(
-        chat
-      );
-
-
-    if (
-      stored
-    ) {
-
-      return stored;
-
-    }
-
-
-
-    if (
-      chat.original_input
-    ) {
-
-      return String(
-        chat.original_input
-      ).trim();
-
-    }
-
-
-    return "";
-
-  }
-
-
-
-  /*
-  ==================================================
-  GET SPEAKER
-  ==================================================
-  */
-
-  function getSpeaker(
-    chat
-  ) {
-
-    if (
-
-      chat?.message_type ===
-        "interaction"
+      option?.target_flow
 
       ||
 
-      chat?.is_interaction ===
-        true
-
-    ) {
-
-      return "CONVERSATION PARTNER";
-
-    }
-
-
-    return "LEARNER";
-
-  }
-
-
-
-  /*
-  ==================================================
-  RECENT ROOM HISTORY
-  ==================================================
-
-  Teach may benefit from a little context.
-
-  Example:
-
-  AI:
-  What will you do today?
-
-  Option:
-  I will go to the market.
-
-  Teach can understand what the option
-  is responding to.
-  ==================================================
-  */
-
-  function getRecentHistory(
-    room,
-    chat
-  ) {
-
-    if (
-
-      !room
+      option?.groups
 
       ||
 
+      [];
+
+
+    if (
       !Array.isArray(
-        room.room_data
+        flow
       )
-
     ) {
 
       return [];
@@ -608,43 +435,7 @@
 
 
 
-    const clickedIndex =
-
-      room.room_data.findIndex(
-
-        function(item) {
-
-          return (
-            item.chat_idx ===
-            chat?.chat_idx
-          );
-
-        }
-
-      );
-
-
-
-    if (
-      clickedIndex === -1
-    ) {
-
-      return [];
-
-    }
-
-
-
-    return room.room_data
-
-      .slice(
-        0,
-        clickedIndex + 1
-      )
-
-      .slice(
-        -MAX_HISTORY_MESSAGES
-      )
+    return flow
 
       .map(
 
@@ -652,15 +443,47 @@
 
           return {
 
-            speaker:
-              getSpeaker(
-                item
-              ),
+            target:
 
-            text:
-              getChatText(
-                item
-              )
+              String(
+
+                item?.target
+
+                ??
+
+                item?.translation
+
+                ??
+
+                ""
+
+              ).trim(),
+
+
+            pronunciation:
+
+              String(
+
+                item?.pronunciation
+
+                ||
+
+                ""
+
+              ).trim(),
+
+
+            source:
+
+              String(
+
+                item?.source
+
+                ||
+
+                ""
+
+              ).trim()
 
           };
 
@@ -672,60 +495,23 @@
 
         function(item) {
 
-          return Boolean(
-            item.text
-          );
-
-        }
-
-      );
-
-  }
-
-
-
-  /*
-  ==================================================
-  HISTORY TO TEXT
-  ==================================================
-  */
-
-  function historyToText(
-    history
-  ) {
-
-    if (
-      !history.length
-    ) {
-
-      return (
-        "[No additional conversation context]"
-      );
-
-    }
-
-
-    return history
-
-      .map(
-
-        function(item) {
-
           return (
 
-            item.speaker +
+            item.target
 
-            ": " +
+            ||
 
-            item.text
+            item.pronunciation
+
+            ||
+
+            item.source
 
           );
 
         }
 
-      )
-
-      .join("\n");
+      );
 
   }
 
@@ -733,31 +519,27 @@
 
   /*
   ==================================================
-  OPTION SOURCE TEXT
-  ==================================================
-
-  options.js stores:
-
-  text
-      helper/source-language version
-
-  Example:
-
-  I am fine.
+  SOURCE TEXT
   ==================================================
   */
 
-  function getOptionSourceText(
+  function getSourceText(
     option
   ) {
 
     return String(
 
-      option?.sourceText ||
+      option?.sourceText
 
-      option?.source_text ||
+      ||
 
-      option?.text ||
+      option?.source_text
+
+      ||
+
+      option?.text
+
+      ||
 
       ""
 
@@ -769,28 +551,25 @@
 
   /*
   ==================================================
-  OPTION TARGET TEXT
-  ==================================================
-
-  Example:
-
-  أنا بخير
+  TARGET TEXT
   ==================================================
   */
 
-  function getOptionTargetText(
+  function getTargetText(
     option
   ) {
 
-    let text =
+    const direct =
 
       String(
 
-        option?.targetText ||
+        option?.targetText
 
-        option?.target_text ||
+        ||
 
-        option?.useText ||
+        option?.target_text
+
+        ||
 
         ""
 
@@ -799,49 +578,66 @@
 
 
     if (
-      text
+      direct
     ) {
 
-      return text;
+      return direct;
 
     }
 
 
 
-    /*
-    Reconstruct from targetFlow
-    if necessary.
-    */
-
-    const flow =
-
-      option?.targetFlow ||
-
-      option?.target_flow;
-
-
-
-    if (
-      !Array.isArray(
-        flow
-      )
-    ) {
-
-      return "";
-
-    }
-
-
-
-    return flow
+    return normalizeTargetFlow(
+      option
+    )
 
       .map(
 
         function(item) {
 
-          return String(
-            item?.target || ""
-          ).trim();
+          return item.target;
+
+        }
+
+      )
+
+      .filter(Boolean)
+
+      .join(" ")
+
+      .replace(
+
+        /\s+([,.!?;:،؛؟。！？，、])/g,
+
+        "$1"
+
+      )
+
+      .trim();
+
+  }
+
+
+
+  /*
+  ==================================================
+  COMPLETE PRONUNCIATION
+  ==================================================
+  */
+
+  function getPronunciation(
+    option
+  ) {
+
+    return normalizeTargetFlow(
+      option
+    )
+
+      .map(
+
+        function(item) {
+
+          return item.pronunciation;
 
         }
 
@@ -859,98 +655,47 @@
 
   /*
   ==================================================
-  OPTION PRONUNCIATION
+  DETAILED BREAKDOWN
+  ==================================================
+
+  This is extremely important.
+
+  Instead of merely telling Teach:
+
+      魔法学校で
+
+  we give it:
+
+      TARGET:
+      魔法学校で
+
+      PRONUNCIATION:
+      mahō gakkō de
+
+      MEANING:
+      at the magic school
+
+
+  results5.js already produces this information.
   ==================================================
   */
 
-  function getOptionPronunciation(
+  function buildBreakdown(
     option
   ) {
 
     const flow =
 
-      option?.targetFlow ||
-
-      option?.target_flow;
-
-
-
-    if (
-      !Array.isArray(
-        flow
-      )
-    ) {
-
-      return "";
-
-    }
-
-
-
-    return flow
-
-      .map(
-
-        function(item) {
-
-          return String(
-            item?.pronunciation || ""
-          ).trim();
-
-        }
-
-      )
-
-      .filter(Boolean)
-
-      .join(" ")
-
-      .trim();
-
-  }
-
-
-
-  /*
-  ==================================================
-  OPTION BREAKDOWN TO TEXT
-  ==================================================
-
-  This gives Teach precise information about
-  what results5.js already produced.
-
-  Example:
-
-  أنا | Ana | I
-  بخير | Bikhair | am fine
-  ==================================================
-  */
-
-  function getOptionBreakdown(
-    option
-  ) {
-
-    const flow =
-
-      option?.targetFlow ||
-
-      option?.target_flow;
-
+      normalizeTargetFlow(
+        option
+      );
 
 
     if (
-      !Array.isArray(
-        flow
-      )
-
-      ||
-
       !flow.length
     ) {
 
-      return (
-        "[No breakdown available]"
-      );
+      return "No detailed breakdown was provided.";
 
     }
 
@@ -960,40 +705,35 @@
 
       .map(
 
-        function(item) {
-
-          const target =
-
-            String(
-              item?.target || ""
-            ).trim();
-
-
-          const pronunciation =
-
-            String(
-              item?.pronunciation || ""
-            ).trim();
-
-
-          const source =
-
-            String(
-              item?.source || ""
-            ).trim();
-
-
+        function(
+          item,
+          index
+        ) {
 
           return (
 
-            "TARGET: " +
-            target +
+            (index + 1) +
+            ".\n" +
 
-            "\nPRONUNCIATION: " +
-            pronunciation +
+            "Target: " +
+            (
+              item.target ||
+              "(none)"
+            ) +
+            "\n" +
 
-            "\nMEANING: " +
-            source
+            "Pronunciation: " +
+            (
+              item.pronunciation ||
+              "(not provided)"
+            ) +
+            "\n" +
+
+            "Meaning: " +
+            (
+              item.source ||
+              "(grammar function)"
+            )
 
           );
 
@@ -1011,164 +751,372 @@
 
   /*
   ==================================================
-  INITIAL TEACH PROMPT
+  CONVERSATION CONTEXT
   ==================================================
+  */
 
-  Used when user presses:
+  function getConversationContext(
+    room,
+    currentChat
+  ) {
 
-  [Teach]
+    if (
+      !Array.isArray(
+        room?.room_data
+      )
+    ) {
 
-  without asking a specific question.
+      return "";
+
+    }
+
+
+
+    let chats =
+      room.room_data;
+
+
+
+    /*
+    Only include conversation up to the
+    currently selected message.
+    */
+
+    if (
+      currentChat?.chat_idx
+    ) {
+
+      const index =
+
+        chats.findIndex(
+
+          function(item) {
+
+            return (
+
+              item.chat_idx ===
+              currentChat.chat_idx
+
+            );
+
+          }
+
+        );
+
+
+      if (
+        index !== -1
+      ) {
+
+        chats =
+          chats.slice(
+            0,
+            index + 1
+          );
+
+      }
+
+    }
+
+
+
+    /*
+    A little context is enough.
+    */
+
+    return chats
+
+      .slice(-6)
+
+      .map(
+
+        function(chat) {
+
+
+          const role =
+
+            (
+              chat.message_type ===
+                "interaction"
+
+              ||
+
+              chat.is_interaction ===
+                true
+            )
+
+              ? "Conversation partner"
+
+              : "Learner";
+
+
+
+          const text =
+
+            chat.interpreted_source_text
+
+            ||
+
+            chat.interaction_text
+
+            ||
+
+            chat.prompts_and_answers?.[
+              chat.prompts_and_answers.length - 1
+            ]?.user_prompt
+
+            ||
+
+            "";
+
+
+
+          return (
+
+            role +
+            ": " +
+            String(
+              text
+            ).trim()
+
+          );
+
+        }
+
+      )
+
+      .filter(
+
+        function(item) {
+
+          return !item.endsWith(
+            ": "
+          );
+
+        }
+
+      )
+
+      .join("\n");
+
+  }
+
+
+
+  /*
+  ==================================================
+  INITIAL EXPLANATION PROMPT
   ==================================================
   */
 
   function buildExplanationPrompt(
-    room,
-    chat,
-    option
+    {
+      room,
+      chat,
+      option
+    }
   ) {
+
 
     const sourceLanguage =
 
-      room?.source_language ||
+      room?.source_language
+
+      ||
+
+      chat?.source_language
+
+      ||
 
       "English";
 
 
     const targetLanguage =
 
-      room?.target_language ||
+      room?.target_language
 
-      "Arabic";
+      ||
 
+      chat?.target_language
 
-    const history =
+      ||
 
-      historyToText(
-
-        getRecentHistory(
-          room,
-          chat
-        )
-
-      );
+      "the target language";
 
 
     const sourceText =
 
-      getOptionSourceText(
+      getSourceText(
         option
       );
 
 
     const targetText =
 
-      getOptionTargetText(
+      getTargetText(
         option
       );
 
 
     const pronunciation =
 
-      getOptionPronunciation(
+      getPronunciation(
         option
       );
 
 
     const breakdown =
 
-      getOptionBreakdown(
+      buildBreakdown(
         option
+      );
+
+
+    const context =
+
+      getConversationContext(
+        room,
+        chat
       );
 
 
 
     return `
-You are the short teaching helper inside a language conversation application.
-
-The learner understands:
-
-${sourceLanguage}
+You are the language teacher inside Conversate Pro.
 
 The learner is practising:
 
+HELPER / EXPLANATION LANGUAGE:
+${sourceLanguage}
+
+TARGET LANGUAGE:
 ${targetLanguage}
 
-The learner clicked Teach on a suggested response.
 
-RECENT CONVERSATION:
+SELECTED SENTENCE:
 
-${history}
-
-SUGGESTED RESPONSE MEANING:
-
-${sourceText}
-
-SUGGESTED RESPONSE IN ${targetLanguage}:
-
+TARGET SENTENCE:
 ${targetText}
 
-PRONUNCIATION:
+FULL PRONUNCIATION:
+${pronunciation || "(see phrase breakdown below)"}
 
-${pronunciation}
+MEANING:
+${sourceText}
 
-EXISTING RESULTS5.JS BREAKDOWN:
+
+PHRASE BREAKDOWN:
 
 ${breakdown}
 
+
+RECENT CONVERSATION CONTEXT:
+
+${context || "(No additional context is needed.)"}
+
+
 YOUR TASK:
 
-Briefly teach the learner how this suggested response works.
+Teach this sentence clearly and thoroughly to a language learner.
 
-The learner needs a SHORT, practical explanation that helps them understand and use the sentence in conversation.
+This explanation must be more detailed than a short dictionary explanation.
 
-Explain mainly in ${sourceLanguage}.
+Normally write approximately 180 to 320 words when the sentence contains enough material.
 
-You may include necessary ${targetLanguage} words or phrases because those are what the learner is studying.
+For a very simple sentence, do not artificially pad the answer, but still explain it properly.
 
-FOCUS ON:
+The learner should finish the explanation understanding:
 
-- what the complete response means
-- the important words or short phrases
-- how the parts combine naturally
-- one important grammar point only when useful
-- anything about word order that would help the learner
-- pronunciation only if there is something especially useful to clarify
+1. the complete natural meaning;
 
-DO NOT:
+2. the important words and phrases;
 
-- generate another conversation response
-- generate response options
-- create a long lesson
-- write an essay
-- discuss unrelated grammar
-- overload the learner with terminology
-- mention being an AI
-- mention the prompt
-- mention results5.js
-- mention internal application architecture
-- use Markdown headings
-- use bullet lists unless absolutely necessary
-- give multiple exercises
-- ask the learner a question
-- tell the learner to click anything
+3. how those words are pronounced;
 
-STYLE:
+4. the important grammar;
 
-- short
-- clear
-- beginner-friendly
-- conversational
-- practical
-- normally about 3 to 6 short sentences
+5. particles, endings, conjugations or agreement when relevant;
 
-IMPORTANT:
+6. why the words appear in this order;
 
-If the existing breakdown uses approximate meanings rather than literal one-to-one translations, explain naturally rather than claiming every word has an exact independent English equivalent.
+7. how the sentence sounds naturally to a native speaker;
 
-OUTPUT:
+8. when the learner could use it;
 
-Return ONLY the short teaching explanation as plain text.
+9. any important difference between the literal structure and the natural ${sourceLanguage} meaning;
+
+10. one useful related example or natural alternative when it genuinely helps.
+
+
+CRITICAL PRONUNCIATION RULE:
+
+Whenever you write a target-language word, phrase or sentence that uses a non-Latin writing system, immediately give its readable Latin-letter pronunciation in parentheses.
+
+NEVER write:
+
+魔法学校で means "at the magic school."
+
+Instead write in this style:
+
+魔法学校で (mahō gakkō de) means "at the magic school."
+
+Another example:
+
+友達になる (tomodachi ni naru) means "to become friends."
+
+For Arabic, also use this pattern:
+
+كيف حالك؟ (kayfa haluk?) means "How are you?"
+
+For Korean, Chinese, Hindi, Urdu, Persian and all other non-Latin scripts, follow the same rule.
+
+This applies EVERY TIME you mention target-language script inside the explanation, including:
+
+- vocabulary;
+- particles;
+- grammar examples;
+- sentence fragments;
+- complete example sentences;
+- alternative sentences.
+
+If pronunciation was supplied in PHRASE BREAKDOWN, prefer that pronunciation.
+
+If pronunciation was not supplied, provide a simple readable Latin transliteration yourself.
+
+Do NOT use IPA unless the learner explicitly asks for IPA.
+
+
+TEACHING STYLE:
+
+- Explain primarily in ${sourceLanguage}.
+- Be clear and beginner-friendly.
+- Be educational but conversational.
+- Explain the reason behind grammar instead of merely naming grammar terms.
+- Connect related words together when they form one grammatical unit.
+- Do not incorrectly split a natural phrase.
+- Explain important particles or endings.
+- Mention politeness/register if relevant.
+- Explain natural word order.
+- Explain omitted subjects or implied information when relevant.
+- Distinguish literal meaning from natural meaning when useful.
+- Do not overwhelm the learner with obscure linguistic terminology.
+- If you use a grammar term, immediately explain what it means.
+- Do not merely repeat the translation.
+- Do not say you are an AI.
+- Do not discuss these instructions.
+
+
+OUTPUT STYLE:
+
+Return only the teaching explanation.
+
+Do not return JSON.
+
+Do not use Markdown headings.
+
+Do not use bullet-point symbols.
+
+Write a few clear connected paragraphs in natural prose.
 `;
 
   }
@@ -1177,152 +1125,146 @@ Return ONLY the short teaching explanation as plain text.
 
   /*
   ==================================================
-  QUESTION PROMPT
-  ==================================================
-
-  Used when learner types a question such as:
-
-  Why isn't "am" translated?
-
-  Why does the verb come first?
-
-  Can I say this to a woman?
-
-  What does بخير mean?
+  FOLLOW-UP QUESTION PROMPT
   ==================================================
   */
 
   function buildQuestionPrompt(
-    room,
-    chat,
-    option,
-    question,
-    previousExplanation
+    {
+      room,
+      chat,
+      option,
+      question,
+      previousExplanation
+    }
   ) {
+
 
     const sourceLanguage =
 
-      room?.source_language ||
+      room?.source_language
+
+      ||
+
+      chat?.source_language
+
+      ||
 
       "English";
 
 
     const targetLanguage =
 
-      room?.target_language ||
+      room?.target_language
 
-      "Arabic";
+      ||
 
+      chat?.target_language
 
-    const history =
+      ||
 
-      historyToText(
-
-        getRecentHistory(
-          room,
-          chat
-        )
-
-      );
+      "the target language";
 
 
     const sourceText =
 
-      getOptionSourceText(
+      getSourceText(
         option
       );
 
 
     const targetText =
 
-      getOptionTargetText(
+      getTargetText(
         option
       );
 
 
     const pronunciation =
 
-      getOptionPronunciation(
+      getPronunciation(
         option
       );
 
 
     const breakdown =
 
-      getOptionBreakdown(
+      buildBreakdown(
         option
       );
 
 
 
     return `
-You are the short teaching helper inside a language conversation application.
+You are the language teacher inside Conversate Pro.
 
-The learner understands:
+The learner is studying this ${targetLanguage} sentence.
 
-${sourceLanguage}
-
-The learner is practising:
-
-${targetLanguage}
-
-RECENT CONVERSATION:
-
-${history}
-
-THE RESPONSE BEING STUDIED:
-
-Meaning:
-${sourceText}
-
-${targetLanguage}:
+TARGET SENTENCE:
 ${targetText}
 
-Pronunciation:
+PRONUNCIATION:
 ${pronunciation}
 
-Breakdown:
+MEANING:
+${sourceText}
+
+
+PHRASE DATA:
+
 ${breakdown}
 
-PREVIOUS SHORT EXPLANATION:
 
-${previousExplanation || "[No previous explanation]"}
+PREVIOUS TEACHING EXPLANATION:
 
-THE LEARNER ASKS:
+${previousExplanation || "(none)"}
+
+
+LEARNER QUESTION:
 
 ${question}
 
-YOUR TASK:
 
-Answer ONLY the learner's question about this response.
+TASK:
 
-Explain mainly in ${sourceLanguage}.
+Answer the learner's exact question clearly.
 
-You may use the necessary ${targetLanguage} words or phrases while explaining.
+Normally give about 4 to 8 useful sentences.
 
-RULES:
+If the question needs more explanation, give enough detail to make the answer genuinely educational.
 
-- Answer the exact question directly.
-- Keep the answer short.
-- Usually 1 to 4 short sentences.
-- Explain enough to make the point clear.
-- Use simple terminology unless technical terminology is necessary.
-- If you use a grammar term, briefly make its meaning clear.
-- Do not restart the entire lesson.
-- Do not repeat information unnecessarily.
-- Do not continue the conversation as the conversation partner.
-- Do not generate suggested responses.
-- Do not introduce unrelated topics.
-- Do not mention being an AI.
-- Do not mention application internals.
-- Do not use Markdown headings.
-- Do not surround the answer with quotation marks.
+Do not unnecessarily repeat the entire original lesson.
 
-If the learner asks whether another expression is possible, you may provide a very short alternative when relevant.
 
-OUTPUT:
+CRITICAL PRONUNCIATION RULE:
 
-Return ONLY the direct plain-text answer.
+Whenever you write target-language text that uses a non-Latin script, immediately place its readable Latin pronunciation after it in parentheses.
+
+For example:
+
+でしょう (deshō)
+
+魔法学校で (mahō gakkō de)
+
+友達になる (tomodachi ni naru)
+
+Never show those target-language forms alone without pronunciation.
+
+Prefer the pronunciation supplied in PHRASE DATA whenever available.
+
+Do not use IPA unless the learner asks for it.
+
+
+STYLE:
+
+- Answer mainly in ${sourceLanguage}.
+- Be clear and practical.
+- Explain grammar terms in ordinary language.
+- Give an example if it helps answer the question.
+- If you give another ${targetLanguage} example in non-Latin script, include its pronunciation and its ${sourceLanguage} meaning.
+- Do not say you are an AI.
+- Return only the answer.
+- No JSON.
 `;
 
   }
@@ -1331,308 +1273,93 @@ Return ONLY the direct plain-text answer.
 
   /*
   ==================================================
-  OPTION ID
+  IDS
   ==================================================
   */
 
-  function getOptionId(
+  function getIds(
+    room,
+    chat,
     option
   ) {
 
-    if (
-      option?.option_idx
-    ) {
+    return {
 
-      return String(
-        option.option_idx
-      );
+      roomIdx:
 
-    }
+        String(
+
+          room?.room_idx
+
+          ||
+
+          "room"
+
+        ),
 
 
-    /*
-    Fallback if an option somehow lacks ID.
-    */
+      chatIdx:
 
-    const source =
+        String(
 
-      getOptionSourceText(
+          chat?.chat_idx
+
+          ||
+
+          "chat"
+
+        ),
+
+
+      optionIdx:
+
+        String(
+
+          option?.option_idx
+
+          ||
+
+          "option"
+
+        )
+
+    };
+
+  }
+
+
+
+  /*
+  ==================================================
+  GET STORED ENTRY
+  ==================================================
+  */
+
+  function getEntry(
+    room,
+    chat,
+    option
+  ) {
+
+    const store =
+      readStore();
+
+
+    const ids =
+
+      getIds(
+        room,
+        chat,
         option
       );
 
 
     return (
 
-      "option_" +
-
-      simpleHash(
-        source
-      )
-
-    );
-
-  }
-
-
-
-  /*
-  ==================================================
-  SIMPLE HASH
-  ==================================================
-
-  Used only to build a stable localStorage
-  identifier.
-
-  This is NOT security-related.
-  ==================================================
-  */
-
-  function simpleHash(
-    text
-  ) {
-
-    const value =
-      String(
-        text || ""
-      );
-
-
-    let hash =
-      0;
-
-
-    for (
-      let index = 0;
-      index < value.length;
-      index++
-    ) {
-
-      hash =
-
-        (
-          (
-            hash << 5
-          )
-
-          -
-
-          hash
-
-          +
-
-          value.charCodeAt(
-            index
-          )
-        )
-
-        |
-
-        0;
-
-    }
-
-
-    return Math.abs(
-      hash
-    ).toString();
-
-  }
-
-
-
-  /*
-  ==================================================
-  READ TEACH DATA
-  ==================================================
-  */
-
-  function getAllTeachData() {
-
-    /*
-    Prefer firebase.js helper because
-    firebase.js already owns the storage keys.
-    */
-
-    if (
-
-      global.ConversateFirebase
-
-      &&
-
-      typeof global
-        .ConversateFirebase
-        .getTeachData ===
-        "function"
-
-    ) {
-
-      return global
-        .ConversateFirebase
-        .getTeachData();
-
-    }
-
-
-
-    /*
-    Fallback.
-    */
-
-    try {
-
-      const value =
-
-        JSON.parse(
-
-          localStorage.getItem(
-            TEACH_STORAGE_KEY
-          )
-
-          ||
-
-          "{}"
-
-        );
-
-
-      return (
-
-        value
-
-        &&
-
-        typeof value ===
-          "object"
-
-        &&
-
-        !Array.isArray(
-          value
-        )
-
-      )
-
-        ? value
-
-        : {};
-
-
-    } catch (error) {
-
-      console.warn(
-        "Invalid Teach localStorage:",
-        error
-      );
-
-
-      return {};
-
-    }
-
-  }
-
-
-
-  /*
-  ==================================================
-  SAVE TEACH DATA
-  ==================================================
-  */
-
-  function saveAllTeachData(
-    data
-  ) {
-
-    if (
-
-      global.ConversateFirebase
-
-      &&
-
-      typeof global
-        .ConversateFirebase
-        .saveTeachData ===
-        "function"
-
-    ) {
-
-      global
-        .ConversateFirebase
-        .saveTeachData(
-          data
-        );
-
-
-      return;
-
-    }
-
-
-
-    localStorage.setItem(
-
-      TEACH_STORAGE_KEY,
-
-      JSON.stringify(
-        data || {}
-      )
-
-    );
-
-  }
-
-
-
-  /*
-  ==================================================
-  GET STORED TEACH RECORD
-  ==================================================
-
-  Structure:
-
-  conversate_teach
-  │
-  └── room_123
-        │
-        └── chat_456
-              │
-              └── option_1
-                    │
-                    ├── explanation
-                    └── questions[]
-  ==================================================
-  */
-
-  function getStoredTeach(
-    roomIdx,
-    chatIdx,
-    optionIdx
-  ) {
-
-    if (
-      !roomIdx ||
-      !chatIdx ||
-      !optionIdx
-    ) {
-
-      return null;
-
-    }
-
-
-    const data =
-      getAllTeachData();
-
-
-    return (
-
-      data?.[
-        roomIdx
-      ]?.[
-        chatIdx
-      ]?.[
-        optionIdx
-      ]
+      store
+        ?.[ids.roomIdx]
+        ?.[ids.chatIdx]
+        ?.[ids.optionIdx]
 
       ||
 
@@ -1646,62 +1373,39 @@ Return ONLY the direct plain-text answer.
 
   /*
   ==================================================
-  ENSURE TEACH RECORD
+  SAVE STORED ENTRY
   ==================================================
   */
 
-  function ensureTeachRecord(
+  function saveEntry(
     room,
     chat,
-    option
+    option,
+    entry
   ) {
 
-    const roomIdx =
-
-      room?.room_idx ||
-      "";
+    const store =
+      readStore();
 
 
-    const chatIdx =
+    const ids =
 
-      chat?.chat_idx ||
-      "";
-
-
-    const optionIdx =
-
-      getOptionId(
+      getIds(
+        room,
+        chat,
         option
       );
 
 
 
     if (
-      !roomIdx ||
-      !chatIdx
-    ) {
-
-      throw new Error(
-        "Teach could not identify this conversation."
-      );
-
-    }
-
-
-
-    const data =
-      getAllTeachData();
-
-
-
-    if (
-      !data[
-        roomIdx
+      !store[
+        ids.roomIdx
       ]
     ) {
 
-      data[
-        roomIdx
+      store[
+        ids.roomIdx
       ] = {};
 
     }
@@ -1709,170 +1413,39 @@ Return ONLY the direct plain-text answer.
 
 
     if (
-      !data[
-        roomIdx
+      !store[
+        ids.roomIdx
       ][
-        chatIdx
+        ids.chatIdx
       ]
     ) {
 
-      data[
-        roomIdx
+      store[
+        ids.roomIdx
       ][
-        chatIdx
+        ids.chatIdx
       ] = {};
 
     }
 
 
 
-    if (
-      !data[
-        roomIdx
-      ][
-        chatIdx
-      ][
-        optionIdx
-      ]
-    ) {
-
-      data[
-        roomIdx
-      ][
-        chatIdx
-      ][
-        optionIdx
-      ] = {
-
-        room_idx:
-          roomIdx,
-
-        chat_idx:
-          chatIdx,
-
-        option_idx:
-          optionIdx,
-
-
-        source_language:
-          room.source_language ||
-          "",
-
-
-        target_language:
-          room.target_language ||
-          "",
-
-
-        source_text:
-          getOptionSourceText(
-            option
-          ),
-
-
-        target_text:
-          getOptionTargetText(
-            option
-          ),
-
-
-        pronunciation:
-          getOptionPronunciation(
-            option
-          ),
-
-
-        explanation:
-          "",
-
-
-        questions:
-          [],
-
-
-        created_at:
-          new Date()
-            .toISOString(),
-
-
-        updated_at:
-          new Date()
-            .toISOString()
-
-      };
-
-    }
+    store[
+      ids.roomIdx
+    ][
+      ids.chatIdx
+    ][
+      ids.optionIdx
+    ] = entry;
 
 
 
-    return {
-
-      data:
-        data,
-
-      record:
-
-        data[
-          roomIdx
-        ][
-          chatIdx
-        ][
-          optionIdx
-        ],
-
-      roomIdx:
-        roomIdx,
-
-      chatIdx:
-        chatIdx,
-
-      optionIdx:
-        optionIdx
-
-    };
-
-  }
-
-
-
-  /*
-  ==================================================
-  SAVE INITIAL EXPLANATION
-  ==================================================
-  */
-
-  function saveExplanation(
-    room,
-    chat,
-    option,
-    explanation
-  ) {
-
-    const storage =
-
-      ensureTeachRecord(
-        room,
-        chat,
-        option
-      );
-
-
-    storage.record.explanation =
-      explanation;
-
-
-    storage.record.updated_at =
-
-      new Date()
-        .toISOString();
-
-
-    saveAllTeachData(
-      storage.data
+    writeStore(
+      store
     );
 
 
-    return storage.record;
+    return entry;
 
   }
 
@@ -1880,152 +1453,26 @@ Return ONLY the direct plain-text answer.
 
   /*
   ==================================================
-  SAVE QUESTION + ANSWER
+  NORMALIZE QUESTION
   ==================================================
   */
 
-  function saveQuestionAnswer(
-    room,
-    chat,
-    option,
-    question,
-    answer
-  ) {
-
-    const storage =
-
-      ensureTeachRecord(
-        room,
-        chat,
-        option
-      );
-
-
-    if (
-      !Array.isArray(
-        storage.record.questions
-      )
-    ) {
-
-      storage.record.questions =
-        [];
-
-    }
-
-
-
-    storage.record.questions.push({
-
-      question:
-        question,
-
-      answer:
-        answer,
-
-      asked_at:
-        new Date()
-          .toISOString()
-
-    });
-
-
-
-    storage.record.updated_at =
-
-      new Date()
-        .toISOString();
-
-
-
-    saveAllTeachData(
-      storage.data
-    );
-
-
-    return storage.record;
-
-  }
-
-
-
-  /*
-  ==================================================
-  FIND CACHED QUESTION
-  ==================================================
-
-  If learner asks exactly the same question again,
-  we can return the local answer immediately.
-  ==================================================
-  */
-
-  function findCachedQuestion(
-    record,
+  function normalizeQuestion(
     question
   ) {
 
-    if (
+    return String(
+      question || ""
+    )
 
-      !record
+      .trim()
 
-      ||
-
-      !Array.isArray(
-        record.questions
+      .replace(
+        /\s+/g,
+        " "
       )
 
-    ) {
-
-      return null;
-
-    }
-
-
-
-    const normalized =
-
-      String(
-        question || ""
-      )
-
-        .trim()
-
-        .toLowerCase()
-
-        .replace(
-          /\s+/g,
-          " "
-        );
-
-
-
-    return record.questions.find(
-
-      function(item) {
-
-        const storedQuestion =
-
-          String(
-            item?.question || ""
-          )
-
-            .trim()
-
-            .toLowerCase()
-
-            .replace(
-              /\s+/g,
-              " "
-            );
-
-
-        return (
-          storedQuestion ===
-          normalized
-        );
-
-      }
-
-    ) || null;
+      .toLowerCase();
 
   }
 
@@ -2033,19 +1480,7 @@ Return ONLY the direct plain-text answer.
 
   /*
   ==================================================
-  MAIN EXPLAIN FUNCTION
-  ==================================================
-
-  index.html already calls:
-
-  ConversateTeach.explain({
-
-      room,
-      chat,
-      option,
-      question
-
-  })
+  EXPLAIN
   ==================================================
   */
 
@@ -2058,18 +1493,15 @@ Return ONLY the direct plain-text answer.
 
 
     const room =
-      settings.room ||
-      null;
+      settings.room;
 
 
     const chat =
-      settings.chat ||
-      null;
+      settings.chat;
 
 
     const option =
-      settings.option ||
-      null;
+      settings.option;
 
 
     const question =
@@ -2080,21 +1512,16 @@ Return ONLY the direct plain-text answer.
 
 
 
-    /*
-    ==================================================
-    VALIDATION
-    ==================================================
-    */
-
     if (
       !room
     ) {
 
       throw new Error(
-        "No conversation room was provided."
+        "Teach requires a room."
       );
 
     }
+
 
 
     if (
@@ -2102,10 +1529,11 @@ Return ONLY the direct plain-text answer.
     ) {
 
       throw new Error(
-        "No conversation message was provided."
+        "Teach requires a chat message."
       );
 
     }
+
 
 
     if (
@@ -2113,7 +1541,7 @@ Return ONLY the direct plain-text answer.
     ) {
 
       throw new Error(
-        "No response option was provided."
+        "Teach requires a response or message."
       );
 
     }
@@ -2122,91 +1550,127 @@ Return ONLY the direct plain-text answer.
 
     /*
     ==================================================
-    STORAGE RECORD
+    EXISTING CACHE
     ==================================================
     */
 
-    const storage =
+    let stored =
 
-      ensureTeachRecord(
+      getEntry(
         room,
         chat,
         option
       );
 
 
-    const record =
-      storage.record;
+
+    /*
+    IMPORTANT:
+
+    Ignore old V1 cached explanations.
+
+    This means old short Teach responses will
+    regenerate automatically after this update.
+    */
+
+    const cacheIsCurrent =
+
+      stored?.teach_version ===
+      TEACH_VERSION;
 
 
 
     /*
     ==================================================
-    MODE 1
-
-    USER PRESSED TEACH
+    FOLLOW-UP QUESTION
     ==================================================
     */
 
     if (
-      !question
+      question
     ) {
 
 
       /*
-      Already explained?
-
-      Return local version immediately.
+      Reuse the explanation only if it was generated
+      with the new detailed Teach version.
       */
 
       if (
-        record.explanation
+        !cacheIsCurrent
       ) {
 
-        latestTeachResult = {
+        stored =
+          null;
 
-          type:
-            "explanation",
+      }
+
+
+
+      const normalizedQuestion =
+
+        normalizeQuestion(
+          question
+        );
+
+
+
+      /*
+      Exact question already answered?
+      */
+
+      const existingQuestion =
+
+        Array.isArray(
+          stored?.questions
+        )
+
+          ? stored.questions.find(
+
+              function(item) {
+
+                return (
+
+                  normalizeQuestion(
+                    item.question
+                  )
+
+                  ===
+
+                  normalizedQuestion
+
+                );
+
+              }
+
+            )
+
+          : null;
+
+
+
+      if (
+        existingQuestion
+      ) {
+
+        latestResult = {
+
+          mode:
+            "question",
+
+          question:
+            existingQuestion.question,
+
+          answer:
+            existingQuestion.answer,
 
           cached:
-            true,
-
-          roomIdx:
-            storage.roomIdx,
-
-          chatIdx:
-            storage.chatIdx,
-
-          optionIdx:
-            storage.optionIdx,
-
-          text:
-            record.explanation,
-
-          explanation:
-            record.explanation
+            true
 
         };
 
 
-        global.conversateTeachResult =
-          latestTeachResult;
-
-
-        updateStatus(
-
-          settings.onStatus,
-
-          "Explanation ready."
-
-        );
-
-
-        /*
-        index.html accepts a string directly.
-        */
-
-        return record.explanation;
+        return latestResult;
 
       }
 
@@ -2216,9 +1680,39 @@ Return ONLY the direct plain-text answer.
 
         settings.onStatus,
 
-        "Preparing a short explanation..."
+        "Answering your question..."
 
       );
+
+
+
+      /*
+      If the initial explanation does not exist yet,
+      it is okay to answer using the sentence data.
+      */
+
+      const prompt =
+
+        buildQuestionPrompt({
+
+          room:
+            room,
+
+          chat:
+            chat,
+
+          option:
+            option,
+
+          question:
+            question,
+
+          previousExplanation:
+
+            stored?.explanation ||
+            ""
+
+        });
 
 
 
@@ -2226,15 +1720,7 @@ Return ONLY the direct plain-text answer.
 
         await callAPI(
 
-          buildExplanationPrompt(
-
-            room,
-
-            chat,
-
-            option
-
-          ),
+          prompt,
 
           settings
 
@@ -2242,64 +1728,114 @@ Return ONLY the direct plain-text answer.
 
 
 
-      if (
-        !answer
-      ) {
-
-        throw new Error(
-          "No explanation was generated."
-        );
-
-      }
+      const now =
+        new Date()
+          .toISOString();
 
 
 
-      saveExplanation(
+      /*
+      Preserve/create entry.
+      */
+
+      const entry = {
+
+        teach_version:
+          TEACH_VERSION,
+
+
+        source_text:
+
+          getSourceText(
+            option
+          ),
+
+
+        target_text:
+
+          getTargetText(
+            option
+          ),
+
+
+        pronunciation:
+
+          getPronunciation(
+            option
+          ),
+
+
+        explanation:
+
+          stored?.explanation ||
+          "",
+
+
+        questions:
+
+          Array.isArray(
+            stored?.questions
+          )
+
+            ? stored.questions.slice()
+
+            : [],
+
+
+        created_at:
+
+          stored?.created_at ||
+          now,
+
+
+        updated_at:
+          now
+
+      };
+
+
+
+      entry.questions.push({
+
+        question:
+          question,
+
+        answer:
+          answer,
+
+        asked_at:
+          now
+
+      });
+
+
+
+      saveEntry(
 
         room,
-
         chat,
-
         option,
-
-        answer
+        entry
 
       );
 
 
 
-      latestTeachResult = {
+      latestResult = {
 
-        type:
-          "explanation",
+        mode:
+          "question",
+
+        question:
+          question,
+
+        answer:
+          answer,
 
         cached:
-          false,
-
-        roomIdx:
-          storage.roomIdx,
-
-        chatIdx:
-          storage.chatIdx,
-
-        optionIdx:
-          storage.optionIdx,
-
-        text:
-          answer,
-
-        explanation:
-          answer,
-
-        generatedAt:
-          new Date()
-            .toISOString()
+          false
 
       };
-
-
-      global.conversateTeachResult =
-        latestTeachResult;
 
 
 
@@ -2307,12 +1843,12 @@ Return ONLY the direct plain-text answer.
 
         settings.onStatus,
 
-        "Explanation ready."
+        "Complete."
 
       );
 
 
-      return answer;
+      return latestResult;
 
     }
 
@@ -2320,71 +1856,49 @@ Return ONLY the direct plain-text answer.
 
     /*
     ==================================================
-    MODE 2
-
-    LEARNER ASKED A QUESTION
+    INITIAL TEACH EXPLANATION
     ==================================================
     */
 
-    const cachedQuestion =
 
-      findCachedQuestion(
-
-        record,
-
-        question
-
-      );
-
-
+    /*
+    New-version explanation already cached.
+    */
 
     if (
-      cachedQuestion
+
+      cacheIsCurrent
+
+      &&
+
+      stored?.explanation
+
     ) {
 
-      latestTeachResult = {
+      latestResult = {
 
-        type:
-          "question",
+        mode:
+          "explanation",
+
+        explanation:
+          stored.explanation,
+
+        sourceText:
+          stored.source_text,
+
+        targetText:
+          stored.target_text,
+
+        pronunciation:
+          stored.pronunciation,
 
         cached:
-          true,
-
-        roomIdx:
-          storage.roomIdx,
-
-        chatIdx:
-          storage.chatIdx,
-
-        optionIdx:
-          storage.optionIdx,
-
-        question:
-          question,
-
-        text:
-          cachedQuestion.answer,
-
-        answer:
-          cachedQuestion.answer
+          true
 
       };
 
 
-      global.conversateTeachResult =
-        latestTeachResult;
-
-
-      updateStatus(
-
-        settings.onStatus,
-
-        "Answer ready."
-
-      );
-
-
-      return cachedQuestion.answer;
+      return latestResult;
 
     }
 
@@ -2394,29 +1908,34 @@ Return ONLY the direct plain-text answer.
 
       settings.onStatus,
 
-      "Thinking about your question..."
+      "Teaching this response..."
 
     );
 
 
 
-    const answer =
+    const prompt =
+
+      buildExplanationPrompt({
+
+        room:
+          room,
+
+        chat:
+          chat,
+
+        option:
+          option
+
+      });
+
+
+
+    const explanation =
 
       await callAPI(
 
-        buildQuestionPrompt(
-
-          room,
-
-          chat,
-
-          option,
-
-          question,
-
-          record.explanation
-
-        ),
+        prompt,
 
         settings
 
@@ -2424,69 +1943,98 @@ Return ONLY the direct plain-text answer.
 
 
 
-    if (
-      !answer
-    ) {
-
-      throw new Error(
-        "No answer was generated."
-      );
-
-    }
+    const now =
+      new Date()
+        .toISOString();
 
 
 
-    saveQuestionAnswer(
+    /*
+    New explanation replaces old V1 cache.
+
+    Old questions are also intentionally cleared
+    because they may have been produced using the
+    older prompt rules.
+    */
+
+    const entry = {
+
+      teach_version:
+        TEACH_VERSION,
+
+
+      source_text:
+
+        getSourceText(
+          option
+        ),
+
+
+      target_text:
+
+        getTargetText(
+          option
+        ),
+
+
+      pronunciation:
+
+        getPronunciation(
+          option
+        ),
+
+
+      explanation:
+        explanation,
+
+
+      questions:
+        [],
+
+
+      created_at:
+        now,
+
+
+      updated_at:
+        now
+
+    };
+
+
+
+    saveEntry(
 
       room,
-
       chat,
-
       option,
-
-      question,
-
-      answer
+      entry
 
     );
 
 
 
-    latestTeachResult = {
+    latestResult = {
 
-      type:
-        "question",
+      mode:
+        "explanation",
+
+      explanation:
+        explanation,
+
+      sourceText:
+        entry.source_text,
+
+      targetText:
+        entry.target_text,
+
+      pronunciation:
+        entry.pronunciation,
 
       cached:
-        false,
-
-      roomIdx:
-        storage.roomIdx,
-
-      chatIdx:
-        storage.chatIdx,
-
-      optionIdx:
-        storage.optionIdx,
-
-      question:
-        question,
-
-      text:
-        answer,
-
-      answer:
-        answer,
-
-      generatedAt:
-        new Date()
-          .toISOString()
+        false
 
     };
-
-
-    global.conversateTeachResult =
-      latestTeachResult;
 
 
 
@@ -2494,12 +2042,12 @@ Return ONLY the direct plain-text answer.
 
       settings.onStatus,
 
-      "Answer ready."
+      "Complete."
 
     );
 
 
-    return answer;
+    return latestResult;
 
   }
 
@@ -2507,39 +2055,53 @@ Return ONLY the direct plain-text answer.
 
   /*
   ==================================================
-  GET LATEST RESULT
-  ==================================================
-  */
-
-  function getLatestResult() {
-
-    return latestTeachResult;
-
-  }
-
-
-
-  /*
-  ==================================================
-  GET STORED TEACH DATA FOR OPTION
+  GET STORED RESULT
   ==================================================
   */
 
   function getStoredResult(
-    roomIdx,
-    chatIdx,
-    optionIdx
+    options
   ) {
 
-    return getStoredTeach(
+    const settings =
+      options || {};
 
-      roomIdx,
 
-      chatIdx,
+    const entry =
 
-      optionIdx
+      getEntry(
 
-    );
+        settings.room,
+
+        settings.chat,
+
+        settings.option
+
+      );
+
+
+
+    /*
+    Do not expose outdated V1 results as current.
+    */
+
+    if (
+
+      !entry
+
+      ||
+
+      entry.teach_version !==
+        TEACH_VERSION
+
+    ) {
+
+      return null;
+
+    }
+
+
+    return entry;
 
   }
 
@@ -2547,29 +2109,50 @@ Return ONLY the direct plain-text answer.
 
   /*
   ==================================================
-  CLEAR ONE OPTION'S TEACH DATA
+  CLEAR ONE STORED RESULT
   ==================================================
   */
 
   function clearStoredResult(
-    roomIdx,
-    chatIdx,
-    optionIdx
+    options
   ) {
 
-    const data =
-      getAllTeachData();
+    const settings =
+      options || {};
+
+
+    const ids =
+
+      getIds(
+
+        settings.room,
+
+        settings.chat,
+
+        settings.option
+
+      );
+
+
+    const store =
+      readStore();
 
 
 
     if (
-      !data?.[
-        roomIdx
-      ]?.[
-        chatIdx
-      ]?.[
-        optionIdx
+
+      !store[
+        ids.roomIdx
       ]
+
+      ||
+
+      !store[
+        ids.roomIdx
+      ][
+        ids.chatIdx
+      ]
+
     ) {
 
       return false;
@@ -2578,66 +2161,72 @@ Return ONLY the direct plain-text answer.
 
 
 
-    delete data[
-      roomIdx
+    delete store[
+      ids.roomIdx
     ][
-      chatIdx
+      ids.chatIdx
     ][
-      optionIdx
+      ids.optionIdx
     ];
 
 
 
     /*
-    Remove empty chat container.
+    Clean empty objects.
     */
 
     if (
 
-      !Object.keys(
-        data[
-          roomIdx
+      Object.keys(
+
+        store[
+          ids.roomIdx
         ][
-          chatIdx
+          ids.chatIdx
         ]
-      ).length
+
+      ).length ===
+      0
 
     ) {
 
-      delete data[
-        roomIdx
+      delete store[
+        ids.roomIdx
       ][
-        chatIdx
+        ids.chatIdx
       ];
 
     }
 
 
-
-    /*
-    Remove empty room container.
-    */
 
     if (
 
-      !Object.keys(
-        data[
-          roomIdx
+      Object.keys(
+
+        store[
+          ids.roomIdx
         ]
-      ).length
+
+        ||
+
+        {}
+
+      ).length ===
+      0
 
     ) {
 
-      delete data[
-        roomIdx
+      delete store[
+        ids.roomIdx
       ];
 
     }
 
 
 
-    saveAllTeachData(
-      data
+    writeStore(
+      store
     );
 
 
@@ -2649,41 +2238,35 @@ Return ONLY the direct plain-text answer.
 
   /*
   ==================================================
-  GLOBAL
+  LATEST RESULT
   ==================================================
   */
 
-  global.conversateTeachResult =
-    null;
+  function getLatestResult() {
+
+    return latestResult;
+
+  }
 
 
+
+  /*
+  ==================================================
+  GLOBAL API
+  ==================================================
+  */
 
   global.ConversateTeach =
     Object.freeze({
 
-      /*
-      Main function required by index.html.
-      */
-
       explain:
         explain,
-
-
-      /*
-      LocalStorage helpers.
-      */
 
       getStoredResult:
         getStoredResult,
 
-
       clearStoredResult:
         clearStoredResult,
-
-
-      /*
-      Most recent result.
-      */
 
       getLatestResult:
         getLatestResult

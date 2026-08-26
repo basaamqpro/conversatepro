@@ -20,12 +20,15 @@
   3. Every Option sentence gets
      its own 🔊 button.
 
-  4. Clicking the chat itself remains free
+  4. 🔊 button is OUTSIDE the
+     .translation_sentence box.
+
+  5. Clicking the chat itself remains free
      for Options / other existing behaviour.
 
-  5. Global 🔊 button opens speed slider.
+  6. Global 🔊 button opens speed slider.
 
-  6. Speed is remembered in localStorage.
+  7. Speed is remembered in localStorage.
 
   ==================================================
   */
@@ -164,14 +167,6 @@
   ==================================================
   MAIN REAL CHAT SENTENCE
   ==================================================
-
-  We use this when detecting the real
-  newly-created Conversation Partner chat.
-
-  Option sentences may also use
-  .translation_sentence, but they do not
-  count as real messages.
-  ==================================================
   */
 
   function getMainSentence(
@@ -221,22 +216,6 @@
   /*
   ==================================================
   GET PRACTICE-LANGUAGE TEXT
-  ==================================================
-
-  Example:
-
-  marhaban
-  مرحبًا
-  Hello
-
-  kayfa
-  كيف
-  how
-
-
-  Audio receives only:
-
-  مرحبًا كيف
   ==================================================
   */
 
@@ -322,11 +301,6 @@
       getPracticeLanguage();
 
 
-
-    /*
-    Languages where spaces between generated
-    segments are normally inappropriate.
-    */
 
     const noSpaceLanguages = [
 
@@ -462,8 +436,7 @@
 
 
     /*
-    Current Conversate Pro AI messages
-    are on the left.
+    Current AI messages are left aligned.
     */
 
     return row
@@ -522,6 +495,71 @@
 
       );
 
+
+
+    /*
+    Also clean audio button host states.
+    */
+
+    container
+
+      .querySelectorAll(
+        ".audio_button_host"
+      )
+
+      .forEach(
+
+        function(host) {
+
+          host.classList.remove(
+
+            "audio_loading",
+
+            "audio_playing",
+
+            "audio_error"
+
+          );
+
+        }
+
+      );
+
+  }
+
+
+
+  /*
+  ==================================================
+  GET AUDIO HOST
+  ==================================================
+
+  The audio button now lives OUTSIDE:
+
+      .translation_sentence
+
+  Structure becomes:
+
+      .audio_button_host
+          ├── .translation_sentence
+          └── .chat_audio_button
+  ==================================================
+  */
+
+  function getAudioHost(
+    sentence
+  ) {
+
+    if (
+      !sentence
+    ) {
+
+      return null;
+
+    }
+
+
+    return sentence.parentElement;
   }
 
 
@@ -622,11 +660,25 @@
     clearAudioClasses();
 
 
+
     activeSentence =
       sentence;
 
 
+
+    const host =
+      getAudioHost(
+        sentence
+      );
+
+
+
     sentence.classList.add(
+      "audio_loading"
+    );
+
+
+    host?.classList.add(
       "audio_loading"
     );
 
@@ -649,12 +701,23 @@
 
     } catch (error) {
 
+
       sentence.classList.remove(
         "audio_loading"
       );
 
 
       sentence.classList.add(
+        "audio_error"
+      );
+
+
+      host?.classList.remove(
+        "audio_loading"
+      );
+
+
+      host?.classList.add(
         "audio_error"
       );
 
@@ -684,22 +747,11 @@
   AUDIO BUTTON CLICK
   ==================================================
 
-  IMPORTANT:
+  Click chat:
+      → existing Options behaviour
 
-  The event listener lives DIRECTLY on
-  the 🔊 button.
-
-  This means stopPropagation() happens
-  before the parent AI sentence sees
-  the click.
-
-  Therefore:
-
-  Click chat
-      → Options
-
-  Click 🔊
-      → Audio only
+  Click 🔊:
+      → audio only
   ==================================================
   */
 
@@ -719,11 +771,23 @@
 
 
 
-    const sentence =
+    /*
+    When creating the button we store
+    its exact sentence reference here.
+    */
 
-      button.closest(
-        ".translation_sentence"
-      );
+    const sentence =
+      button.__conversateSentence;
+
+
+
+    if (
+      !sentence
+    ) {
+
+      return;
+
+    }
 
 
 
@@ -748,6 +812,25 @@
   ==================================================
   CREATE 🔊 BUTTON
   ==================================================
+
+  IMPORTANT CHANGE:
+
+  OLD:
+
+      .translation_sentence
+          └── 🔊
+
+
+  NEW:
+
+      parent / host
+          ├── .translation_sentence
+          └── 🔊
+
+
+  Therefore the button no longer sits inside
+  the horizontally scrolling chat box.
+  ==================================================
   */
 
   function addAudioButton(
@@ -764,14 +847,15 @@
 
 
 
-    /*
-    Already created.
-    */
+    const host =
+      getAudioHost(
+        sentence
+      );
+
+
 
     if (
-      sentence.querySelector(
-        ":scope > .chat_audio_button"
-      )
+      !host
     ) {
 
       return;
@@ -780,9 +864,70 @@
 
 
 
+    /*
+    Make parent the positioning container.
+    */
+
+    host.classList.add(
+      "audio_button_host"
+    );
+
+
+
+    /*
+    Mark translation sentence as audio capable.
+    */
+
     sentence.classList.add(
       "audio_enabled"
     );
+
+
+
+    /*
+    Check whether this exact host already
+    has an audio button for this sentence.
+    */
+
+    const existingButton =
+
+      Array
+        .from(
+          host.children
+        )
+
+        .find(
+
+          function(child) {
+
+            return child
+              .classList
+              ?.contains(
+                "chat_audio_button"
+              );
+
+          }
+
+        );
+
+
+
+    if (
+      existingButton
+    ) {
+
+      /*
+      Keep sentence reference fresh in case
+      the application rerendered its contents.
+      */
+
+      existingButton.__conversateSentence =
+        sentence;
+
+
+      return;
+
+    }
 
 
 
@@ -802,7 +947,7 @@
       "chat_audio_button";
 
 
-    button.innerHTML =
+    button.textContent =
       "🔊";
 
 
@@ -818,10 +963,20 @@
 
 
     /*
-    Direct listener is important.
+    Store direct relationship.
 
-    It prevents the parent AI message
-    from opening Options when 🔊 is clicked.
+    This is more reliable than searching
+    upward/downward through the DOM later.
+    */
+
+    button.__conversateSentence =
+      sentence;
+
+
+
+    /*
+    Direct listener prevents the click
+    reaching the AI message Options handler.
     */
 
     button.addEventListener(
@@ -834,7 +989,13 @@
 
 
 
-    sentence.appendChild(
+    /*
+    IMPORTANT:
+
+    Append to PARENT, not sentence.
+    */
+
+    host.appendChild(
       button
     );
 
@@ -847,15 +1008,7 @@
   DECORATE ALL SENTENCES
   ==================================================
 
-  THIS IS THE MAJOR CHANGE.
-
-  Previously only real chat messages
-  got an audio control.
-
-  Now ALL translation_sentence elements
-  inside the conversation receive 🔊.
-
-  That includes:
+  Includes:
 
   ✓ Conversation Partner
   ✓ User
@@ -863,8 +1016,7 @@
   ✓ Option 2
   ✓ Option 3
 
-  Teach text is plain explanatory text,
-  so it is not automatically decorated.
+  Teach explanation remains plain text.
   ==================================================
   */
 
@@ -943,10 +1095,6 @@
       ];
 
 
-
-    /*
-    Only AI / Conversation Partner messages.
-    */
 
     if (
       !isConversationPartnerRow(
@@ -1054,8 +1202,8 @@
 
 
     /*
-    This also detects newly generated
-    Option sentences.
+    Adds audio buttons to new chats
+    and newly generated Options.
     */
 
     decorateAllSentences();
@@ -1086,8 +1234,8 @@
     ==================================================
     INITIAL LOAD
 
-    Existing chats should NOT suddenly
-    start speaking after page refresh.
+    Existing chats should not automatically
+    speak just because the page loaded.
     ==================================================
     */
 
@@ -1144,7 +1292,7 @@
 
 
     /*
-    Real new message was added.
+    A REAL message was added.
     */
 
     if (
@@ -1199,14 +1347,6 @@
   /*
   ==================================================
   OBSERVER
-  ==================================================
-
-  Automatically sees:
-
-  new messages
-  options
-  rerenders
-  edited messages
   ==================================================
   */
 
@@ -1294,12 +1434,23 @@
         clearAudioClasses();
 
 
+
         if (
           activeSentence
         ) {
 
           activeSentence
             .classList
+            .add(
+              "audio_playing"
+            );
+
+
+
+          getAudioHost(
+            activeSentence
+          )
+            ?.classList
             .add(
               "audio_playing"
             );
@@ -1326,8 +1477,25 @@
           activeSentence
             .classList
             .remove(
+
               "audio_loading",
+
               "audio_playing"
+
+            );
+
+
+
+          getAudioHost(
+            activeSentence
+          )
+            ?.classList
+            .remove(
+
+              "audio_loading",
+
+              "audio_playing"
+
             );
 
         }
@@ -1374,8 +1542,11 @@
           activeSentence
             .classList
             .remove(
+
               "audio_loading",
+
               "audio_playing"
+
             );
 
 
@@ -1384,6 +1555,27 @@
             .add(
               "audio_error"
             );
+
+
+
+          const host =
+            getAudioHost(
+              activeSentence
+            );
+
+
+          host?.classList.remove(
+
+            "audio_loading",
+
+            "audio_playing"
+
+          );
+
+
+          host?.classList.add(
+            "audio_error"
+          );
 
         }
 
@@ -1404,7 +1596,6 @@
   SPEED CONTROL
   ==================================================
   */
-
 
   function loadSavedSpeed() {
 
@@ -1465,15 +1656,6 @@
   ==================================================
   CREATE SPEED UI
   ==================================================
-
-             🔊
-              ↓
-        ┌───────────────┐
-        │ Speech speed  │
-        │  ─────●────   │
-        │     0.90×     │
-        └───────────────┘
-  ==================================================
   */
 
   function createSpeedControl() {
@@ -1508,7 +1690,7 @@
 
 
     /*
-    Main button.
+    Main global button.
     */
 
     const button =
@@ -1530,7 +1712,7 @@
       "chat_audio_speed_button";
 
 
-    button.innerHTML =
+    button.textContent =
       "🔊";
 
 
@@ -1546,7 +1728,7 @@
 
 
     /*
-    Panel.
+    Speed panel.
     */
 
     const panel =
@@ -1586,7 +1768,7 @@
 
 
     /*
-    Value text.
+    Current value.
     */
 
     const value =
@@ -1663,7 +1845,7 @@
 
 
     /*
-    Useful labels.
+    Labels.
     */
 
     const labels =
@@ -1688,7 +1870,7 @@
 
 
     /*
-    Slider changes global audio speed.
+    Speed changes.
     */
 
     slider.addEventListener(
@@ -1748,7 +1930,7 @@
 
 
     /*
-    Toggle panel.
+    Open / close.
     */
 
     button.addEventListener(
@@ -1769,11 +1951,6 @@
 
 
 
-    /*
-    Prevent click inside panel from
-    closing itself.
-    */
-
     panel.addEventListener(
 
       "click",
@@ -1787,10 +1964,6 @@
     );
 
 
-
-    /*
-    Click elsewhere closes panel.
-    */
 
     document.addEventListener(
 
@@ -1932,7 +2105,7 @@
 
 
     /*
-    Apply remembered speed.
+    Remembered speed.
     */
 
     loadSavedSpeed();
@@ -1940,7 +2113,7 @@
 
 
     /*
-    Add global speed control.
+    Global speed control.
     */
 
     createSpeedControl();
@@ -1948,7 +2121,7 @@
 
 
     /*
-    Audio visual events.
+    Audio visual states.
     */
 
     setupAudioEvents();
