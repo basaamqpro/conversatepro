@@ -1,1748 +1,494 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>Conversate Pro - Conversations</title>
-
-  <style>
-
-    * {
-      box-sizing: border-box;
-    }
-
-
-    html,
-    body {
-      margin: 0;
-      min-height: 100%;
-    }
-
-
-    body {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-      color: #111827;
-      background: #f8fafc;
-    }
-
-
-    h1,
-    h2,
-    h3,
-    p {
-      overflow-wrap: anywhere;
-    }
-
-
-    button,
-    input,
-    select {
-      font: inherit;
-    }
-
-
-    /*
-    ==================================================
-    PANEL
-    ==================================================
-    */
-
-    .panel {
-      margin-bottom: 18px;
-      padding: 20px;
-      border: 1px solid #d1d5db;
-      border-radius: 14px;
-      background: #ffffff;
-    }
-
-
-    /*
-    ==================================================
-    HEADER
-    ==================================================
-    */
-
-    .header,
-    .room_header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 15px;
-    }
-
-
-    .header h1,
-    .room_header h3 {
-      margin: 0 0 6px;
-    }
-
-
-    .header p,
-    .room_header p {
-      margin: 0;
-    }
-
-
-    .brand_text {
-      color: #2563eb;
-    }
-
-
-    /*
-    ==================================================
-    CREATE ROOM GRID
-    ==================================================
-    */
-
-    .grid {
-      display: grid;
-      grid-template-columns:
-        repeat(
-          2,
-          minmax(0, 1fr)
-        );
-      gap: 16px;
-    }
-
-
-    label {
-      display: block;
-      margin: 10px 0 6px;
-      font-weight: bold;
-    }
-
-
-    input,
-    select,
-    button {
-      width: 100%;
-      padding: 11px;
-      border-radius: 9px;
-      font-size: 16px;
-    }
-
-
-    input,
-    select {
-      border: 1px solid #cbd5e1;
-      background: #ffffff;
-      outline: none;
-    }
-
-
-    input:focus,
-    select:focus {
-      border-color: #2563eb;
-      outline: 2px solid rgba(
-        37,
-        99,
-        235,
-        0.12
-      );
-    }
-
-
-    button {
-      border: 0;
-      cursor: pointer;
-      background: #111827;
-      color: #ffffff;
-    }
-
-
-    button:disabled {
-      cursor: not-allowed;
-      opacity: 0.6;
-    }
-
-
-    button.secondary {
-      background: #e5e7eb;
-      color: #111827;
-    }
-
-
-    button.danger {
-      background: #b91c1c;
-    }
-
-
-    button.primary {
-      background: #2563eb;
-      color: #ffffff;
-    }
-
-
-    /*
-    ==================================================
-    BUTTON ROWS
-    ==================================================
-    */
-
-    .button_row,
-    .room_actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-
-    .button_row {
-      margin-top: 15px;
-    }
-
-
-    .button_row button,
-    .room_actions button,
-    .header button {
-      width: auto;
-      min-width: 110px;
-    }
-
-
-    /*
-    ==================================================
-    TEXT
-    ==================================================
-    */
-
-    .muted {
-      color: #64748b;
-    }
-
-
-    .section_description {
-      margin-top: -5px;
-      color: #64748b;
-      line-height: 1.5;
-    }
-
-
-    /*
-    ==================================================
-    STATUS MESSAGE
-    ==================================================
-    */
-
-    .message {
-      display: none;
-      margin: 12px 0 18px;
-      padding: 12px;
-      border-radius: 9px;
-      font-weight: bold;
-    }
-
-
-    .message.visible {
-      display: block;
-    }
-
-
-    .message.error {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-
-
-    .message.success {
-      background: #dcfce7;
-      color: #166534;
-    }
-
-
-    .message.loading {
-      background: #dbeafe;
-      color: #1d4ed8;
-    }
-
-
-    /*
-    ==================================================
-    ROOM CARD
-    ==================================================
-    */
-
-    .room_card {
-      margin-top: 14px;
-      padding: 16px;
-      border: 1px solid #d1d5db;
-      border-radius: 12px;
-      background: #ffffff;
-    }
-
-
-    .room_languages {
-      font-weight: 700;
-    }
-
-
-    .room_count {
-      margin-top: 5px !important;
-      font-size: 14px;
-    }
-
-
-    /*
-    ==================================================
-    EMPTY ROOMS
-    ==================================================
-    */
-
-    .empty {
-      padding: 20px;
-      border: 1px dashed #cbd5e1;
-      border-radius: 12px;
-      background: #ffffff;
-      color: #64748b;
-      text-align: center;
-    }
-
-
-    /*
-    ==================================================
-    MOBILE
-    ==================================================
-    */
-
-    @media (
-      max-width: 700px
-    ) {
-
-      body {
-        padding: 12px;
-      }
-
-
-      .grid {
-        grid-template-columns:
-          1fr;
-      }
-
-
-      .header,
-      .room_header {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-
-      .header button {
-        width: 100%;
-      }
-
-
-      .room_actions {
-        width: 100%;
-      }
-
-
-      .room_actions button {
-        width: 100%;
-      }
-
-
-      .button_row button {
-        width: 100%;
-      }
-
-    }
-
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Choose or create a ConversateProArabic conversation room.">
+  <title>Conversations · ConversateProArabic</title>
+  <link rel="stylesheet" href="css/welcome.css">
 </head>
-
-
 <body>
-
-
-  <!--
-  ==================================================
-  APP STATUS
-  ==================================================
-  -->
-
-  <div
-    id="appMessage"
-    class="message"
-    role="status"
-    aria-live="polite"
-  ></div>
-
-
-
-  <!--
-  ==================================================
-  USER HEADER
-  ==================================================
-  -->
-
-  <section class="panel">
-
-    <div class="header">
-
-      <div>
-
-        <h1>
-          Conversate
-          <span class="brand_text">
-            Pro
-          </span>
-        </h1>
-
-        <p>
-          Welcome,
-          <strong
-            id="loggedInUsername"
-          ></strong>
+  <main class="page_shell">
+    <header class="page_header">
+      <div class="brand">
+        <p class="brand_eyebrow">ConversateProArabic</p>
+        <h1>Your conversations</h1>
+        <p class="brand_text">
+          Create a room, choose the learning direction, and build the conversation one sentence at a time.
         </p>
-
-        <p class="muted">
-          Choose a conversation or
-          create a new one.
-        </p>
-
       </div>
 
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
+        <span id="currentUserLabel" style="color:#667085;font-size:14px;font-weight:700;"></span>
+        <button id="logoutButton" class="secondary_button" type="button">Log out</button>
+        <button id="openCreateButton" class="primary_button" type="button">
+          <span aria-hidden="true">＋</span>
+          New conversation
+        </button>
+      </div>
+    </header>
 
-      <button
-        id="logoutButton"
-        type="button"
-        class="secondary"
-      >
-        Logout
-      </button>
+    <section id="createPanel" class="create_panel" hidden aria-labelledby="createTitle">
+      <div class="create_panel_head">
+        <div>
+          <p class="section_eyebrow">New room</p>
+          <h2 id="createTitle">Start a conversation</h2>
+        </div>
 
-    </div>
-
-  </section>
-
-
-
-  <!--
-  ==================================================
-  CREATE CONVERSATION ROOM
-  ==================================================
-  -->
-
-  <section class="panel">
-
-    <h2>
-      Create Conversation
-    </h2>
-
-    <p class="section_description">
-      Choose the language you understand
-      and the language you want to practise.
-    </p>
-
-
-    <div class="grid">
-
-
-      <!-- ROOM NAME -->
-
-      <div>
-
-        <label for="newRoomName">
-          Conversation name
-        </label>
-
-        <input
-          id="newRoomName"
-          type="text"
-          placeholder="Arabic conversation"
-        >
-
+        <button id="closeCreateButton" class="icon_button" type="button" aria-label="Close new conversation form">×</button>
       </div>
 
+      <form id="createRoomForm" class="create_form">
+        <div class="field_group">
+          <label for="roomNameInput">Conversation name</label>
+          <input
+            id="roomNameInput"
+            name="roomName"
+            type="text"
+            maxlength="80"
+            autocomplete="off"
+            placeholder="e.g. Daily conversation"
+            required
+          >
+        </div>
 
+        <fieldset class="direction_fieldset">
+          <legend>Practice direction</legend>
 
-      <!-- SOURCE LANGUAGE -->
+          <label class="direction_option selected">
+            <input type="radio" name="direction" value="en-ar" checked>
+            <span class="direction_copy">
+              <strong>English <span aria-hidden="true">→</span> Arabic</strong>
+              <small>Arabic is the learning target.</small>
+            </span>
+            <span class="direction_mark" aria-hidden="true">✓</span>
+          </label>
 
-      <div>
+          <label class="direction_option">
+            <input type="radio" name="direction" value="ar-en">
+            <span class="direction_copy">
+              <strong>Arabic <span aria-hidden="true">→</span> English</strong>
+              <small>English is the learning target.</small>
+            </span>
+            <span class="direction_mark" aria-hidden="true">✓</span>
+          </label>
+        </fieldset>
 
-        <label
-          for="newRoomSourceLanguage"
-        >
-          Your language
-        </label>
+        <p id="formMessage" class="form_message" role="status" aria-live="polite"></p>
 
-        <select
-          id="newRoomSourceLanguage"
-        ></select>
+        <div class="form_actions">
+          <button id="cancelCreateButton" class="secondary_button" type="button">Cancel</button>
+          <button id="createRoomButton" class="primary_button" type="submit">Create conversation</button>
+        </div>
+      </form>
+    </section>
 
+    <section class="rooms_section" aria-labelledby="roomsTitle">
+      <div class="rooms_heading">
+        <div>
+          <p class="section_eyebrow">Rooms</p>
+          <h2 id="roomsTitle">Continue learning</h2>
+        </div>
+        <span id="roomCount" class="room_count">0 conversations</span>
       </div>
 
+      <div id="roomsGrid" class="rooms_grid" aria-live="polite"></div>
+    </section>
+  </main>
 
-
-      <!-- TARGET LANGUAGE -->
-
-      <div>
-
-        <label
-          for="newRoomTargetLanguage"
-        >
-          Practice language
-        </label>
-
-        <select
-          id="newRoomTargetLanguage"
-        ></select>
-
-      </div>
-
-
-    </div>
-
-
-
-    <div class="button_row">
-
-      <button
-        id="createRoomButton"
-        type="button"
-        class="primary"
-      >
-        Create Conversation
-      </button>
-
-    </div>
-
-  </section>
-
-
-
-  <!--
-  ==================================================
-  EXISTING ROOMS
-  ==================================================
-  -->
-
-  <section>
-
-    <h2>
-      Your Conversations
-    </h2>
-
-    <div
-      id="show_rooms_names"
-    ></div>
-
-  </section>
-
-
-
-  <!--
-  ==================================================
-  RESULTS5.JS
-
-  We use the exact same language list
-  as the existing LingoGPT translation
-  system.
-
-  Later index.html will also use
-  results5.js for the exact same:
-  - translation
-  - pronunciation
-  - source flow
-  - target flow
-  - sentence breakdown
-  ==================================================
-  -->
-
-  <script
-    src="results5.js"
-  ></script>
-
-
-
+  <script src="js/model.js"></script>
   <script type="module">
+    import {
+      createRoom as createFirebaseRoom,
+      getRooms as getFirebaseRooms,
+      deleteRoom as deleteFirebaseRoom,
+      setActiveRoom,
+      getCurrentUser,
+      getFreshCurrentUser,
+      logout
+    } from "./js/firebase.js";
 
-    /*
-    ==================================================
-    FIREBASE
-    ==================================================
-    */
+    const state = {
+      rooms: [],
+      busy: false
+    };
 
-    import "./firebase.js";
+    const el = {};
 
-
-    "use strict";
-
-
-
-    /*
-    ==================================================
-    STATE
-    ==================================================
-    */
-
-    let currentUser =
-      null;
-
-
-    let rooms =
-      [];
-
-
-
-    /*
-    ==================================================
-    MESSAGE
-    ==================================================
-    */
-
-    function showMessage(
-      message,
-      type
-    ) {
-
-      const box =
-        document.getElementById(
-          "appMessage"
-        );
-
-
-      box.textContent =
-        message || "";
-
-
-      box.className =
-        "message";
-
-
-      if (
-        !message
-      ) {
-
-        return;
-
-      }
-
-
-      box.classList.add(
-        "visible"
-      );
-
-
-      if (
-        type === "error"
-      ) {
-
-        box.classList.add(
-          "error"
-        );
-
-      }
-
-
-      else if (
-        type === "success"
-      ) {
-
-        box.classList.add(
-          "success"
-        );
-
-      }
-
-
-      else {
-
-        box.classList.add(
-          "loading"
-        );
-
-      }
-
+    function cacheElements() {
+      el.openCreateButton = document.getElementById("openCreateButton");
+      el.createPanel = document.getElementById("createPanel");
+      el.closeCreateButton = document.getElementById("closeCreateButton");
+      el.cancelCreateButton = document.getElementById("cancelCreateButton");
+      el.createRoomForm = document.getElementById("createRoomForm");
+      el.createRoomButton = document.getElementById("createRoomButton");
+      el.roomNameInput = document.getElementById("roomNameInput");
+      el.formMessage = document.getElementById("formMessage");
+      el.roomsGrid = document.getElementById("roomsGrid");
+      el.roomCount = document.getElementById("roomCount");
+      el.logoutButton = document.getElementById("logoutButton");
+      el.currentUserLabel = document.getElementById("currentUserLabel");
     }
 
-
-
-    /*
-    ==================================================
-    FALLBACK LANGUAGES
-    ==================================================
-
-    Normally results5.js provides
-    the supported-language list.
-
-    This fallback means welcome.html
-    can still create rooms if results5.js
-    fails to load for some reason.
-    ==================================================
-    */
-
-    const fallbackLanguages = [
-
-      "English",
-      "Arabic",
-      "Hausa",
-      "French",
-      "Spanish",
-      "Portuguese",
-      "German",
-      "Italian",
-      "Dutch",
-      "Russian",
-      "Ukrainian",
-      "Polish",
-      "Turkish",
-      "Persian",
-      "Urdu",
-      "Hindi",
-      "Bengali",
-      "Punjabi",
-      "Gujarati",
-      "Marathi",
-      "Tamil",
-      "Telugu",
-      "Kannada",
-      "Malayalam",
-      "Nepali",
-      "Sinhala",
-      "Mandarin Chinese",
-      "Cantonese",
-      "Japanese",
-      "Korean",
-      "Vietnamese",
-      "Thai",
-      "Indonesian",
-      "Malay",
-      "Filipino (Tagalog)",
-      "Swahili",
-      "Somali",
-      "Amharic",
-      "Yoruba",
-      "Igbo",
-      "Zulu",
-      "Afrikaans",
-      "Hebrew",
-      "Greek",
-      "Romanian",
-      "Czech",
-      "Hungarian",
-      "Swedish",
-      "Norwegian",
-      "Danish"
-
-    ];
-
-
-
-    /*
-    ==================================================
-    SUPPORTED LANGUAGES
-    ==================================================
-    */
-
-    const supportedLanguages =
-
-      window.LingoGPTResults &&
-
-      Array.isArray(
-        window
-          .LingoGPTResults
-          .supportedLanguages
-      )
-
-        ? window
-            .LingoGPTResults
-            .supportedLanguages
-
-        : fallbackLanguages;
-
-
-
-    /*
-    ==================================================
-    POPULATE SELECT
-    ==================================================
-    */
-
-    function populateSelect(
-      selectId,
-      selectedLanguage
-    ) {
-
-      const select =
-        document.getElementById(
-          selectId
-        );
-
-
-      select.innerHTML =
-        "";
-
-
-      supportedLanguages.forEach(
-
-        function(language) {
-
-          const option =
-            document.createElement(
-              "option"
-            );
-
-
-          option.value =
-            language;
-
-
-          option.textContent =
-            language;
-
-
-          option.selected =
-            language ===
-            selectedLanguage;
-
-
-          select.appendChild(
-            option
-          );
-
-        }
-
-      );
-
+    function getModel() {
+      if (!window.ConversateModel) {
+        throw new Error("model.js must be loaded before welcome.html runs.");
+      }
+      return window.ConversateModel;
     }
 
-
-
-    /*
-    ==================================================
-    POPULATE DEFAULT LANGUAGES
-    ==================================================
-    */
-
-    function populateLanguages() {
-
-      populateSelect(
-        "newRoomSourceLanguage",
-        "English"
-      );
-
-
-      populateSelect(
-        "newRoomTargetLanguage",
-        "Arabic"
-      );
-
+    function directionLabel(direction) {
+      return direction === "ar-en"
+        ? "Arabic → English"
+        : "English → Arabic";
     }
 
+    function targetLabel(direction) {
+      return direction === "ar-en"
+        ? "Target: English"
+        : "Target: Arabic";
+    }
 
+    function formatDate(value) {
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "";
 
-    /*
-    ==================================================
-    RENDER ROOMS
-    ==================================================
-    */
+      return new Intl.DateTimeFormat(undefined, {
+        month: "short",
+        day: "numeric",
+        year: date.getFullYear() !== new Date().getFullYear() ? "numeric" : undefined
+      }).format(date);
+    }
+
+    function setBusy(busy) {
+      state.busy = Boolean(busy);
+      el.openCreateButton.disabled = state.busy;
+      el.logoutButton.disabled = state.busy;
+      el.createRoomButton.disabled = state.busy;
+      el.closeCreateButton.disabled = state.busy;
+      el.cancelCreateButton.disabled = state.busy;
+    }
+
+    function setFormMessage(message, type = "") {
+      el.formMessage.textContent = message || "";
+      el.formMessage.className = "form_message" + (type ? " " + type : "");
+    }
+
+    function openCreatePanel() {
+      if (state.busy) return;
+
+      el.createPanel.hidden = false;
+      setFormMessage("");
+
+      requestAnimationFrame(function () {
+        el.roomNameInput.focus();
+        el.createPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+
+    function closeCreatePanel() {
+      if (state.busy) return;
+
+      el.createPanel.hidden = true;
+      setFormMessage("");
+      el.createRoomForm.reset();
+
+      const firstRadio = el.createRoomForm.querySelector('input[value="en-ar"]');
+      if (firstRadio) firstRadio.checked = true;
+
+      syncDirectionCards();
+    }
+
+    function syncDirectionCards() {
+      document.querySelectorAll(".direction_option").forEach(function (option) {
+        const input = option.querySelector('input[type="radio"]');
+        option.classList.toggle("selected", Boolean(input && input.checked));
+      });
+    }
+
+    function createRoomCard(room) {
+      const card = document.createElement("article");
+      card.className = "room_card";
+      card.dataset.roomId = room.id;
+
+      const mainButton = document.createElement("button");
+      mainButton.type = "button";
+      mainButton.className = "room_open";
+      mainButton.dataset.action = "open";
+      mainButton.dataset.roomId = room.id;
+      mainButton.setAttribute("aria-label", "Open " + room.name);
+
+      const top = document.createElement("div");
+      top.className = "room_card_top";
+
+      const badge = document.createElement("span");
+      badge.className = "direction_badge";
+      badge.textContent = directionLabel(room.direction);
+
+      const arrow = document.createElement("span");
+      arrow.className = "room_arrow";
+      arrow.setAttribute("aria-hidden", "true");
+      arrow.textContent = "↗";
+
+      top.append(badge, arrow);
+
+      const name = document.createElement("h3");
+      name.textContent = room.name;
+
+      const target = document.createElement("p");
+      target.className = "room_target";
+      target.textContent = targetLabel(room.direction);
+
+      const footer = document.createElement("div");
+      footer.className = "room_footer";
+
+      const date = document.createElement("span");
+      date.textContent = room.updatedAt
+        ? "Updated " + formatDate(room.updatedAt)
+        : "Created " + formatDate(room.createdAt);
+
+      footer.appendChild(date);
+      mainButton.append(top, name, target, footer);
+
+      const deleteButton = document.createElement("button");
+      deleteButton.type = "button";
+      deleteButton.className = "room_delete";
+      deleteButton.dataset.action = "delete";
+      deleteButton.dataset.roomId = room.id;
+      deleteButton.setAttribute("aria-label", "Delete " + room.name);
+      deleteButton.textContent = "Delete";
+
+      card.append(mainButton, deleteButton);
+      return card;
+    }
 
     function renderRooms() {
+      el.roomsGrid.innerHTML = "";
+      el.roomCount.textContent = state.rooms.length + (state.rooms.length === 1 ? " conversation" : " conversations");
 
-      const container =
-        document.getElementById(
-          "show_rooms_names"
-        );
+      if (!state.rooms.length) {
+        const empty = document.createElement("div");
+        empty.className = "rooms_empty";
 
+        const icon = document.createElement("div");
+        icon.className = "empty_icon";
+        icon.textContent = "ع";
 
-      container.innerHTML =
-        "";
+        const heading = document.createElement("h3");
+        heading.textContent = "No conversations yet";
 
+        const text = document.createElement("p");
+        text.textContent = "Create your first room and choose whether you want to practise English → Arabic or Arabic → English.";
 
-      /*
-      No rooms yet.
-      */
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "primary_button";
+        button.textContent = "Create first conversation";
+        button.addEventListener("click", openCreatePanel);
 
-      if (
-        !rooms.length
-      ) {
-
-        const empty =
-          document.createElement(
-            "div"
-          );
-
-
-        empty.className =
-          "empty";
-
-
-        empty.textContent =
-          "You have no conversations yet. Create your first conversation above.";
-
-
-        container.appendChild(
-          empty
-        );
-
-
+        empty.append(icon, heading, text, button);
+        el.roomsGrid.appendChild(empty);
         return;
-
       }
 
-
-
-      /*
-      Show every room.
-      */
-
-      rooms.forEach(
-
-        function(room) {
-
-
-          /*
-          ------------------------------
-          ROOM CARD
-          ------------------------------
-          */
-
-          const card =
-            document.createElement(
-              "article"
-            );
-
-
-          card.className =
-            "room_card";
-
-
-
-          /*
-          ------------------------------
-          HEADER
-          ------------------------------
-          */
-
-          const header =
-            document.createElement(
-              "div"
-            );
-
-
-          header.className =
-            "room_header";
-
-
-
-          /*
-          ------------------------------
-          ROOM DETAILS
-          ------------------------------
-          */
-
-          const details =
-            document.createElement(
-              "div"
-            );
-
-
-
-          const title =
-            document.createElement(
-              "h3"
-            );
-
-
-          title.textContent =
-            room.room_name ||
-            "Untitled Conversation";
-
-
-
-          /*
-          Languages
-          */
-
-          const languages =
-            document.createElement(
-              "p"
-            );
-
-
-          languages.className =
-            "muted room_languages";
-
-
-          languages.textContent =
-
-            (
-              room.source_language ||
-              "Source"
-            )
-
-            +
-
-            " → "
-
-            +
-
-            (
-              room.target_language ||
-              "Target"
-            );
-
-
-
-          /*
-          Message count
-          */
-
-          const messageCount =
-
-            Array.isArray(
-              room.room_data
-            )
-
-              ? room
-                  .room_data
-                  .length
-
-              : 0;
-
-
-
-          const count =
-            document.createElement(
-              "p"
-            );
-
-
-          count.className =
-            "muted room_count";
-
-
-          count.textContent =
-
-            messageCount
-
-            +
-
-            (
-              messageCount === 1
-                ? " conversation message"
-                : " conversation messages"
-            );
-
-
-
-          details.append(
-
-            title,
-            languages,
-            count
-
-          );
-
-
-
-          /*
-          ------------------------------
-          ACTIONS
-          ------------------------------
-          */
-
-          const actions =
-            document.createElement(
-              "div"
-            );
-
-
-          actions.className =
-            "room_actions";
-
-
-
-          /*
-          OPEN BUTTON
-          */
-
-          const openButton =
-            document.createElement(
-              "button"
-            );
-
-
-          openButton.type =
-            "button";
-
-
-          openButton.className =
-            "primary";
-
-
-          openButton.textContent =
-            "Open Conversation";
-
-
-          openButton.onclick =
-            function() {
-
-              openRoom(
-                room.room_idx
-              );
-
-            };
-
-
-
-          /*
-          DELETE BUTTON
-          */
-
-          const deleteButton =
-            document.createElement(
-              "button"
-            );
-
-
-          deleteButton.type =
-            "button";
-
-
-          deleteButton.className =
-            "danger";
-
-
-          deleteButton.textContent =
-            "Delete";
-
-
-          deleteButton.onclick =
-            function() {
-
-              removeRoom(
-                room
-              );
-
-            };
-
-
-
-          actions.append(
-
-            openButton,
-            deleteButton
-
-          );
-
-
-
-          header.append(
-
-            details,
-            actions
-
-          );
-
-
-
-          card.appendChild(
-            header
-          );
-
-
-          container.appendChild(
-            card
-          );
-
-        }
-
-      );
-
+      state.rooms.forEach(function (room) {
+        el.roomsGrid.appendChild(createRoomCard(room));
+      });
     }
 
+    function renderLoadError(message) {
+      el.roomsGrid.innerHTML = "";
+      el.roomCount.textContent = "";
 
+      const empty = document.createElement("div");
+      empty.className = "rooms_empty";
 
-    /*
-    ==================================================
-    LOAD ROOMS
-    ==================================================
-    */
+      const heading = document.createElement("h3");
+      heading.textContent = "Could not load conversations";
+
+      const text = document.createElement("p");
+      text.textContent = message || "Check your Firebase connection and try again.";
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "secondary_button";
+      button.textContent = "Try again";
+      button.addEventListener("click", loadRooms);
+
+      empty.append(heading, text, button);
+      el.roomsGrid.appendChild(empty);
+    }
 
     async function loadRooms() {
+      if (state.busy) return;
 
-      rooms =
-
-        await window
-          .ConversateFirebase
-          .getRooms();
-
-
-      renderRooms();
-
-    }
-
-
-
-    /*
-    ==================================================
-    CREATE ROOM
-    ==================================================
-    */
-
-    async function createRoom() {
-
-      const roomName =
-
-        document
-          .getElementById(
-            "newRoomName"
-          )
-          .value
-          .trim();
-
-
-
-      const sourceLanguage =
-
-        document
-          .getElementById(
-            "newRoomSourceLanguage"
-          )
-          .value;
-
-
-
-      const targetLanguage =
-
-        document
-          .getElementById(
-            "newRoomTargetLanguage"
-          )
-          .value;
-
-
-
-      const button =
-        document.getElementById(
-          "createRoomButton"
-        );
-
-
-
-      /*
-      ------------------------------
-      Validate room name
-      ------------------------------
-      */
-
-      if (
-        !roomName
-      ) {
-
-        showMessage(
-          "Enter a conversation name.",
-          "error"
-        );
-
-
-        return;
-
-      }
-
-
-
-      /*
-      ------------------------------
-      Languages must differ
-      ------------------------------
-      */
-
-      if (
-        sourceLanguage ===
-        targetLanguage
-      ) {
-
-        showMessage(
-          "Choose different languages.",
-          "error"
-        );
-
-
-        return;
-
-      }
-
-
-
-      button.disabled =
-        true;
-
-
-      button.textContent =
-        "Creating...";
-
-
-
-      showMessage(
-        "Creating conversation..."
-      );
-
-
+      setBusy(true);
+      el.roomsGrid.innerHTML = '<div class="rooms_empty"><p>Loading conversations…</p></div>';
 
       try {
-
-
-        /*
-        firebase.js saves this inside:
-
-        conversate_Data
-          ↓
-        user
-          ↓
-        rooms[]
-        */
-
-        await window
-          .ConversateFirebase
-          .createRoom(
-
-            roomName,
-
-            sourceLanguage,
-
-            targetLanguage
-
-          );
-
-
-
-        /*
-        Clear room name input.
-        */
-
-        document.getElementById(
-          "newRoomName"
-        ).value =
-          "";
-
-
-
-        /*
-        Reload rooms from Firebase.
-        */
-
-        await loadRooms();
-
-
-
-        showMessage(
-          "Conversation created.",
-          "success"
-        );
-
-
-      } catch (error) {
-
-
-        console.error(
-          error
-        );
-
-
-        showMessage(
-
-          error.message ||
-
-          "Could not create conversation.",
-
-          "error"
-
-        );
-
-
-      } finally {
-
-
-        button.disabled =
-          false;
-
-
-        button.textContent =
-          "Create Conversation";
-
-      }
-
-    }
-
-
-
-    /*
-    ==================================================
-    OPEN ROOM
-    ==================================================
-
-    firebase.js saves:
-
-    conversate_current_room
-
-    The future Conversate Pro index.html
-    will read this value through:
-
-    ConversateFirebase.getCurrentRoom()
-    ==================================================
-    */
-
-    function openRoom(
-      roomIdx
-    ) {
-
-
-      window
-        .ConversateFirebase
-        .selectRoom(
-          roomIdx
-        );
-
-
-      window.location.href =
-        "index.html";
-
-    }
-
-
-
-    /*
-    ==================================================
-    DELETE ROOM
-    ==================================================
-    */
-
-    async function removeRoom(
-      room
-    ) {
-
-
-      const confirmed =
-        confirm(
-
-          'Delete "' +
-
-          (
-            room.room_name ||
-            "this conversation"
-          )
-
-          +
-
-          '" and all of its conversation messages?'
-
-        );
-
-
-
-      if (
-        !confirmed
-      ) {
-
-        return;
-
-      }
-
-
-
-      showMessage(
-        "Deleting conversation..."
-      );
-
-
-
-      try {
-
-
-        await window
-          .ConversateFirebase
-          .deleteRoom(
-            room.room_idx
-          );
-
-
-
-        /*
-        firebase.js also clears any
-        temporary Options/Teach data
-        for this room.
-        */
-
-        await loadRooms();
-
-
-
-        showMessage(
-          "Conversation deleted.",
-          "success"
-        );
-
-
-      } catch (error) {
-
-
-        console.error(
-          error
-        );
-
-
-        showMessage(
-
-          error.message ||
-
-          "Could not delete conversation.",
-
-          "error"
-
-        );
-
-      }
-
-    }
-
-
-
-    /*
-    ==================================================
-    LOGOUT
-    ==================================================
-    */
-
-    function logout() {
-
-      window
-        .ConversateFirebase
-        .logout();
-
-    }
-
-
-
-    /*
-    ==================================================
-    START PAGE
-    ==================================================
-    */
-
-    async function startPage() {
-
-
-      /*
-      First prepare language selectors.
-      */
-
-      populateLanguages();
-
-
-
-      showMessage(
-        "Loading your conversations..."
-      );
-
-
-
-      try {
-
-
-        /*
-        ==================================================
-        SYNC
-
-        Same account
-              ↓
-        account_Details
-
-        Conversate data
-              ↓
-        conversate_Data
-
-        Local browser cache
-              ↓
-        conversate_user_data
-        ==================================================
-        */
-
-        const synced =
-
-          await window
-            .ConversateFirebase
-            .sync();
-
-
-
-        /*
-        No logged-in user.
-        */
-
-        if (
-          !synced ||
-          !synced.user
-        ) {
-
-
-          window.location.replace(
-            "loginregister.html"
-          );
-
-
-          return;
-
-        }
-
-
-
-        currentUser =
-          synced.user;
-
-
-
-        /*
-        Display username.
-        */
-
-        document.getElementById(
-          "loggedInUsername"
-        ).textContent =
-
-          currentUser.username ||
-
-          currentUser.name ||
-
-          "User";
-
-
-
-        /*
-        Load Conversate Pro rooms.
-        */
-
-        rooms =
-
-          Array.isArray(
-            synced.data?.rooms
-          )
-
-            ? synced.data.rooms
-
-            : [];
-
-
+        const Model = getModel();
+        const rooms = await getFirebaseRooms();
+
+        state.rooms = rooms
+          .filter(function (room) {
+            return room && room.id && Model.isDirection(room.direction);
+          })
+          .map(function (room) {
+            return Model.createRoom(room);
+          });
 
         renderRooms();
-
-
-        showMessage("");
-
-
       } catch (error) {
-
-
-        console.error(
-          error
-        );
-
-
-        showMessage(
-
-          error.message ||
-
-          "Could not load your conversations.",
-
-          "error"
-
-        );
-
+        console.error(error);
+        renderLoadError(error?.message || "Could not load conversations.");
+      } finally {
+        setBusy(false);
       }
-
     }
 
+    async function createRoom(event) {
+      event.preventDefault();
+      if (state.busy) return;
 
+      const Model = getModel();
+      const name = Model.cleanText(el.roomNameInput.value);
+      const directionInput = el.createRoomForm.querySelector('input[name="direction"]:checked');
+      const direction = directionInput ? directionInput.value : "en-ar";
 
-    /*
-    ==================================================
-    EVENTS
-    ==================================================
-    */
+      if (!name) {
+        setFormMessage("Enter a conversation name.");
+        el.roomNameInput.focus();
+        return;
+      }
 
-    document
-      .getElementById(
-        "createRoomButton"
-      )
-      .addEventListener(
+      setBusy(true);
+      el.createRoomButton.textContent = "Creating…";
+      setFormMessage("Saving conversation…");
 
-        "click",
+      try {
+        const room = await createFirebaseRoom(name, direction);
+        setActiveRoom(room);
+        window.location.href = "index.html";
+      } catch (error) {
+        console.error(error);
+        setFormMessage(error?.message || "Could not create the conversation.", "error");
+      } finally {
+        el.createRoomButton.textContent = "Create conversation";
+        setBusy(false);
+      }
+    }
 
-        createRoom
+    function openRoom(roomId) {
+      if (state.busy) return;
 
-      );
+      const room = state.rooms.find(function (item) {
+        return item.id === roomId;
+      });
 
+      if (!room) return;
 
+      setActiveRoom(room);
+      window.location.href = "index.html";
+    }
 
-    document
-      .getElementById(
-        "logoutButton"
-      )
-      .addEventListener(
+    async function deleteRoom(roomId) {
+      if (state.busy) return;
 
-        "click",
+      const room = state.rooms.find(function (item) {
+        return item.id === roomId;
+      });
 
-        logout
+      if (!room) return;
 
-      );
+      const confirmed = window.confirm('Delete "' + room.name + '" and its saved sentences?');
+      if (!confirmed) return;
 
+      setBusy(true);
 
+      try {
+        await deleteFirebaseRoom(roomId);
+        state.rooms = state.rooms.filter(function (item) {
+          return item.id !== roomId;
+        });
+        renderRooms();
+      } catch (error) {
+        console.error(error);
+        window.alert(error?.message || "Could not delete the conversation.");
+      } finally {
+        setBusy(false);
+      }
+    }
 
-    /*
-    Press Enter while entering
-    conversation name.
-    */
+    function handleRoomsClick(event) {
+      const button = event.target.closest("button[data-action]");
+      if (!button) return;
 
-    document
-      .getElementById(
-        "newRoomName"
-      )
-      .addEventListener(
+      const roomId = button.dataset.roomId;
 
-        "keydown",
+      if (button.dataset.action === "open") {
+        openRoom(roomId);
+      }
 
-        function(event) {
+      if (button.dataset.action === "delete") {
+        deleteRoom(roomId);
+      }
+    }
 
+    function bindEvents() {
+      el.openCreateButton.addEventListener("click", openCreatePanel);
+      el.closeCreateButton.addEventListener("click", closeCreatePanel);
+      el.cancelCreateButton.addEventListener("click", closeCreatePanel);
+      el.createRoomForm.addEventListener("submit", createRoom);
+      el.roomsGrid.addEventListener("click", handleRoomsClick);
 
-          if (
-            event.key ===
-            "Enter"
-          ) {
+      el.logoutButton.addEventListener("click", function () {
+        if (state.busy) return;
+        logout();
+        window.location.href = "loginregister.html";
+      });
 
+      document.querySelectorAll('input[name="direction"]').forEach(function (input) {
+        input.addEventListener("change", syncDirectionCards);
+      });
 
-            event.preventDefault();
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && !el.createPanel.hidden) {
+          closeCreatePanel();
+        }
+      });
+    }
 
+    async function init() {
+      cacheElements();
+      getModel();
 
-            createRoom();
+      const localUser = getCurrentUser();
+      if (!localUser?.userId) {
+        window.location.replace("loginregister.html");
+        return;
+      }
 
-          }
+      el.currentUserLabel.textContent = localUser.username || localUser.name || "User";
+      bindEvents();
+      syncDirectionCards();
 
+      try {
+        const freshUser = await getFreshCurrentUser();
+
+        if (!freshUser?.userId) {
+          window.location.replace("loginregister.html");
+          return;
         }
 
-      );
+        el.currentUserLabel.textContent = freshUser.username || freshUser.name || "User";
+        await loadRooms();
+      } catch (error) {
+        console.error(error);
+        renderLoadError(error?.message || "Could not verify your account.");
+      }
+    }
 
-
-
-    /*
-    ==================================================
-    START
-    ==================================================
-    */
-
-    startPage();
-
-
+    init();
   </script>
-
 </body>
 </html>

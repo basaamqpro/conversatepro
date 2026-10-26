@@ -1,6895 +1,913 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
-
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>Conversate Pro</title>
-
-
-  <style>
-
-    /*
-    ==================================================
-    BASIC
-    ==================================================
-    */
-
-    * {
-      box-sizing: border-box;
-    }
-
-
-    html,
-    body {
-      margin: 0;
-      min-height: 100%;
-    }
-
-
-    body {
-      font-family: Arial, sans-serif;
-      color: #111827;
-      background: #f8fafc;
-    }
-
-
-    button,
-    textarea,
-    select,
-    input {
-      font: inherit;
-    }
-
-
-    button {
-      border: 0;
-      cursor: pointer;
-    }
-
-
-
-    /*
-    ==================================================
-    TOP BAR
-    ==================================================
-    */
-
-    .top_bar {
-
-      position: sticky;
-
-      top: 0;
-
-      z-index: 20;
-
-      display: flex;
-
-      align-items: center;
-
-      justify-content: space-between;
-
-      gap: 10px;
-
-      padding: 10px 12px;
-
-      border-bottom:
-        1px solid #e5e7eb;
-
-      background:
-        rgba(
-          248,
-          250,
-          252,
-          0.96
-        );
-
-      backdrop-filter:
-        blur(8px);
-
-    }
-
-
-    .top_bar button {
-
-      padding:
-        9px 12px;
-
-      border-radius:
-        9px;
-
-      background:
-        #e5e7eb;
-
-      color:
-        #111827;
-
-      font-weight:
-        700;
-
-    }
-
-
-    .room_information {
-
-      min-width: 0;
-
-      flex: 1;
-
-      text-align: right;
-
-    }
-
-
-    .room_name {
-
-      overflow: hidden;
-
-      color:
-        #111827;
-
-      font-size:
-        14px;
-
-      font-weight:
-        700;
-
-      text-overflow:
-        ellipsis;
-
-      white-space:
-        nowrap;
-
-    }
-
-
-    .room_languages {
-
-      overflow: hidden;
-
-      margin-top:
-        2px;
-
-      color:
-        #64748b;
-
-      font-size:
-        12px;
-
-      font-weight:
-        700;
-
-      text-overflow:
-        ellipsis;
-
-      white-space:
-        nowrap;
-
-    }
-
-
-
-    /*
-    ==================================================
-    CHAT AREA
-    ==================================================
-    */
-
-    #chat_page_id {
-
-      width:
-        100%;
-
-      max-width:
-        1000px;
-
-      margin:
-        0 auto;
-
-      padding:
-        12px 10px 190px;
-
-    }
-
-
-
-    /*
-    ==================================================
-    EMPTY CHAT
-    ==================================================
-    */
-
-    .empty_chat {
-
-      max-width:
-        500px;
-
-      margin:
-        55px auto;
-
-      padding:
-        25px;
-
-      border:
-        1px dashed #cbd5e1;
-
-      border-radius:
-        16px;
-
-      background:
-        #ffffff;
-
-      color:
-        #64748b;
-
-      text-align:
-        center;
-
-      line-height:
-        1.55;
-
-    }
-
-
-    .empty_chat strong {
-
-      display:
-        block;
-
-      margin-bottom:
-        8px;
-
-      color:
-        #111827;
-
-      font-size:
-        18px;
-
-    }
-
-
-
-    /*
-    ==================================================
-    MESSAGE ROW
-    ==================================================
-    */
-
-    .message_row {
-
-      display:
-        flex;
-
-      width:
-        100%;
-
-      margin:
-        10px 0 20px;
-
-    }
-
-
-    .message_row.right {
-
-      justify-content:
-        flex-end;
-
-    }
-
-
-    .message_row.left {
-
-      justify-content:
-        flex-start;
-
-    }
-
-
-
-    /*
-    ==================================================
-    MESSAGE BUBBLE
-    ==================================================
-    */
-
-    .message_bubble {
-
-      width:
-        min(
-          78%,
-          720px
-        );
-
-      max-width:
-        100%;
-
-    }
-
-
-
-    /*
-    ==================================================
-    SPEAKER LABEL
-    ==================================================
-    */
-
-    .speaker_label {
-
-      margin:
-        0 5px 5px;
-
-      color:
-        #64748b;
-
-      font-size:
-        11px;
-
-      font-weight:
-        700;
-
-    }
-
-
-    .message_row.right
-    .speaker_label {
-
-      text-align:
-        right;
-
-    }
-
-
-    .message_row.left
-    .speaker_label {
-
-      text-align:
-        left;
-
-    }
-
-
-
-    /*
-    ==================================================
-    TRANSLATION SENTENCE
-
-    This keeps the original
-    LingoGPT visual structure.
-    ==================================================
-    */
-
-    .translation_sentence {
-
-      display:
-        flex;
-
-      flex-wrap:
-        nowrap;
-
-      gap:
-        8px;
-
-      width:
-        100%;
-
-      padding:
-        12px 10px;
-
-      overflow-x:
-        auto;
-
-      overflow-y:
-        hidden;
-
-      border-radius:
-        16px;
-
-      background:
-        #ffffff;
-
-      box-shadow:
-        0 2px 10px
-        rgba(
-          15,
-          23,
-          42,
-          0.07
-        );
-
-      scrollbar-width:
-        thin;
-
-      -webkit-overflow-scrolling:
-        touch;
-
-    }
-
-
-    .translation_sentence[
-      dir="rtl"
-    ] {
-
-      direction:
-        rtl;
-
-    }
-
-
-    .translation_sentence[
-      dir="ltr"
-    ] {
-
-      direction:
-        ltr;
-
-    }
-
-
-    .message_row.right
-    .translation_sentence {
-
-      border-bottom-right-radius:
-        4px;
-
-    }
-
-
-    .message_row.left
-    .translation_sentence {
-
-      border-bottom-left-radius:
-        4px;
-
-    }
-
-
-
-    /*
-    ==================================================
-    AI MESSAGE CAN BE CLICKED
-
-    Clicking it will later open
-    options.js suggestions.
-    ==================================================
-    */
-
-    .translation_sentence.assistable {
-
-      cursor:
-        pointer;
-
-      transition:
-        transform 0.12s ease,
-        box-shadow 0.12s ease;
-
-    }
-
-
-    .translation_sentence.assistable:hover {
-
-      box-shadow:
-        0 4px 15px
-        rgba(
-          15,
-          23,
-          42,
-          0.12
-        );
-
-    }
-
-
-    .translation_sentence.assistable:active {
-
-      transform:
-        scale(0.995);
-
-    }
-
-
-
-    /*
-    ==================================================
-    TRANSLATION GROUP
-    ==================================================
-    */
-
-    .translation_group {
-
-      display:
-        inline-flex;
-
-      flex:
-        0 0 auto;
-
-      min-width:
-        max-content;
-
-      flex-direction:
-        column;
-
-      align-items:
-        center;
-
-      justify-content:
-        flex-end;
-
-      padding:
-        4px 6px 7px;
-
-      border-bottom:
-        4px solid #4363d8;
-
-      text-align:
-        center;
-
-    }
-
-
-    .translation_group span {
-
-      display:
-        block;
-
-      margin:
-        0;
-
-      white-space:
-        nowrap;
-
-    }
-
-
-
-    /*
-    Pronunciation
-    */
-
-    .group_pronunciation {
-
-      margin-bottom:
-        3px !important;
-
-      color:
-        #0369a1;
-
-      font-size:
-        13px;
-
-      font-weight:
-        500;
-
-    }
-
-
-
-    /*
-    Practice language
-    */
-
-    .group_translation {
-
-      color:
-        #111827;
-
-      font-size:
-        20px;
-
-      font-weight:
-        700;
-
-    }
-
-
-
-    /*
-    User/helper language meaning
-    */
-
-    .group_source {
-
-      margin-top:
-        3px !important;
-
-      color:
-        #64748b;
-
-      font-size:
-        13px;
-
-      font-weight:
-        500;
-
-    }
-
-
-
-    /*
-    ==================================================
-    MESSAGE ACTIONS
-    ==================================================
-    */
-
-    .chat_actions {
-
-      display:
-        flex;
-
-      flex-wrap:
-        wrap;
-
-      gap:
-        6px;
-
-      margin-top:
-        6px;
-
-    }
-
-
-    .message_row.right
-    .chat_actions {
-
-      justify-content:
-        flex-end;
-
-    }
-
-
-    .message_row.left
-    .chat_actions {
-
-      justify-content:
-        flex-start;
-
-    }
-
-
-    .chat_actions button {
-
-      width:
-        auto;
-
-      padding:
-        6px 9px;
-
-      border-radius:
-        8px;
-
-      background:
-        #e5e7eb;
-
-      color:
-        #334155;
-
-      font-size:
-        12px;
-
-      font-weight:
-        700;
-
-    }
-
-
-    .chat_actions
-    .reverse_button {
-
-      background:
-        #dbeafe;
-
-      color:
-        #1d4ed8;
-
-    }
-
-
-    .chat_actions
-    .delete_button {
-
-      background:
-        #fee2e2;
-
-      color:
-        #b91c1c;
-
-    }
-
-
-
-    /*
-    ==================================================
-    OPTIONS PANEL
-
-    This will be populated by options.js.
-    Nothing inside this panel is stored
-    in Firestore.
-    ==================================================
-    */
-
-    .message_assist_panel {
-
-      display:
-        none;
-
-      width:
-        100%;
-
-      margin-top:
-        10px;
-
-      padding:
-        10px;
-
-      border:
-        1px solid #dbeafe;
-
-      border-radius:
-        12px;
-
-      background:
-        #f8fbff;
-
-    }
-
-
-    .message_assist_panel.visible {
-
-      display:
-        block;
-
-    }
-
-
-    .assist_title {
-
-      margin:
-        0 0 8px;
-
-      color:
-        #1e3a8a;
-
-      font-size:
-        13px;
-
-      font-weight:
-        700;
-
-    }
-
-
-    .assist_message {
-
-      margin:
-        5px 0;
-
-      color:
-        #64748b;
-
-      font-size:
-        13px;
-
-      line-height:
-        1.45;
-
-    }
-
-
-
-    /*
-    ==================================================
-    OPTION CARD
-    ==================================================
-    */
-
-    .response_option {
-
-      margin:
-        10px 0;
-
-      padding:
-        10px;
-
-      border:
-        1px solid #e2e8f0;
-
-      border-radius:
-        11px;
-
-      background:
-        #ffffff;
-
-    }
-
-
-    .option_number {
-
-      margin:
-        0 0 8px;
-
-      color:
-        #334155;
-
-      font-size:
-        12px;
-
-      font-weight:
-        700;
-
-    }
-
-
-    .response_option
-    .translation_sentence {
-
-      border-radius:
-        11px;
-
-      box-shadow:
-        none;
-
-      background:
-        #f8fafc;
-
-    }
-
-
-    .option_actions {
-
-      display:
-        flex;
-
-      flex-wrap:
-        wrap;
-
-      gap:
-        7px;
-
-      margin-top:
-        8px;
-
-    }
-
-
-    .option_actions button {
-
-      width:
-        auto;
-
-      padding:
-        7px 11px;
-
-      border-radius:
-        8px;
-
-      font-size:
-        12px;
-
-      font-weight:
-        700;
-
-    }
-
-
-    .use_option_button {
-
-      background:
-        #2563eb;
-
-      color:
-        #ffffff;
-
-    }
-
-
-    .teach_option_button {
-
-      background:
-        #ede9fe;
-
-      color:
-        #6d28d9;
-
-    }
-
-
-
-    /*
-    ==================================================
-    TEACH BOX
-
-    teach.js output is temporary.
-    It is not part of the conversation.
-    ==================================================
-    */
-
-    .teach_box {
-
-      display:
-        none;
-
-      margin-top:
-        9px;
-
-      padding:
-        10px;
-
-      border:
-        1px solid #ddd6fe;
-
-      border-radius:
-        9px;
-
-      background:
-        #faf5ff;
-
-    }
-
-
-    .teach_box.visible {
-
-      display:
-        block;
-
-    }
-
-
-    .teach_answer {
-
-      margin:
-        0;
-
-      color:
-        #4c1d95;
-
-      font-size:
-        13px;
-
-      line-height:
-        1.5;
-
-      white-space:
-        pre-wrap;
-
-    }
-
-
-    .teach_question_row {
-
-      display:
-        flex;
-
-      gap:
-        6px;
-
-      margin-top:
-        9px;
-
-    }
-
-
-    .teach_question_input {
-
-      flex:
-        1;
-
-      min-width:
-        0;
-
-      padding:
-        8px;
-
-      border:
-        1px solid #c4b5fd;
-
-      border-radius:
-        8px;
-
-      outline:
-        none;
-
-      background:
-        #ffffff;
-
-      font-size:
-        12px;
-
-    }
-
-
-    .teach_question_button {
-
-      width:
-        auto;
-
-      padding:
-        8px 10px;
-
-      border-radius:
-        8px;
-
-      background:
-        #7c3aed;
-
-      color:
-        #ffffff;
-
-      font-size:
-        12px;
-
-      font-weight:
-        700;
-
-    }
-
-
-
-    /*
-    ==================================================
-    FIXED COMPOSER
-    ==================================================
-    */
-
-    #inputform_div {
-
-      position:
-        fixed;
-
-      right:
-        0;
-
-      bottom:
-        0;
-
-      left:
-        0;
-
-      z-index:
-        30;
-
-      padding:
-        9px
-        max(
-          10px,
-          env(
-            safe-area-inset-right
-          )
-        )
-        calc(
-          9px +
-          env(
-            safe-area-inset-bottom
-          )
-        )
-        max(
-          10px,
-          env(
-            safe-area-inset-left
-          )
-        );
-
-      border-top:
-        1px solid #d1d5db;
-
-      background:
-        rgba(
-          255,
-          255,
-          255,
-          0.97
-        );
-
-      backdrop-filter:
-        blur(10px);
-
-    }
-
-
-
-    /*
-    ==================================================
-    STATUS
-    ==================================================
-    */
-
-    #translationStatus {
-
-      display:
-        none;
-
-      width:
-        100%;
-
-      max-width:
-        1000px;
-
-      margin:
-        0 auto 7px;
-
-      padding:
-        7px 10px;
-
-      border-radius:
-        8px;
-
-      font-size:
-        13px;
-
-      font-weight:
-        700;
-
-    }
-
-
-    #translationStatus.visible {
-
-      display:
-        block;
-
-      background:
-        #dbeafe;
-
-      color:
-        #1d4ed8;
-
-    }
-
-
-    #translationStatus.error {
-
-      background:
-        #fee2e2;
-
-      color:
-        #991b1b;
-
-    }
-
-
-
-    /*
-    ==================================================
-    COMPOSER
-    ==================================================
-    */
-
-    .composer {
-
-      display:
-        flex;
-
-      flex-direction:
-        column;
-
-      gap:
-        7px;
-
-      width:
-        100%;
-
-      max-width:
-        1000px;
-
-      margin:
-        0 auto;
-
-    }
-
-
-
-    /*
-    Languages
-    */
-
-    .composer_languages {
-
-      display:
-        grid;
-
-      grid-template-columns:
-        1fr 1fr;
-
-      gap:
-        7px;
-
-      width:
-        100%;
-
-    }
-
-
-    select {
-
-      width:
-        100%;
-
-      height:
-        36px;
-
-      padding:
-        0 8px;
-
-      border:
-        1px solid #cbd5e1;
-
-      border-radius:
-        9px;
-
-      background:
-        #ffffff;
-
-      outline:
-        none;
-
-      font-size:
-        13px;
-
-    }
-
-
-
-    /*
-    Input
-    */
-
-    #sourceText {
-
-      display:
-        block;
-
-      width:
-        100%;
-
-      min-width:
-        0;
-
-      min-height:
-        52px;
-
-      max-height:
-        120px;
-
-      padding:
-        10px 11px;
-
-      border:
-        1px solid #cbd5e1;
-
-      border-radius:
-        11px;
-
-      resize:
-        none;
-
-      outline:
-        none;
-
-      background:
-        #ffffff;
-
-      line-height:
-        1.35;
-
-      font-size:
-        15px;
-
-    }
-
-
-    #sourceText:focus,
-    select:focus {
-
-      border-color:
-        #2563eb;
-
-      outline:
-        2px solid
-        rgba(
-          37,
-          99,
-          235,
-          0.12
-        );
-
-    }
-
-
-
-    /*
-    ==================================================
-    COMPOSER ACTIONS
-    ==================================================
-    */
-
-    .composer_actions {
-
-      display:
-        flex;
-
-      align-items:
-        center;
-
-      justify-content:
-        flex-end;
-
-      gap:
-        7px;
-
-      width:
-        100%;
-
-    }
-
-
-    #sendButton,
-    #interactPlusButton,
-    #cancelEditButton {
-
-      width:
-        auto;
-
-      min-width:
-        72px;
-
-      height:
-        36px;
-
-      padding:
-        0 12px;
-
-      border-radius:
-        9px;
-
-      font-size:
-        13px;
-
-      font-weight:
-        700;
-
-    }
-
-
-    #sendButton {
-
-      background:
-        #111827;
-
-      color:
-        #ffffff;
-
-    }
-
-
-    /*
-    InteractPlus starts / continues
-    the AI conversation.
-    */
-
-    #interactPlusButton {
-
-      background:
-        #2563eb;
-
-      color:
-        #ffffff;
-
-    }
-
-
-    #sendButton:disabled,
-    #interactPlusButton:disabled {
-
-      cursor:
-        not-allowed;
-
-      opacity:
-        0.55;
-
-    }
-
-
-    #cancelEditButton {
-
-      display:
-        none;
-
-      background:
-        #e5e7eb;
-
-      color:
-        #111827;
-
-    }
-
-
-    #cancelEditButton.visible {
-
-      display:
-        block;
-
-    }
-
-
-
-    /*
-    ==================================================
-    MOBILE
-    ==================================================
-    */
-
-    @media (
-      max-width: 760px
-    ) {
-
-      #chat_page_id {
-
-        padding:
-          8px 7px 220px;
-
-      }
-
-
-      .message_bubble {
-
-        width:
-          88%;
-
-      }
-
-
-      .translation_sentence {
-
-        padding:
-          10px 8px;
-
-      }
-
-
-      .group_translation {
-
-        font-size:
-          18px;
-
-      }
-
-
-      .group_pronunciation,
-      .group_source {
-
-        font-size:
-          12px;
-
-      }
-
-
-      .composer_languages {
-
-        gap:
-          6px;
-
-      }
-
-
-      select {
-
-        height:
-          34px;
-
-        padding:
-          0 6px;
-
-        font-size:
-          12px;
-
-      }
-
-
-      #sourceText {
-
-        min-height:
-          50px;
-
-        font-size:
-          14px;
-
-      }
-
-
-      .composer_actions {
-
-        gap:
-          6px;
-
-      }
-
-
-      #sendButton,
-      #interactPlusButton,
-      #cancelEditButton {
-
-        min-width:
-          68px;
-
-        height:
-          34px;
-
-        padding:
-          0 10px;
-
-        font-size:
-          12px;
-
-      }
-
-
-      .teach_question_row {
-
-        flex-direction:
-          column;
-
-      }
-
-
-      .teach_question_button {
-
-        width:
-          100%;
-
-      }
-
-    }
-
- /* ==================================================
-   CONVERSATE PRO AUDIO
-================================================== */
-
-
-/* Translation sentence needs positioning
-   so the audio button can sit inside it. */
-
-.translation_sentence.audio_enabled {
-    position: relative;
-}
-
-
-/* ==================================================
-   INDIVIDUAL 🔊 BUTTON
-================================================== */
-
-.chat_audio_button {
-
-    position: absolute;
-
-    top: 6px;
-    right: 6px;
-
-    width: 30px;
-    height: 30px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 0;
-
-    border: 1px solid rgba(0, 0, 0, 0.08);
-
-    border-radius: 50%;
-
-    background: rgba(255, 255, 255, 0.95);
-
-    cursor: pointer;
-
-    font-size: 15px;
-
-    line-height: 1;
-
-    z-index: 5;
-
-    box-shadow:
-        0 1px 5px
-        rgba(0, 0, 0, 0.10);
-}
-
-
-.chat_audio_button:hover {
-    transform: scale(1.06);
-}
-
-
-.chat_audio_button:active {
-    transform: scale(0.95);
-}
-
-
-/* Give the message a little space
-   so the button does not cover words. */
-
-
-
-
-/* RTL */
-
-.translation_sentence[dir="rtl"]
-.chat_audio_button {
-
-    right: auto;
-    left: 6px;
-}
-
-
-.translation_sentence[dir="rtl"].audio_enabled {
-    padding-right: initial;
-    padding-left: 42px;
-}
-
-
-/* ==================================================
-   AUDIO STATES
-================================================== */
-
-.translation_sentence.audio_loading {
-
-    opacity: 0.82;
-}
-
-
-.translation_sentence.audio_loading
-.chat_audio_button {
-
-    animation:
-        audioPulse 0.8s infinite alternate;
-}
-
-
-.translation_sentence.audio_playing {
-
-    outline:
-        2px solid #2563eb;
-
-    outline-offset:
-        2px;
-}
-
-
-.translation_sentence.audio_playing
-.chat_audio_button {
-
-    background:
-        #eff6ff;
-}
-
-
-.translation_sentence.audio_error {
-
-    outline:
-        2px solid #dc2626;
-
-    outline-offset:
-        2px;
-}
-
-
-@keyframes audioPulse {
-
-    from {
-        opacity: 0.55;
-    }
-
-    to {
-        opacity: 1;
-    }
-
-}
-
-
-/* ==================================================
-   GLOBAL AUDIO SPEED CONTROL
-================================================== */
-
-.chat_audio_settings {
-
-    position: fixed;
-
-    right: 14px;
-    bottom: 92px;
-
-    z-index: 1000;
-}
-
-
-/* Main 🔊 settings button */
-
-.chat_audio_speed_button {
-
-    width: 44px;
-    height: 44px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 0;
-
-    border: 1px solid #ddd;
-
-    border-radius: 50%;
-
-    background: white;
-
-    font-size: 20px;
-
-    cursor: pointer;
-
-    box-shadow:
-        0 4px 16px
-        rgba(0, 0, 0, 0.15);
-}
-
-
-.chat_audio_speed_button:hover {
-
-    transform: scale(1.04);
-}
-
-
-/* Slider popup */
-
-.chat_audio_speed_panel {
-
-    position: absolute;
-
-    right: 0;
-    bottom: 54px;
-
-    width: 220px;
-
-    padding: 14px;
-
-    border: 1px solid #ddd;
-
-    border-radius: 14px;
-
-    background: white;
-
-    box-shadow:
-        0 8px 30px
-        rgba(0, 0, 0, 0.18);
-}
-
-
-.chat_audio_speed_panel[hidden] {
-    display: none;
-}
-
-
-.chat_audio_speed_title {
-
-    margin-bottom: 4px;
-
-    font-size: 13px;
-
-    font-weight: 700;
-}
-
-
-.chat_audio_speed_value {
-
-    display: block;
-
-    margin-bottom: 8px;
-
-    font-size: 20px;
-
-    font-weight: 700;
-}
-
-
-.chat_audio_speed_slider {
-
-    width: 100%;
-
-    cursor: pointer;
-}
-
-
-.chat_audio_speed_labels {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    margin-top: 5px;
-
-    font-size: 10px;
-
-    color: #777;
-}
-
-
-/* Mobile */
-
-@media (max-width: 600px) {
-
-    .chat_audio_settings {
-
-        right: 10px;
-        bottom: 88px;
-    }
-
-
-    .chat_audio_speed_panel {
-
-        width: 200px;
-    }
-
-}
-
-/* ==================================================
-   TEACH BUTTON ON REAL CHATS
-================================================== */
-
-.chat_teach_controls {
-    display: flex;
-    justify-content: flex-end;
-
-    margin-top: 7px;
-
-    position: relative;
-    z-index: 6;
-}
-
-
-.chat_teach_button {
-    padding: 5px 11px;
-
-    border: 1px solid rgba(0, 0, 0, 0.10);
-
-    border-radius: 999px;
-
-    background: rgba(255, 255, 255, 0.92);
-
-    color: #222;
-
-    font-size: 12px;
-    font-weight: 600;
-
-    cursor: pointer;
-}
-
-
-.chat_teach_button:hover {
-    background: #f3f4f6;
-}
-
-
-.chat_teach_button:active {
-    transform: scale(0.97);
-}
-
-
-/* ==================================================
-   TEACH PANEL
-================================================== */
-
-.chat_teach_panel {
-    margin-top: 9px;
-
-    padding: 12px;
-
-    border: 1px solid #e5e7eb;
-
-    border-radius: 12px;
-
-    background: #fff;
-
-    color: #222;
-
-    text-align: left;
-
-    font-size: 13px;
-
-    line-height: 1.55;
-
-    position: relative;
-
-    z-index: 8;
-}
-
-
-.chat_teach_panel[hidden] {
-    display: none;
-}
-
-
-.chat_teach_header {
-    display: flex;
-
-    align-items: center;
-    justify-content: space-between;
-
-    gap: 10px;
-
-    margin-bottom: 8px;
-}
-
-
-.chat_teach_close {
-    width: 26px;
-    height: 26px;
-
-    padding: 0;
-
-    border: 0;
-
-    border-radius: 50%;
-
-    background: #f3f4f6;
-
-    cursor: pointer;
-
-    font-size: 18px;
-
-    line-height: 1;
-}
-
-
-.chat_teach_status {
-    margin-bottom: 7px;
-
-    color: #666;
-
-    font-size: 11px;
-}
-
-
-.chat_teach_explanation {
-    white-space: pre-wrap;
-}
-
-
-/* ==================================================
-   TEACH QUESTIONS
-================================================== */
-
-.chat_teach_questions {
-    margin-top: 10px;
-}
-
-
-.chat_teach_qa {
-    margin-top: 8px;
-
-    padding-top: 8px;
-
-    border-top: 1px solid #eee;
-}
-
-
-.chat_teach_question {
-    margin-bottom: 4px;
-
-    font-weight: 600;
-}
-
-
-.chat_teach_answer {
-    white-space: pre-wrap;
-}
-
-
-.chat_teach_form {
-    display: flex;
-
-    gap: 6px;
-
-    margin-top: 12px;
-}
-
-
-.chat_teach_input {
-    flex: 1;
-
-    min-width: 0;
-
-    padding: 8px 10px;
-
-    border: 1px solid #d1d5db;
-
-    border-radius: 9px;
-
-    font: inherit;
-}
-
-
-.chat_teach_ask {
-    padding: 8px 12px;
-
-    border: 0;
-
-    border-radius: 9px;
-
-    background: #111827;
-
-    color: white;
-
-    cursor: pointer;
-
-    font-weight: 600;
-}
-
-
-/* Keep panel readable even inside RTL chat */
-
-.chat_teach_panel {
-    direction: ltr;
-}
-
-/* Container around the chat box */
-.audio_button_host {
-    position: relative;
-}
-
-
-/* Audio button OUTSIDE the chat box */
-.chat_audio_button {
-    position: absolute;
-
-    top: -15px;
-    right: -8px;
-
-    width: 30px;
-    height: 30px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 0;
-
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 50%;
-
-    background: #ffffff;
-
-    cursor: pointer;
-
-    font-size: 15px;
-    line-height: 1;
-
-    z-index: 20;
-
-    box-shadow:
-        0 2px 7px
-        rgba(0, 0, 0, 0.15);
-}
-
-  </style>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ConversateProArabic — focused English and Arabic sentence practice.">
+  <title>ConversateProArabic</title>
+  <link rel="stylesheet" href="css/app.css">
 </head>
-
-
 <body>
+  <div class="app_shell">
+
+    <header class="topbar">
+      <a class="back_link" href="welcome.html" aria-label="Back to conversations">
+        <span aria-hidden="true">‹</span>
+        Conversations
+      </a>
+
+      <div class="brand_block">
+        <p class="brand_eyebrow">ConversateProArabic</p>
+        <h1 id="roomName">Arabic Conversation</h1>
+      </div>
+
+      <div class="topbar_tools">
+        <div class="direction_control" aria-label="Practice direction">
+          <button
+            id="directionEnAr"
+            class="direction_button active"
+            type="button"
+            data-direction="en-ar"
+            aria-pressed="true"
+          >
+            English <span aria-hidden="true">→</span> Arabic
+          </button>
+
+          <button
+            id="directionArEn"
+            class="direction_button"
+            type="button"
+            data-direction="ar-en"
+            aria-pressed="false"
+          >
+            Arabic <span aria-hidden="true">→</span> English
+          </button>
+        </div>
+
+        <button
+          id="textSettingsButton"
+          class="text_settings_button"
+          type="button"
+          aria-haspopup="dialog"
+          aria-controls="textSettingsPanel"
+        >
+          <span aria-hidden="true">Aa</span>
+          Text
+        </button>
+      </div>
+    </header>
 
 
 
-  <!--
-  ==================================================
-  TOP BAR
-  ==================================================
-  -->
+    <div id="textSettingsPanel" class="text_settings_overlay" hidden>
+      <section
+        class="text_settings_panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="textSettingsTitle"
+      >
+        <div class="text_settings_header">
+          <div>
+            <p class="text_settings_eyebrow">Display</p>
+            <h2 id="textSettingsTitle">Text settings</h2>
+          </div>
 
-  <header class="top_bar">
+          <button
+            id="closeTextSettings"
+            class="text_settings_close"
+            type="button"
+            aria-label="Close text settings"
+          >
+            ×
+          </button>
+        </div>
 
+        <p class="text_settings_help">
+          Move a slider and the conversation changes immediately.
+        </p>
 
-    <button
-      id="backButton"
-      type="button"
-    >
-      ‹ Conversations
-    </button>
+        <div class="text_settings_groups">
+          <section class="text_setting_group">
+            <div class="text_setting_title_row">
+              <h3>Translation</h3>
+            </div>
 
+            <label class="slider_label" for="translationSize">
+              <span>Size</span>
+              <output id="translationSizeValue">32 px</output>
+            </label>
+            <input id="translationSize" type="range" min="18" max="48" step="1" value="32">
 
-    <div class="room_information">
+            <label class="slider_label" for="translationWeight">
+              <span>Weight</span>
+              <output id="translationWeightValue">800</output>
+            </label>
+            <input id="translationWeight" type="range" min="400" max="900" step="50" value="800">
+          </section>
 
-      <div
-        id="roomName"
-        class="room_name"
-      ></div>
+          <section class="text_setting_group">
+            <div class="text_setting_title_row">
+              <h3>Transliteration</h3>
+            </div>
 
-      <div
-        id="roomLanguages"
-        class="room_languages"
-      ></div>
+            <label class="slider_label" for="transliterationSize">
+              <span>Size</span>
+              <output id="transliterationSizeValue">15 px</output>
+            </label>
+            <input id="transliterationSize" type="range" min="12" max="34" step="1" value="15">
 
+            <label class="slider_label" for="transliterationWeight">
+              <span>Weight</span>
+              <output id="transliterationWeightValue">850</output>
+            </label>
+            <input id="transliterationWeight" type="range" min="400" max="900" step="50" value="850">
+          </section>
+
+          <section class="text_setting_group">
+            <div class="text_setting_title_row">
+              <h3>Source</h3>
+            </div>
+
+            <label class="slider_label" for="sourceSize">
+              <span>Size</span>
+              <output id="sourceSizeValue">16 px</output>
+            </label>
+            <input id="sourceSize" type="range" min="12" max="36" step="1" value="16">
+
+            <label class="slider_label" for="sourceWeight">
+              <span>Weight</span>
+              <output id="sourceWeightValue">650</output>
+            </label>
+            <input id="sourceWeight" type="range" min="400" max="900" step="50" value="650">
+          </section>
+
+          <section class="text_setting_group">
+            <div class="text_setting_title_row">
+              <h3>Breakdown</h3>
+            </div>
+
+            <label class="slider_label" for="breakdownSize">
+              <span>Size</span>
+              <output id="breakdownSizeValue">18 px</output>
+            </label>
+            <input id="breakdownSize" type="range" min="12" max="36" step="1" value="18">
+
+            <label class="slider_label" for="breakdownWeight">
+              <span>Weight</span>
+              <output id="breakdownWeightValue">850</output>
+            </label>
+            <input id="breakdownWeight" type="range" min="400" max="900" step="50" value="850">
+          </section>
+        </div>
+
+        <div class="text_settings_footer">
+          <button id="resetTextSettings" class="text_settings_reset" type="button">
+            Reset
+          </button>
+          <button id="doneTextSettings" class="text_settings_done" type="button">
+            Done
+          </button>
+        </div>
+      </section>
     </div>
 
 
-  </header>
+    <main class="conversation_layout">
+      <section
+        id="conversation"
+        class="conversation"
+        aria-live="polite"
+        aria-label="Conversation"
+      ></section>
 
+      <div id="status" class="status" role="status" aria-live="polite"></div>
+    </main>
 
+    <section class="composer_wrap" aria-label="Sentence composer">
+      <div class="composer">
+        <div class="composer_topline">
+          <div class="speaker_control" aria-label="Write as">
+            <span class="speaker_label">Write as</span>
 
-  <!--
-  ==================================================
-  CHAT
-  ==================================================
-  -->
+            <button
+              id="speakerUser"
+              class="speaker_button active"
+              type="button"
+              data-speaker="user"
+              aria-pressed="true"
+            >
+              You
+            </button>
 
-  <main
-    id="chat_page_id"
-  ></main>
+            <button
+              id="speakerPartner"
+              class="speaker_button"
+              type="button"
+              data-speaker="partner"
+              aria-pressed="false"
+            >
+              Partner
+            </button>
+          </div>
 
+          <button id="cancelEditButton" class="cancel_edit" type="button" hidden>
+            Cancel edit
+          </button>
+        </div>
 
+        <label class="sr_only" for="sentenceInput">Write one sentence</label>
+        <textarea
+          id="sentenceInput"
+          rows="2"
+          maxlength="800"
+          autocomplete="off"
+          spellcheck="true"
+          placeholder="Write one sentence…"
+        ></textarea>
 
-  <!--
-  ==================================================
-  FIXED COMPOSER
-  ==================================================
-  -->
+        <div id="dictionaryTray" class="dictionary_tray" hidden>
+          <div id="dictionaryWords" class="dictionary_words" aria-label="Words in the input"></div>
+          <div id="dictionaryCategories" class="dictionary_categories" aria-label="Matching dictionary categories"></div>
+          <div id="dictionaryVocabulary" class="dictionary_vocabulary" aria-live="polite"></div>
+        </div>
 
-  <div id="inputform_div">
+        <div class="composer_footer">
+          <p id="composerHint" class="composer_hint">
+            English, Arabic, Arabic transliteration, and approximate pronunciation are accepted.
+          </p>
 
+          <div class="composer_actions">
+            <button id="aiButton" class="button secondary" type="button">
+              <span aria-hidden="true">✦</span>
+              AI next turn
+            </button>
 
-    <div
-      id="translationStatus"
-      role="status"
-      aria-live="polite"
-    ></div>
-
-
-    <div class="composer">
-
-
-      <!-- Languages -->
-
-      <div
-        class="composer_languages"
-      >
-
-        <select
-          id="sourceLang"
-          aria-label="Your language"
-        ></select>
-
-
-        <select
-          id="targetLang"
-          aria-label="Practice language"
-        ></select>
-
+            <button id="sendButton" class="button primary" type="button">
+              Send
+            </button>
+          </div>
+        </div>
       </div>
-
-
-
-      <!-- User response -->
-
-      <textarea
-        id="sourceText"
-        rows="1"
-        placeholder="Type your response..."
-      ></textarea>
-
-
-
-      <!-- Actions -->
-
-      <div
-        class="composer_actions"
-      >
-
-
-        <button
-          id="cancelEditButton"
-          type="button"
-        >
-          Cancel edit
-        </button>
-
-
-        <button
-          id="sendButton"
-          type="button"
-        >
-          Send
-        </button>
-
-
-        <button
-          id="interactPlusButton"
-          type="button"
-        >
-          InteractPlus
-        </button>
-
-
-      </div>
-
-    </div>
+    </section>
 
   </div>
 
-
-
   <!--
-  ==================================================
-  SAME LINGOGPT TRANSLATION ENGINE
-
-  Keep your existing results5.js
-  unchanged.
-  ==================================================
+    Static dictionary data only. It is deliberately not a dependency of
+    model.js, ai.js, sentence.js, or app.js.
   -->
+  <script src="js/dictionary.js"></script>
 
-  <script src="results5.js"></script>
+  <script src="js/model.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/sentence.js"></script>
+  <script src="js/paragraph.js"></script>
+  <script src="js/app.js"></script>
 
 
+  <script>
+    (function () {
+      "use strict";
 
-  <script type="module">
+      const input = document.getElementById("sentenceInput");
+      const tray = document.getElementById("dictionaryTray");
+      const wordsBox = document.getElementById("dictionaryWords");
+      const categoriesBox = document.getElementById("dictionaryCategories");
+      const vocabularyBox = document.getElementById("dictionaryVocabulary");
 
-
-    /*
-    ==================================================
-    FIREBASE
-    ==================================================
-    */
-
-    import "./firebase.js";
-
-
-    "use strict";
-
-
-
-    /*
-    ==================================================
-    STATE
-    ==================================================
-    */
-
-    const palette = [
-
-      "#e6194b",
-      "#3cb44b",
-      "#b59b00",
-      "#4363d8",
-      "#f58231",
-      "#911eb4",
-      "#008b8b",
-      "#f032e6"
-
-    ];
-
-
-    let currentRoom =
-      null;
-
-
-    let currentRoomIdx =
-      "";
-
-
-    let editingChatIdx =
-      "";
-
-
-    let activeController =
-      null;
-
-
-    let activeAssistController =
-      null;
-
-
-
-    /*
-    ==================================================
-    BASIC HELPERS
-    ==================================================
-    */
-
-    function createId(
-      prefix
-    ) {
-
-      return (
-
-        prefix +
-
-        "_" +
-
-        Date.now() +
-
-        "_" +
-
-        Math.floor(
-          Math.random() * 10000
-        )
-
-      );
-
-    }
-
-
-
-    function color(
-      index
-    ) {
-
-      return palette[
-
-        Math.abs(
-          Number(index) || 0
-        )
-
-        %
-
-        palette.length
-
-      ];
-
-    }
-
-
-
-    function getRoom() {
-
-      return currentRoom;
-
-    }
-
-
-
-    async function refreshCurrentRoom() {
-
-      currentRoom =
-
-        await window
-          .ConversateFirebase
-          .getCurrentRoom();
-
-
-      return currentRoom;
-
-    }
-
-
-
-    /*
-    ==================================================
-    OPTIONAL MODULE LOADER
-
-    These files will be created next:
-
-    understandInput.js
-    interactPlus.js
-    options.js
-    teach.js
-
-    They are loaded only when required.
-
-    This means index.html itself can exist
-    before all four files are finished.
-    ==================================================
-    */
-
-    async function loadOptionalModule(
-      fileName,
-      globalName
-    ) {
-
-
-      /*
-      Already loaded.
-      */
-
-      if (
-        window[
-          globalName
-        ]
-      ) {
-
-        return window[
-          globalName
-        ];
-
-      }
-
-
-
-      try {
-
-
-        await import(
-          "./" + fileName
-        );
-
-
-        return (
-
-          window[
-            globalName
-          ]
-
-          ||
-
-          null
-
-        );
-
-
-      } catch (error) {
-
-
-        console.warn(
-
-          fileName +
-          " is not available yet.",
-
-          error
-
-        );
-
-
-        return null;
-
-      }
-
-    }
-
-
-
-    /*
-    ==================================================
-    LANGUAGES
-    ==================================================
-    */
-
-    const supportedLanguages =
-
-      window.LingoGPTResults
-
-        ? window
-            .LingoGPTResults
-            .supportedLanguages
-
-        : [];
-
-
-
-    function populateSelect(
-      selectId,
-      selectedLanguage
-    ) {
-
-
-      const select =
-        document.getElementById(
-          selectId
-        );
-
-
-      select.innerHTML =
-        "";
-
-
-
-      supportedLanguages.forEach(
-
-        function(language) {
-
-
-          const option =
-            document.createElement(
-              "option"
-            );
-
-
-          option.value =
-            language;
-
-
-          option.textContent =
-            language;
-
-
-          option.selected =
-
-            language ===
-            selectedLanguage;
-
-
-          select.appendChild(
-            option
-          );
-
-        }
-
-      );
-
-    }
-
-
-
-    /*
-    ==================================================
-    TEXT DIRECTION
-    ==================================================
-    */
-
-    function isRTLLanguage(
-      language
-    ) {
-
-
-      const rtlLanguages = [
-
-        "Arabic",
-        "Hebrew",
-        "Persian",
-        "Urdu"
-
-      ];
-
-
-      return rtlLanguages.includes(
-
-        String(
-          language || ""
-        )
-
-      );
-
-    }
-
-
-
-    /*
-    ==================================================
-    NORMALIZE FLOW
-    ==================================================
-    */
-
-    function normalizeFlow(
-      items
-    ) {
-
-
-      if (
-        !Array.isArray(
-          items
-        )
-      ) {
-
-        return [];
-
-      }
-
-
-
-      return items
-
-        .map(
-
-          function(
-            item,
-            index
-          ) {
-
-
-            return {
-
-              index:
-                index,
-
-
-              source:
-
-                String(
-
-                  item?.source ||
-
-                  ""
-
-                ).trim(),
-
-
-              target:
-
-                String(
-
-                  item?.target ??
-
-                  item?.translation ??
-
-                  ""
-
-                ).trim(),
-
-
-              pronunciation:
-
-                String(
-
-                  item?.pronunciation ||
-
-                  ""
-
-                ).trim()
-
-            };
-
-          }
-
-        )
-
-
-        .filter(
-
-          function(item) {
-
-            return (
-
-              item.source ||
-
-              item.target ||
-
-              item.pronunciation
-
-            );
-
-          }
-
-        );
-
-    }
-
-
-
-    /*
-    ==================================================
-    STORED RESULT
-    ==================================================
-    */
-
-    function getStoredResult(
-      chat
-    ) {
-
-
-      if (
-
-        !Array.isArray(
-          chat.prompts_and_answers
-        )
-
-        ||
-
-        !chat
-          .prompts_and_answers
-          .length
-
-      ) {
-
-        return null;
-
-      }
-
-
-
-      const last =
-
-        chat
-          .prompts_and_answers[
-
-            chat
-              .prompts_and_answers
-              .length - 1
-
-          ];
-
-
-
-      return (
-
-        last
-
-        &&
-
-        typeof last
-          .gpt_api_answer ===
-          "object"
-
-      )
-
-        ? last.gpt_api_answer
-
-        : null;
-
-    }
-
-
-
-    /*
-    ==================================================
-    TARGET FLOW
-    ==================================================
-    */
-
-    function getTargetFlow(
-      chat
-    ) {
-
-
-      const result =
-        getStoredResult(
-          chat
-        );
-
-
-      return normalizeFlow(
-
-        chat.target_flow ||
-
-        chat.targetFlow ||
-
-        result?.targetFlow ||
-
-        result?.target_flow ||
-
-        chat.groups
-
-      );
-
-    }
-
-
-
-    /*
-    ==================================================
-    SOURCE FLOW
-    ==================================================
-    */
-
-    function getSourceFlow(
-      chat
-    ) {
-
-
-      const result =
-        getStoredResult(
-          chat
-        );
-
-
-      return normalizeFlow(
-
-        chat.source_flow ||
-
-        chat.sourceFlow ||
-
-        result?.sourceFlow ||
-
-        result?.source_flow ||
-
-        chat.groups
-
-      );
-
-    }
-
-
-
-    /*
-    ==================================================
-    CREATE TRANSLATION SENTENCE
-
-    Shared by:
-
-    - normal conversation messages
-    - future suggested response options
-
-    This guarantees the same visual layout.
-    ==================================================
-    */
-
-    function createTranslationSentence(
-      flow,
-      displayedLanguage
-    ) {
-
-
-      const sentence =
-        document.createElement(
-          "div"
-        );
-
-
-      sentence.className =
-        "translation_sentence";
-
-
-      sentence.dir =
-
-        isRTLLanguage(
-          displayedLanguage
-        )
-
-          ? "rtl"
-
-          : "ltr";
-
-
-
-      flow.forEach(
-
-        function(
-          item,
-          index
-        ) {
-
-
-          const group =
-            document.createElement(
-              "span"
-            );
-
-
-          group.className =
-            "translation_group";
-
-
-          group.style
-            .borderBottomColor =
-            color(
-              index
-            );
-
-
-
-          /*
-          ------------------------------
-          PRONUNCIATION
-          ------------------------------
-          */
-
-          const pronunciation =
-            document.createElement(
-              "span"
-            );
-
-
-          pronunciation.className =
-            "group_pronunciation";
-
-
-          pronunciation.dir =
-            "ltr";
-
-
-          pronunciation.textContent =
-
-            item.pronunciation ||
-
-            "\u00A0";
-
-
-
-          /*
-          ------------------------------
-          TARGET / PRACTICE LANGUAGE
-          ------------------------------
-          */
-
-          const translation =
-            document.createElement(
-              "span"
-            );
-
-
-          translation.className =
-            "group_translation";
-
-
-          translation.dir =
-            "auto";
-
-
-          translation.textContent =
-
-            item.target ||
-
-            "\u00A0";
-
-
-
-          /*
-          ------------------------------
-          SOURCE MEANING
-          ------------------------------
-          */
-
-          const source =
-            document.createElement(
-              "span"
-            );
-
-
-          source.className =
-            "group_source";
-
-
-          source.dir =
-            "auto";
-
-
-          source.textContent =
-
-            item.source ||
-
-            "\u00A0";
-
-
-
-          group.append(
-
-            pronunciation,
-
-            translation,
-
-            source
-
-          );
-
-
-          sentence.appendChild(
-            group
-          );
-
-        }
-
-      );
-
-
-      return sentence;
-
-    }
-
-
-
-    /*
-    ==================================================
-    RENDER CHAT
-    ==================================================
-    */
-
-    function renderChat() {
-
-
-      const room =
-        getRoom();
-
-
-      if (
-        !room
-      ) {
-
+      if (!input || !tray || !wordsBox || !categoriesBox || !vocabularyBox) {
         return;
-
       }
 
-
-
-      if (
-        !Array.isArray(
-          room.room_data
-        )
-      ) {
-
-        room.room_data =
-          [];
-
-      }
-
-
-
-      /*
-      Room information.
-      */
-
-      document.getElementById(
-        "roomName"
-      ).textContent =
-
-        room.room_name ||
-
-        "Conversation";
-
-
-
-      document.getElementById(
-        "roomLanguages"
-      ).textContent =
-
-        room.source_language +
-
-        " → " +
-
-        room.target_language;
-
-
-
-      const container =
-        document.getElementById(
-          "chat_page_id"
-        );
-
-
-      container.innerHTML =
-        "";
-
-
-
-      /*
-      ==================================================
-      EMPTY CONVERSATION
-      ==================================================
-
-      InteractPlus starts the conversation.
-      */
-
-      if (
-        !room.room_data.length
-      ) {
-
-
-        const empty =
-          document.createElement(
-            "div"
-          );
-
-
-        empty.className =
-          "empty_chat";
-
-
-        empty.innerHTML =
-
-          "<strong>Start your conversation</strong>" +
-
-          "Click <b>InteractPlus</b> and your conversation partner will speak first.";
-
-
-        container.appendChild(
-          empty
-        );
-
-
-        return;
-
-      }
-
-
-
-      /*
-      ==================================================
-      MESSAGES
-      ==================================================
-      */
-
-      room.room_data.forEach(
-
-        function(
-          chat,
-          chatIndex
-        ) {
-
-
-          const sourceFlowActive =
-
-            chat.display_flow ===
-            "source";
-
-
-
-          const flow =
-
-            sourceFlowActive
-
-              ? getSourceFlow(
-                  chat
-                )
-
-              : getTargetFlow(
-                  chat
-                );
-
-
-
-          const displayedLanguage =
-
-            sourceFlowActive
-
-              ? chat.source_language
-
-              : chat.target_language;
-
-
-
-          /*
-          ==================================================
-          MESSAGE SIDE
-
-          USER = right
-
-          INTERACTION / AI =
-          left
-          ==================================================
-          */
-
-          const interactionMessage =
-
-            chat.message_type ===
-              "interaction"
-
-            ||
-
-            chat.is_interaction ===
-              true;
-
-
-
-          const messageSide =
-
-            interactionMessage
-
-              ? "left"
-
-              : chat.message_type ===
-                  "user"
-
-                ? "right"
-
-                : (
-
-                    chatIndex % 2 === 0
-
-                      ? "right"
-
-                      : "left"
-
-                  );
-
-
-
-          /*
-          Row.
-          */
-
-          const row =
-            document.createElement(
-              "div"
-            );
-
-
-          row.className =
-
-            "message_row " +
-
-            messageSide;
-
-
-
-          /*
-          Bubble.
-          */
-
-          const bubble =
-            document.createElement(
-              "div"
-            );
-
-
-          bubble.className =
-            "message_bubble";
-
-
-
-          /*
-          Speaker.
-          */
-
-          const speaker =
-            document.createElement(
-              "p"
-            );
-
-
-          speaker.className =
-            "speaker_label";
-
-
-          speaker.textContent =
-
-            interactionMessage
-
-              ? "Conversation partner"
-
-              : "You";
-
-
-
-          /*
-          Sentence.
-          */
-
-          const sentence =
-
-            createTranslationSentence(
-
-              flow,
-
-              displayedLanguage
-
-            );
-
-
-
-          /*
-          ==================================================
-          CLICK AI MESSAGE
-
-          Clicking an AI message will later
-          request suggested responses from
-          options.js.
-          ==================================================
-          */
-
-          if (
-            interactionMessage
-          ) {
-
-
-            sentence.classList.add(
-              "assistable"
-            );
-
-
-            sentence.title =
-              "Click for response options";
-
-
-            sentence.addEventListener(
-
-              "click",
-
-              function() {
-
-                openResponseOptions(
-                  chat.chat_idx
-                );
-
-              }
-
-            );
-
-          }
-
-
-
-          /*
-          ==================================================
-          CHAT ACTIONS
-          ==================================================
-          */
-
-          const actions =
-            document.createElement(
-              "div"
-            );
-
-
-          actions.className =
-            "chat_actions";
-
-
-
-          /*
-          ------------------------------
-          REVERSE
-          ------------------------------
-          */
-
-          const reverseButton =
-            document.createElement(
-              "button"
-            );
-
-
-          reverseButton.type =
-            "button";
-
-
-          reverseButton.className =
-            "reverse_button";
-
-
-          reverseButton.textContent =
-            "Reverse";
-
-
-          reverseButton.onclick =
-
-            async function() {
-
-
-              const oldFlow =
-
-                chat.display_flow ||
-
-                "target";
-
-
-
-              chat.display_flow =
-
-                sourceFlowActive
-
-                  ? "target"
-
-                  : "source";
-
-
-
-              renderChat();
-
-
-
-              try {
-
-
-                await window
-                  .ConversateFirebase
-                  .saveChat(
-
-                    currentRoomIdx,
-
-                    chat
-
-                  );
-
-
-                await refreshCurrentRoom();
-
-
-              } catch (error) {
-
-
-                console.error(
-                  error
-                );
-
-
-                chat.display_flow =
-                  oldFlow;
-
-
-                renderChat();
-
-
-                setStatus(
-
-                  error.message ||
-
-                  "Could not save Reverse state.",
-
-                  "error"
-
-                );
-
-              }
-
-            };
-
-
-
-          /*
-          ------------------------------
-          EDIT
-          ------------------------------
-          */
-
-          const editButton =
-            document.createElement(
-              "button"
-            );
-
-
-          editButton.type =
-            "button";
-
-
-          editButton.textContent =
-            "Edit";
-
-
-          editButton.onclick =
-
-            function() {
-
-              startEdit(
-                chat.chat_idx
-              );
-
-            };
-
-
-
-          /*
-          ------------------------------
-          DELETE
-          ------------------------------
-          */
-
-          const deleteButton =
-            document.createElement(
-              "button"
-            );
-
-
-          deleteButton.type =
-            "button";
-
-
-          deleteButton.className =
-            "delete_button";
-
-
-          deleteButton.textContent =
-            "Delete";
-
-
-          deleteButton.onclick =
-
-            function() {
-
-              deleteChat(
-                chat.chat_idx
-              );
-
-            };
-
-
-
-          actions.append(
-
-            reverseButton,
-
-            editButton,
-
-            deleteButton
-
-          );
-
-
-
-          /*
-          ==================================================
-          RESPONSE OPTIONS PANEL
-
-          Only useful for AI messages.
-
-          options.js later fills this.
-          ==================================================
-          */
-
-          const assistPanel =
-            document.createElement(
-              "div"
-            );
-
-
-          assistPanel.className =
-            "message_assist_panel";
-
-
-          assistPanel.id =
-
-            "assist_" +
-
-            chat.chat_idx;
-
-
-
-          bubble.append(
-
-            speaker,
-
-            sentence,
-
-            actions,
-
-            assistPanel
-
-          );
-
-
-          row.appendChild(
-            bubble
-          );
-
-
-          container.appendChild(
-            row
-          );
-
-        }
-
-      );
-
-
-
-      /*
-      Scroll to latest real message.
-      */
-
-      window.requestAnimationFrame(
-
-        function() {
-
-
-          window.scrollTo({
-
-            top:
-              document.body
-                .scrollHeight,
-
-            behavior:
-              "smooth"
-
-          });
-
-        }
-
-      );
-
-    }
-
-
-
-    /*
-    ==================================================
-    OPTIONS.JS
-    ==================================================
-
-    Clicking an AI conversation message
-    calls this function.
-
-    Expected future global:
-
-    window.ConversateOptions
-
-    with:
-
-    generateOptions({
-      room,
-      chat,
-      signal,
-      onStatus
-    })
-
-    Options are NOT saved by this page
-    to Firestore.
-    ==================================================
-    */
-
-    async function openResponseOptions(
-      chatIdx
-    ) {
-
-
-      const panel =
-        document.getElementById(
-
-          "assist_" +
-          chatIdx
-
-        );
-
-
-      if (
-        !panel
-      ) {
-
-        return;
-
-      }
-
-
-
-      /*
-      Toggle already-loaded panel.
-      */
-
-      if (
-        panel.dataset.loaded ===
-          "true"
-      ) {
-
-
-        panel.classList.toggle(
-          "visible"
-        );
-
-
-        return;
-
-      }
-
-
-
-      panel.classList.add(
-        "visible"
-      );
-
-
-      panel.innerHTML =
-        "";
-
-
-      const title =
-        document.createElement(
-          "p"
-        );
-
-
-      title.className =
-        "assist_title";
-
-
-      title.textContent =
-        "Ways you could respond";
-
-
-      const loading =
-        document.createElement(
-          "p"
-        );
-
-
-      loading.className =
-        "assist_message";
-
-
-      loading.textContent =
-        "Preparing response options...";
-
-
-      panel.append(
-
-        title,
-
-        loading
-
-      );
-
-
-
-      /*
-      Load options.js only now.
-      */
-
-      const module =
-
-        await loadOptionalModule(
-
-          "options.js",
-
-          "ConversateOptions"
-
-        );
-
-
-
-      if (
-        !module
-
-        ||
-
-        typeof module
-          .generateOptions !==
-          "function"
-      ) {
-
-
-        loading.textContent =
-          "options.js has not been created yet.";
-
-
-        return;
-
-      }
-
-
-
-      const room =
-        getRoom();
-
-
-      const chat =
-
-        room?.room_data?.find(
-
-          function(item) {
-
-            return (
-              item.chat_idx ===
-              chatIdx
-            );
-
-          }
-
-        );
-
-
-
-      if (
-        !room ||
-        !chat
-      ) {
-
-
-        loading.textContent =
-          "This message could not be found.";
-
-
-        return;
-
-      }
-
-
-
-      if (
-        activeAssistController
-      ) {
-
-        activeAssistController
-          .abort();
-
-      }
-
-
-
-      const controller =
-        new AbortController();
-
-
-      activeAssistController =
-        controller;
-
-
-
-      try {
-
-
-        const results =
-
-          await module
-            .generateOptions({
-
-              room:
-                room,
-
-              chat:
-                chat,
-
-              signal:
-                controller.signal,
-
-              onStatus:
-
-                function(message) {
-
-                  if (
-                    message
-                  ) {
-
-                    loading.textContent =
-                      message;
-
-                  }
-
-                }
-
-            });
-
-
-
-        if (
-          activeAssistController !==
-          controller
-        ) {
-
-          return;
-
-        }
-
-
-
-        const options =
-
-          Array.isArray(
-            results?.options
-          )
-
-            ? results.options
-
-            : (
-
-                Array.isArray(
-                  results
-                )
-
-                  ? results
-
-                  : []
-
-              );
-
-
-
-        if (
-          !options.length
-        ) {
-
-
-          loading.textContent =
-            "No response options were returned.";
-
-
-          return;
-
-        }
-
-
-
-        panel.innerHTML =
-          "";
-
-
-        panel.appendChild(
-          title
-        );
-
-
-        options.forEach(
-
-          function(
-            option,
-            index
-          ) {
-
-
-            renderResponseOption(
-
-              panel,
-
-              room,
-
-              chat,
-
-              option,
-
-              index
-
-            );
-
-          }
-
-        );
-
-
-        panel.dataset.loaded =
-          "true";
-
-
-      } catch (error) {
-
-
-        if (
-          error.name !==
-          "AbortError"
-        ) {
-
-
-          console.error(
-            error
-          );
-
-
-          loading.textContent =
-
-            error.message ||
-
-            "Could not generate response options.";
-
-        }
-
-
-      } finally {
-
-
-        if (
-          activeAssistController ===
-          controller
-        ) {
-
-          activeAssistController =
-            null;
-
-        }
-
-      }
-
-    }
-
-
-
-    /*
-    ==================================================
-    RENDER ONE RESPONSE OPTION
-    ==================================================
-    */
-
-    function renderResponseOption(
-      panel,
-      room,
-      chat,
-      option,
-      index
-    ) {
-
-
-      const card =
-        document.createElement(
-          "div"
-        );
-
-
-      card.className =
-        "response_option";
-
-
-
-      /*
-      Option heading.
-      */
-
-      const heading =
-        document.createElement(
-          "p"
-        );
-
-
-      heading.className =
-        "option_number";
-
-
-      heading.textContent =
-
-        "Option " +
-
-        (index + 1);
-
-
-
-      /*
-      Translation flow.
-      */
-
-      const optionFlow =
-
-        normalizeFlow(
-
-          option.targetFlow ||
-
-          option.target_flow ||
-
-          option.groups ||
-
-          []
-
-        );
-
-
-
-      if (
-        optionFlow.length
-      ) {
-
-
-        const sentence =
-
-          createTranslationSentence(
-
-            optionFlow,
-
-            room.target_language
-
-          );
-
-
-        card.append(
-
-          heading,
-
-          sentence
-
-        );
-
-
-      } else {
-
-
-        const text =
-          document.createElement(
-            "p"
-          );
-
-
-        text.className =
-          "assist_message";
-
-
-        text.textContent =
-
-          option.text ||
-
-          option.targetText ||
-
-          option.useText ||
-
-          "Response option";
-
-
-        card.append(
-
-          heading,
-
-          text
-
-        );
-
-      }
-
-
-
-      /*
-      Buttons.
-      */
-
-      const actions =
-        document.createElement(
-          "div"
-        );
-
-
-      actions.className =
-        "option_actions";
-
-
-
-      /*
-      USE
-      */
-
-      const useButton =
-        document.createElement(
-          "button"
-        );
-
-
-      useButton.type =
-        "button";
-
-
-      useButton.className =
-        "use_option_button";
-
-
-      useButton.textContent =
-        "Use";
-
-
-      useButton.onclick =
-
-        function() {
-
-          useResponseOption(
-            option
-          );
-
-        };
-
-
-
-      /*
-      TEACH
-      */
-
-      const teachButton =
-        document.createElement(
-          "button"
-        );
-
-
-      teachButton.type =
-        "button";
-
-
-      teachButton.className =
-        "teach_option_button";
-
-
-      teachButton.textContent =
-        "Teach";
-
-
-
-      /*
-      Teach box.
-      */
-
-      const teachBox =
-        document.createElement(
-          "div"
-        );
-
-
-      teachBox.className =
-        "teach_box";
-
-
-
-      const teachAnswer =
-        document.createElement(
-          "p"
-        );
-
-
-      teachAnswer.className =
-        "teach_answer";
-
-
-
-      const questionRow =
-        document.createElement(
-          "div"
-        );
-
-
-      questionRow.className =
-        "teach_question_row";
-
-
-
-      const questionInput =
-        document.createElement(
-          "input"
-        );
-
-
-      questionInput.type =
-        "text";
-
-
-      questionInput.className =
-        "teach_question_input";
-
-
-      questionInput.placeholder =
-        "Ask about this response...";
-
-
-
-      const questionButton =
-        document.createElement(
-          "button"
-        );
-
-
-      questionButton.type =
-        "button";
-
-
-      questionButton.className =
-        "teach_question_button";
-
-
-      questionButton.textContent =
-        "Ask";
-
-
-
-      questionRow.append(
-
-        questionInput,
-
-        questionButton
-
-      );
-
-
-      teachBox.append(
-
-        teachAnswer,
-
-        questionRow
-
-      );
-
-
-
-      teachButton.onclick =
-
-        function() {
-
-          teachResponseOption({
-
-            room:
-              room,
-
-            chat:
-              chat,
-
-            option:
-              option,
-
-            box:
-              teachBox,
-
-            answer:
-              teachAnswer,
-
-            question:
-              ""
-
-          });
-
-        };
-
-
-
-      questionButton.onclick =
-
-        function() {
-
-
-          const question =
-            questionInput
-              .value
-              .trim();
-
-
-          if (
-            !question
-          ) {
-
-            return;
-
-          }
-
-
-          teachResponseOption({
-
-            room:
-              room,
-
-            chat:
-              chat,
-
-            option:
-              option,
-
-            box:
-              teachBox,
-
-            answer:
-              teachAnswer,
-
-            question:
-              question
-
-          });
-
-        };
-
-
-
-      questionInput.addEventListener(
-
-        "keydown",
-
-        function(event) {
-
-
-          if (
-            event.key ===
-            "Enter"
-          ) {
-
-
-            event.preventDefault();
-
-
-            questionButton.click();
-
-          }
-
-        }
-
-      );
-
-
-
-      actions.append(
-
-        useButton,
-
-        teachButton
-
-      );
-
-
-      card.append(
-
-        actions,
-
-        teachBox
-
-      );
-
-
-      panel.appendChild(
-        card
-      );
-
-    }
-
-
-
-    /*
-    ==================================================
-    USE OPTION
-    ==================================================
-
-    The option is NOT sent automatically.
-
-    It goes into the main composer so the
-    learner can:
-
-    - read it
-    - change it
-    - extend it
-    - then press Send
-    ==================================================
-    */
-
-    function useResponseOption(
-      option
-    ) {
-
-
-      let text =
-
-        String(
-
-          option.useText ||
-
-          option.targetText ||
-
-          option.text ||
-
-          ""
-
-        ).trim();
-
-
-
-      /*
-      If no simple text exists,
-      reconstruct target sentence
-      from targetFlow.
-      */
-
-      if (
-        !text
-      ) {
-
-
-        const flow =
-
-          normalizeFlow(
-
-            option.targetFlow ||
-
-            option.target_flow ||
-
-            []
-
-          );
-
-
-        text = flow
-
-          .map(
-            function(item) {
-
-              return item.target;
-
-            }
-          )
-
-          .filter(Boolean)
-
-          .join(" ");
-
-      }
-
-
-
-      if (
-        !text
-      ) {
-
-        return;
-
-      }
-
-
-
-      const textarea =
-        document.getElementById(
-          "sourceText"
-        );
-
-
-      textarea.value =
-        text;
-
-
-      textarea.focus();
-
-
-      resizeComposer();
-
-
-      setStatus(
-        "Response placed in the composer. Edit it if you want, then press Send."
-      );
-
-    }
-
-
-
-    /*
-    ==================================================
-    TEACH.JS
-    ==================================================
-
-    Expected future global:
-
-    window.ConversateTeach
-
-    with:
-
-    explain({
-      room,
-      chat,
-      option,
-      question,
-      signal,
-      onStatus
-    })
-
-    Teach data stays temporary.
-    ==================================================
-    */
-
-    async function teachResponseOption(
-      settings
-    ) {
-
-
-      const box =
-        settings.box;
-
-
-      const answer =
-        settings.answer;
-
-
-      box.classList.add(
-        "visible"
-      );
-
-
-      answer.textContent =
-        "Preparing explanation...";
-
-
-
-      const module =
-
-        await loadOptionalModule(
-
-          "teach.js",
-
-          "ConversateTeach"
-
-        );
-
-
-
-      if (
-        !module
-
-        ||
-
-        typeof module
-          .explain !==
-          "function"
-      ) {
-
-
-        answer.textContent =
-          "teach.js has not been created yet.";
-
-
-        return;
-
-      }
-
-
-
-      try {
-
-
-        const result =
-
-          await module
-            .explain({
-
-              room:
-                settings.room,
-
-              chat:
-                settings.chat,
-
-              option:
-                settings.option,
-
-              question:
-                settings.question || "",
-
-              onStatus:
-
-                function(message) {
-
-                  if (
-                    message
-                  ) {
-
-                    answer.textContent =
-                      message;
-
-                  }
-
-                }
-
-            });
-
-
-
-        const text =
-
-          typeof result ===
-            "string"
-
-            ? result
-
-            : (
-
-                result?.text ||
-
-                result?.answer ||
-
-                result?.explanation ||
-
-                ""
-
-              );
-
-
-
-        answer.textContent =
-
-          text ||
-
-          "No explanation was returned.";
-
-
-      } catch (error) {
-
-
-        console.error(
-          error
-        );
-
-
-        answer.textContent =
-
-          error.message ||
-
-          "Teach could not answer.";
-
-      }
-
-    }
-
-
-
-    /*
-    ==================================================
-    GET ORIGINAL / EDITABLE TEXT
-    ==================================================
-    */
-
-    function getPrompt(
-      chat
-    ) {
-
-
-      /*
-      Conversate Pro preserves exactly
-      what the learner originally typed.
-      */
-
-      if (
-        chat.original_input
-      ) {
-
-        return String(
-          chat.original_input
-        );
-
-      }
-
-
-
-      if (
-
-        Array.isArray(
-          chat.prompts_and_answers
-        )
-
-        &&
-
-        chat
-          .prompts_and_answers
-          .length
-
-      ) {
-
-
-        return String(
-
-          chat
-            .prompts_and_answers[
-              chat
-                .prompts_and_answers
-                .length - 1
-            ]
-            .user_prompt
-
-          ||
-
-          ""
-
-        );
-
-      }
-
-
-      return "";
-
-    }
-
-
-
-    /*
-    ==================================================
-    START EDIT
-    ==================================================
-    */
-
-    function startEdit(
-      chatIdx
-    ) {
-
-
-      const room =
-        getRoom();
-
-
-
-      const chat =
-
-        room?.room_data.find(
-
-          function(item) {
-
-            return (
-              item.chat_idx ===
-              chatIdx
-            );
-
-          }
-
-        );
-
-
-
-      if (
-        !chat
-      ) {
-
-        return;
-
-      }
-
-
-
-      editingChatIdx =
-        chat.chat_idx;
-
-
-
-      document.getElementById(
-        "sourceText"
-      ).value =
-        getPrompt(
-          chat
-        );
-
-
-
-      populateSelect(
-
-        "sourceLang",
-
-        chat.source_language ||
-
-        room.source_language
-
-      );
-
-
-
-      populateSelect(
-
-        "targetLang",
-
-        chat.target_language ||
-
-        room.target_language
-
-      );
-
-
-
-      document.getElementById(
-        "sendButton"
-      ).textContent =
-        "Update";
-
-
-
-      document.getElementById(
-        "cancelEditButton"
-      ).classList.add(
-        "visible"
-      );
-
-
-
-      document.getElementById(
-        "sourceText"
-      ).focus();
-
-
-
-      resizeComposer();
-
-    }
-
-
-
-    /*
-    ==================================================
-    CANCEL EDIT
-    ==================================================
-    */
-
-    function cancelEdit() {
-
-
-      editingChatIdx =
-        "";
-
-
-
-      document.getElementById(
-        "sourceText"
-      ).value =
-        "";
-
-
-
-      document.getElementById(
-        "sendButton"
-      ).textContent =
-        "Send";
-
-
-
-      document.getElementById(
-        "cancelEditButton"
-      ).classList.remove(
-        "visible"
-      );
-
-
-
-      setComposerLanguages();
-
-
-      setStatus("");
-
-
-      resizeComposer();
-
-    }
-
-
-
-    /*
-    ==================================================
-    DELETE CHAT
-    ==================================================
-    */
-
-    async function deleteChat(
-      chatIdx
-    ) {
-
-
-      if (
-
-        !confirm(
-          "Delete this conversation message?"
-        )
-
-      ) {
-
-        return;
-
-      }
-
-
-
-      if (
-        editingChatIdx ===
-        chatIdx
-      ) {
-
-        cancelEdit();
-
-      }
-
-
-
-      setStatus(
-        "Deleting..."
-      );
-
-
-
-      try {
-
-
-        await window
-          .ConversateFirebase
-          .deleteChat(
-
-            currentRoomIdx,
-
-            chatIdx
-
-          );
-
-
-
-        await refreshCurrentRoom();
-
-
-        setStatus("");
-
-
-        renderChat();
-
-
-      } catch (error) {
-
-
-        console.error(
-          error
-        );
-
-
-        setStatus(
-
-          error.message ||
-
-          "Could not delete message.",
-
-          "error"
-
-        );
-
-      }
-
-    }
-
-
-
-    /*
-    ==================================================
-    STATUS
-    ==================================================
-    */
-
-    function setStatus(
-      message,
-      type
-    ) {
-
-
-      const box =
-        document.getElementById(
-          "translationStatus"
-        );
-
-
-      box.textContent =
-        message || "";
-
-
-      box.className =
-        "";
-
-
-
-      if (
-        message
-      ) {
-
-
-        box.classList.add(
-          "visible"
-        );
-
-
-        if (
-          type === "error"
-        ) {
-
-
-          box.classList.add(
-            "error"
-          );
-
-        }
-
-      }
-
-    }
-
-
-
-    /*
-    ==================================================
-    UNDERSTAND USER INPUT
-    ==================================================
-
-    Future understandInput.js should expose:
-
-    window.ConversateInput.understand(...)
-
-    It will understand:
-
-    I'm fine
-
-    ana bikhair
-
-    ana bee-khair
-
-    أنا بخير
-
-    mixed forms, etc.
-
-    Expected result:
-
-    {
-      originalText,
-      inputForm,
-      sourceText,
-      targetText,
-      detectedLanguage
-    }
-
-    sourceText should be the canonical
-    meaning in the user's language.
-
-    Example:
-
-    originalText:
-      "ana bikhair"
-
-    sourceText:
-      "I am fine"
-
-    targetText:
-      "أنا بخير"
-    ==================================================
-    */
-
-    async function understandUserInput(
-      options
-    ) {
-
-
-      const module =
-
-        await loadOptionalModule(
-
-          "understandInput.js",
-
-          "ConversateInput"
-
-        );
-
-
-
-      /*
-      ==================================================
-      TEMPORARY FALLBACK
-
-      Until understandInput.js is created,
-      normal source-language messages will
-      continue using results5.js directly.
-      ==================================================
-      */
-
-      if (
-        !module
-
-        ||
-
-        typeof module
-          .understand !==
-          "function"
-      ) {
-
+      let selectedWordIndex = null;
+      let selectedWordIsArabic = false;
+      let currentMatches = [];
+      let breakdownContext = null;
+
+      function triplet(en, ar, tr) {
+        const english = String(en || "").trim();
+        const arabic = String(ar || "").trim();
+        const transliteration = String(tr || "").trim();
+
+        if (!english && !arabic) return null;
 
         return {
-
-          originalText:
-            options.text,
-
-          inputForm:
-            "direct",
-
-          sourceText:
-            options.text,
-
-          targetText:
-            "",
-
-          detectedLanguage:
-            options.sourceLanguage
-
+          en: english,
+          ar: arabic,
+          tr: transliteration
         };
-
       }
 
+      function pairTriplet(pair, index, enKey, arKey, trKey) {
+        const value = Array.isArray(pair) ? pair[index] : null;
+        if (!value) return null;
+        return triplet(value[enKey], value[arKey], value[trKey]);
+      }
 
+      const categories = [
+        {
+          key: "action",
+          label: "Action",
+          getData: () => globalThis.a_action || [],
+          views: [
+            { key: "base", read: item => item?.base_verb ? triplet(item.base_verb.en, item.base_verb.ar, item.base_verb.ar_tr) : null },
+            { key: "third", read: item => item?.third_person_singular ? triplet(item.third_person_singular.en, item.third_person_singular.ar, item.third_person_singular.ar_tr) : null },
+            { key: "present", read: item => item?.present_participle ? triplet(item.present_participle.en, item.present_participle.ar, item.present_participle.ar_tr) : null },
+            { key: "past", read: item => item?.past_tense ? triplet(item.past_tense.en, item.past_tense.ar, item.past_tense.ar_tr) : null }
+          ]
+        },
+        {
+          key: "object",
+          label: "Object",
+          getData: () => globalThis.b_object || [],
+          views: [
+            { key: "singular", read: item => pairTriplet(item, 0, "en_singular", "ar_singular", "ar_tr_singular") },
+            { key: "plural", read: item => pairTriplet(item, 1, "en_plural", "ar_plural", "ar_tr_plural") }
+          ]
+        },
+        {
+          key: "career",
+          label: "Career",
+          getData: () => globalThis.c_career || [],
+          views: [
+            { key: "singular", read: item => pairTriplet(item, 0, "en_singular_career", "ar_singular", "ar_tr_singular") },
+            { key: "plural", read: item => pairTriplet(item, 1, "en_plural_career", "ar_plural", "ar_tr_plural") }
+          ]
+        },
+        {
+          key: "environment",
+          label: "Environment",
+          getData: () => globalThis.d_environment || [],
+          views: [
+            { key: "singular", read: item => pairTriplet(item, 0, "en_singular_environment", "ar_singular", "ar_tr_singular") },
+            { key: "plural", read: item => pairTriplet(item, 1, "en_plural_environment", "ar_plural", "ar_tr_plural") }
+          ]
+        },
+        {
+          key: "position",
+          label: "Position",
+          getData: () => globalThis.e_position || [],
+          views: [
+            { key: "main", read: item => triplet(item?.en_position, item?.ar, item?.tr) }
+          ]
+        },
+        {
+          key: "time",
+          label: "Time",
+          getData: () => globalThis.f_time || [],
+          views: [
+            { key: "main", read: item => triplet(item?.en_time, item?.ar, item?.tr) }
+          ]
+        },
+        {
+          key: "stuff",
+          label: "Stuff",
+          getData: () => globalThis.g_stuff || [],
+          views: [
+            { key: "singular", read: item => pairTriplet(item, 0, "en_singular_stuff", "ar_singular", "ar_tr_singular") },
+            { key: "plural", read: item => pairTriplet(item, 1, "en_plural_stuff", "ar_plural", "ar_tr_plural") }
+          ]
+        },
+        {
+          key: "description",
+          label: "Description",
+          getData: () => globalThis.h_description || [],
+          views: [
+            { key: "adjective", read: item => pairTriplet(item, 0, "en_adjective", "ar_adjective", "ar_tr_adjective") },
+            { key: "adverb", read: item => pairTriplet(item, 1, "en_adverb", "ar_adverb", "ar_tr_adverb") }
+          ]
+        },
+        {
+          key: "animal",
+          label: "Animal",
+          getData: () => globalThis.i_animal || [],
+          views: [
+            { key: "animal", read: item => pairTriplet(item, 0, "en_animal", "ar_animal", "ar_tr_animal") },
+            { key: "related", read: item => pairTriplet(item, 1, "en_possessive", "ar_possessive", "ar_tr_possessive") }
+          ]
+        },
+        {
+          key: "body",
+          label: "Body",
+          getData: () => globalThis.j_body || [],
+          views: [
+            { key: "singular", read: item => pairTriplet(item, 0, "en_singular_body", "ar_singular", "ar_tr_singular") },
+            { key: "plural", read: item => pairTriplet(item, 1, "en_plural_body", "ar_plural", "ar_tr_plural") }
+          ]
+        },
+        {
+          key: "clothing",
+          label: "Clothing",
+          getData: () => globalThis.k_clothing || [],
+          views: [
+            { key: "singular", read: item => pairTriplet(item, 0, "en_singular_clothing", "ar_singular", "ar_tr_singular") },
+            { key: "plural", read: item => pairTriplet(item, 1, "en_plural_clothing", "ar_plural", "ar_tr_plural") }
+          ]
+        },
+        {
+          key: "feeling",
+          label: "Feeling",
+          getData: () => globalThis.l_feeling || [],
+          views: [
+            { key: "word", read: item => pairTriplet(item, 0, "en_feel_word", "ar_feel_word", "ar_tr_feel_word") },
+            { key: "present", read: item => pairTriplet(item, 1, "en_feel_present", "ar_feel_present", "ar_tr_feel_present") }
+          ]
+        },
+        {
+          key: "food",
+          label: "Food",
+          getData: () => globalThis.m_food || [],
+          views: [
+            { key: "singular", read: item => pairTriplet(item, 0, "en_singular_food", "ar_singular", "ar_tr_singular") },
+            { key: "plural", read: item => pairTriplet(item, 1, "en_plural_food", "ar_plural", "ar_tr_plural") }
+          ]
+        },
+        {
+          key: "personal",
+          label: "Personal",
+          getData: () => globalThis.n_personal || [],
+          views: [
+            { key: "main", read: item => triplet(item?.en_communication, item?.ar, item?.tr) }
+          ]
+        },
+        {
+          key: "transportation",
+          label: "Transportation",
+          getData: () => globalThis.p_transportation || [],
+          views: [
+            { key: "singular", read: item => pairTriplet(item, 0, "en_singular_transportation", "ar_singular", "ar_tr_singular") },
+            { key: "plural", read: item => pairTriplet(item, 1, "en_plural_transportation", "ar_plural", "ar_tr_plural") }
+          ]
+        },
+        {
+          key: "pronoun",
+          label: "Pronoun",
+          getData: () => globalThis.q_pronoun || [],
+          views: [
+            { key: "main", read: item => triplet(item?.en_pronoun, item?.ar_pronoun, item?.ar_tr_pronoun) }
+          ]
+        }
+      ];
 
-      return await module
-        .understand({
+      function isArabic(text) {
+        return /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/.test(String(text || ""));
+      }
 
-          text:
-            options.text,
+      function stripArabicMarks(text) {
+        return String(text || "")
+          .replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g, "")
+          .replace(/ـ/g, "");
+      }
 
-          room:
-            getRoom(),
+      function cleanEdge(text) {
+        return String(text || "")
+          .replace(/^[\s.,!?;:()\[\]{}«»"“”'،؛…]+|[\s.,!?;:()\[\]{}«»"“”'،؛…]+$/g, "");
+      }
 
-          sourceLanguage:
-            options.sourceLanguage,
+      function normalize(text) {
+        const cleaned = cleanEdge(text).normalize("NFKC");
+        return isArabic(cleaned)
+          ? stripArabicMarks(cleaned)
+          : cleaned.toLocaleLowerCase("en");
+      }
 
-          targetLanguage:
-            options.targetLanguage,
+      function valueMatches(value, needle) {
+        if (!value) return false;
 
-          signal:
-            options.signal,
+        return String(value)
+          .split(/\s*\/\s*/)
+          .some(part => normalize(part) === needle);
+      }
 
-          onStatus:
-            options.onStatus
+      function getWords() {
+        return String(input.value || "")
+          .split(/\s+/)
+          .filter(Boolean);
+      }
 
+      function findMatches(rawWord, relatedWords) {
+        const needles = [rawWord]
+          .concat(Array.isArray(relatedWords) ? relatedWords : [])
+          .map(normalize)
+          .filter(Boolean);
+
+        if (!needles.length) return [];
+
+        const matches = [];
+
+        categories.forEach(category => {
+          const data = category.getData();
+
+          category.views.forEach(view => {
+            const matched = data.some(item => {
+              const vocab = view.read(item);
+
+              return vocab && needles.some(needle => (
+                valueMatches(vocab.en, needle) ||
+                valueMatches(vocab.ar, needle) ||
+                valueMatches(vocab.tr, needle)
+              ));
+            });
+
+            if (matched) {
+              matches.push({ category, view });
+            }
+          });
         });
 
-    }
-
-
-
-    /*
-    ==================================================
-    SEND / UPDATE USER MESSAGE
-    ==================================================
-    */
-
-    async function sendConversationMessage() {
-
-
-      const room =
-        getRoom();
-
-
-
-      if (
-        !room
-      ) {
-
-        return;
-
+        const seen = new Set();
+        return matches.filter(match => {
+          const id = match.category.key + ":" + match.view.key;
+          if (seen.has(id)) return false;
+          seen.add(id);
+          return true;
+        });
       }
 
-
-
-      const originalText =
-
-        document
-          .getElementById(
-            "sourceText"
-          )
-          .value
-          .trim();
-
-
-
-      const sourceLanguage =
-
-        document.getElementById(
-          "sourceLang"
-        ).value;
-
-
-
-      const targetLanguage =
-
-        document.getElementById(
-          "targetLang"
-        ).value;
-
-
-
-      const sendButton =
-        document.getElementById(
-          "sendButton"
-        );
-
-
-
-      const interactButton =
-        document.getElementById(
-          "interactPlusButton"
-        );
-
-
-
-      if (
-        !originalText
-      ) {
-
-
-        setStatus(
-          "Enter a response.",
-          "error"
-        );
-
-
-        return;
-
+      function clearDictionaryDetails() {
+        categoriesBox.innerHTML = "";
+        vocabularyBox.innerHTML = "";
+        currentMatches = [];
       }
 
+      function renderWords() {
+        if (breakdownContext) {
+          return;
+        }
 
+        const words = getWords();
+        wordsBox.innerHTML = "";
+        clearDictionaryDetails();
 
-      if (
-        sourceLanguage ===
-        targetLanguage
-      ) {
+        if (!words.length) {
+          tray.hidden = true;
+          selectedWordIndex = null;
+          return;
+        }
 
+        tray.hidden = false;
 
-        setStatus(
-          "Choose different languages.",
-          "error"
-        );
+        words.forEach((word, index) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "dictionary_word_button";
+          button.textContent = word;
 
+          button.addEventListener("click", function () {
+            selectedWordIndex = index;
+            selectedWordIsArabic = isArabic(cleanEdge(word));
 
-        return;
+            wordsBox.querySelectorAll("button").forEach(item => {
+              item.classList.remove("active");
+            });
+            button.classList.add("active");
 
-      }
-
-
-
-      /*
-      Was this an existing message?
-      */
-
-      const wasEditing =
-        Boolean(
-          editingChatIdx
-        );
-
-
-
-      if (
-        activeController
-      ) {
-
-        activeController.abort();
-
-      }
-
-
-
-      const controller =
-        new AbortController();
-
-
-      activeController =
-        controller;
-
-
-
-      sendButton.disabled =
-        true;
-
-
-      interactButton.disabled =
-        true;
-
-
-
-      sendButton.textContent =
-
-        wasEditing
-
-          ? "Updating..."
-
-          : "Sending...";
-
-
-
-      setStatus(
-        "Understanding your response..."
-      );
-
-
-
-      let shouldAutoReply =
-        false;
-
-
-
-      try {
-
-
-        /*
-        ==================================================
-        STEP 1
-
-        Understand whether the learner wrote:
-
-        English
-        Arabic
-        Arabic transliteration
-        pronunciation-style text
-        ==================================================
-        */
-
-        const understood =
-
-          await understandUserInput({
-
-            text:
-              originalText,
-
-            sourceLanguage:
-              sourceLanguage,
-
-            targetLanguage:
-              targetLanguage,
-
-            signal:
-              controller.signal,
-
-            onStatus:
-
-              function(message) {
-
-                if (
-                  activeController ===
-                    controller
-
-                  &&
-
-                  message
-                ) {
-
-                  setStatus(
-                    message
-                  );
-
-                }
-
-              }
-
+            renderCategoryChoices(word);
           });
 
+          wordsBox.appendChild(button);
+        });
+      }
 
+      function renderCategoryChoices(word, relatedWords) {
+        categoriesBox.innerHTML = "";
+        vocabularyBox.innerHTML = "";
+        currentMatches = findMatches(word, relatedWords);
 
-        if (
-          activeController !==
-          controller
-        ) {
-
+        if (!currentMatches.length) {
+          const empty = document.createElement("span");
+          empty.className = "dictionary_empty";
+          empty.textContent = "No dictionary category found for this word.";
+          categoriesBox.appendChild(empty);
           return;
-
         }
 
+        const byCategory = new Map();
+        currentMatches.forEach(match => {
+          if (!byCategory.has(match.category.key)) {
+            byCategory.set(match.category.key, match);
+          }
+        });
 
+        byCategory.forEach(match => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "dictionary_category_button";
+          button.textContent = match.category.label;
 
-        /*
-        Canonical source-language meaning.
-
-        Example:
-
-        "ana bikhair"
-             ↓
-        "I am fine"
-        */
-
-        const canonicalSourceText =
-
-          String(
-
-            understood?.sourceText ||
-
-            understood?.interpretedSourceText ||
-
-            understood?.sourceMeaning ||
-
-            originalText
-
-          ).trim();
-
-
-
-        /*
-        ==================================================
-        STEP 2
-
-        Use the SAME results5.js system
-        as LingoGPT.
-
-        This guarantees the same:
-        - translation
-        - pronunciation
-        - target flow
-        - source flow
-        - display structure
-        ==================================================
-        */
-
-        setStatus(
-          "Preparing the conversation breakdown..."
-        );
-
-
-
-        const results =
-
-          await window
-            .LingoGPTResults
-            .generateResults({
-
-              text:
-                canonicalSourceText,
-
-              sourceLanguage:
-                sourceLanguage,
-
-              targetLanguage:
-                targetLanguage,
-
-              signal:
-                controller.signal,
-
-              onStatus:
-
-                function(message) {
-
-                  if (
-
-                    activeController ===
-                      controller
-
-                    &&
-
-                    message !==
-                      "Complete."
-
-                  ) {
-
-                    setStatus(
-                      message
-                    );
-
-                  }
-
-                }
-
+          button.addEventListener("click", function () {
+            categoriesBox.querySelectorAll("button").forEach(item => {
+              item.classList.remove("active");
             });
+            button.classList.add("active");
 
+            const exactMatch = currentMatches.find(item =>
+              item.category.key === match.category.key
+            ) || match;
 
+            renderVocabulary(exactMatch.category, exactMatch.view);
+          });
 
-        if (
-          activeController !==
-          controller
-        ) {
+          categoriesBox.appendChild(button);
+        });
+      }
 
-          return;
+      function renderVocabulary(category, view) {
+        vocabularyBox.innerHTML = "";
+        const fragment = document.createDocumentFragment();
+        const seen = new Set();
 
-        }
+        category.getData().forEach(item => {
+          const vocab = view.read(item);
+          if (!vocab || (!vocab.en && !vocab.ar)) return;
 
+          const signature = vocab.en + "|" + vocab.ar;
+          if (seen.has(signature)) return;
+          seen.add(signature);
 
+          const card = document.createElement("button");
+          card.type = "button";
+          card.className = "dictionary_vocab_item";
 
-        /*
-        Existing chat when editing.
-        */
+          const ar = document.createElement("span");
+          ar.className = "dictionary_vocab_ar";
+          ar.textContent = vocab.ar;
 
-        const oldChat =
+          const tr = document.createElement("span");
+          tr.className = "dictionary_vocab_tr";
+          tr.textContent = vocab.tr;
 
-          editingChatIdx
+          const en = document.createElement("span");
+          en.className = "dictionary_vocab_en";
+          en.textContent = vocab.en;
 
-            ? room
-                .room_data
-                .find(
+          card.append(ar, tr, en);
 
-                  function(chat) {
+          card.addEventListener("click", async function () {
+            if (breakdownContext) {
+              const app = globalThis.ConversateApp;
 
-                    return (
-                      chat.chat_idx ===
-                      editingChatIdx
-                    );
+              if (!app || typeof app.replaceBreakdownSegment !== "function") {
+                return;
+              }
 
-                  }
+              card.disabled = true;
 
-                )
+              try {
+                const updated = await app.replaceBreakdownSegment(
+                  Object.assign({}, breakdownContext),
+                  Object.assign({}, vocab)
+                );
 
-            : null;
+                if (updated) {
+                  closeBreakdownDictionary();
+                }
+              } finally {
+                card.disabled = false;
+              }
 
-
-
-        /*
-        ==================================================
-        NEW CONVERSATE PRO CHAT DATA
-
-        It retains the original LingoGPT
-        fields and adds interpretation fields.
-        ==================================================
-        */
-
-        const chatData = {
-
-
-          chat_idx:
-
-            editingChatIdx ||
-
-            createId(
-              "chat"
-            ),
-
-
-
-          message_type:
-
-            oldChat &&
-            oldChat.message_type
-
-              ? oldChat.message_type
-
-              : "user",
-
-
-
-          is_interaction:
-
-            oldChat &&
-            oldChat.is_interaction ===
-              true,
-
-
-
-          /*
-          Exactly what the learner typed.
-          */
-
-          original_input:
-            originalText,
-
-
-
-          /*
-          Example:
-          direct
-          target_script
-          target_transliteration
-          target_pronunciation
-          mixed
-          */
-
-          input_form:
-
-            understood?.inputForm ||
-
-            understood?.input_form ||
-
-            "direct",
-
-
-
-          /*
-          Canonical helper-language meaning.
-          */
-
-          interpreted_source_text:
-            canonicalSourceText,
-
-
-
-          /*
-          Canonical practice-language sentence,
-          when understandInput.js provides it.
-          */
-
-          interpreted_target_text:
-
-            String(
-
-              understood?.targetText ||
-
-              understood?.interpretedTargetText ||
-
-              ""
-
-            ),
-
-
-
-          source_language:
-
-            results.detectedLanguage ||
-
-            sourceLanguage,
-
-
-
-          target_language:
-
-            results.targetLanguage ||
-
-            targetLanguage,
-
-
-
-          target_flow:
-
-            Array.isArray(
-              results.targetFlow
-            )
-
-              ? results.targetFlow
-
-              : [],
-
-
-
-          source_flow:
-
-            Array.isArray(
-              results.sourceFlow
-            )
-
-              ? results.sourceFlow
-
-              : [],
-
-
-
-          groups:
-
-            Array.isArray(
-              results.groups
-            )
-
-              ? results.groups
-
-              : [],
-
-
-
-          display_flow:
-
-            oldChat &&
-            oldChat.display_flow ===
-              "source"
-
-              ? "source"
-
-              : "target",
-
-
-
-          prompts_and_answers: [
-
-            {
-
-              /*
-              Canonical sentence allows
-              the future interaction engine
-              to read clean conversation
-              history.
-              */
-
-              user_prompt:
-                canonicalSourceText,
-
-
-              /*
-              Preserve what the learner
-              actually entered too.
-              */
-
-              original_user_input:
-                originalText,
-
-
-              gpt_api_answer:
-                results
-
+              return;
             }
 
-          ],
+            replaceSelectedWord(selectedWordIsArabic ? vocab.ar : vocab.en);
+          });
 
+          fragment.appendChild(card);
+        });
 
+        vocabularyBox.appendChild(fragment);
+      }
 
-          generated_at:
-
-            results.generatedAt ||
-
-            new Date()
-              .toISOString()
-
-        };
-
-
-
-        /*
-        Save real conversation message
-        to conversate_Data.
-        */
-
-        await window
-          .ConversateFirebase
-          .saveChat(
-
-            currentRoomIdx,
-
-            chatData
-
-          );
-
-
-
-        await refreshCurrentRoom();
-
-
-
-        editingChatIdx =
-          "";
-
-
-
-        document.getElementById(
-          "sourceText"
-        ).value =
-          "";
-
-
-
-        document.getElementById(
-          "cancelEditButton"
-        ).classList.remove(
-          "visible"
+      function preserveEdgePunctuation(original, replacement) {
+        const match = String(original || "").match(
+          /^([^\p{L}\p{N}\u0600-\u06FF]*)(.*?)([^\p{L}\p{N}\u0600-\u06FF]*)$/u
         );
 
-
-
-        setComposerLanguages();
-
-
-        setStatus("");
-
-
-        renderChat();
-
-
-        resizeComposer();
-
-
-
-        /*
-        ==================================================
-        AUTOMATIC CONVERSATION
-
-        Only a NEW learner message triggers
-        the automatic AI response.
-
-        Editing an old message does not.
-        ==================================================
-        */
-
-        shouldAutoReply =
-          !wasEditing;
-
-
-      } catch (error) {
-
-
-        if (
-          error.name !==
-          "AbortError"
-        ) {
-
-
-          console.error(
-            error
-          );
-
-
-          setStatus(
-
-            error.message ||
-
-            "Could not send your response.",
-
-            "error"
-
-          );
-
-        }
-
-
-      } finally {
-
-
-        if (
-          activeController ===
-          controller
-        ) {
-
-
-          activeController =
-            null;
-
-
-          sendButton.disabled =
-            false;
-
-
-          interactButton.disabled =
-            false;
-
-
-          sendButton.textContent =
-
-            editingChatIdx
-
-              ? "Update"
-
-              : "Send";
-
-        }
-
+        if (!match) return replacement;
+        return match[1] + replacement + match[3];
       }
 
+      function replaceSelectedWord(replacement) {
+        if (selectedWordIndex === null || !replacement) return;
 
+        const words = getWords();
+        if (!words[selectedWordIndex]) return;
 
-      /*
-      ==================================================
-      STEP 3
-
-      AUTOMATIC AI RESPONSE
-
-      No second InteractPlus click required.
-      ==================================================
-      */
-
-      if (
-        shouldAutoReply
-      ) {
-
-
-        await generateInteractionResponse(
-          "continue"
+        words[selectedWordIndex] = preserveEdgePunctuation(
+          words[selectedWordIndex],
+          replacement
         );
 
+        input.value = words.join(" ");
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        input.focus();
       }
 
-    }
-
-
-
-    /*
-    ==================================================
-    INTERACT PLUS
-    ==================================================
-
-    Future interactPlus.js should expose:
-
-    window.ConversateInteractPlus.interact({
-
-      room,
-      mode,
-      signal,
-      onStatus
-
-    })
-
-    MODE:
-
-    "start"
-      = empty conversation
-
-    "continue"
-      = reply to conversation
-
-    It may return either:
-
-    1. full results5.js-style data
-
-    OR
-
-    2. just interactionText
-
-    index.html supports both.
-    ==================================================
-    */
-
-    async function generateInteractionResponse(
-      mode
-    ) {
-
-
-      if (
-        editingChatIdx
-      ) {
-
-
-        setStatus(
-          "Finish or cancel editing first.",
-          "error"
-        );
-
-
-        return;
-
+      function closeBreakdownDictionary() {
+        breakdownContext = null;
+        selectedWordIndex = null;
+        selectedWordIsArabic = false;
+        renderWords();
       }
 
+      function openBreakdown(context) {
+        if (!context || !context.segment || !context.clickedText) return;
 
+        breakdownContext = Object.assign({}, context);
+        selectedWordIndex = null;
+        selectedWordIsArabic = false;
 
-      /*
-      Refresh room first.
+        tray.hidden = false;
+        wordsBox.innerHTML = "";
+        categoriesBox.innerHTML = "";
+        vocabularyBox.innerHTML = "";
 
-      This guarantees the AI sees
-      the latest user message.
-      */
-
-      await refreshCurrentRoom();
-
-
-
-      const room =
-        getRoom();
-
-
-
-      if (
-        !room
-      ) {
-
-        return;
-
-      }
-
-
-
-      const sendButton =
-        document.getElementById(
-          "sendButton"
-        );
-
-
-      const interactButton =
-        document.getElementById(
-          "interactPlusButton"
-        );
-
-
-
-      if (
-        activeController
-      ) {
-
-        activeController.abort();
-
-      }
-
-
-
-      const controller =
-        new AbortController();
-
-
-      activeController =
-        controller;
-
-
-
-      sendButton.disabled =
-        true;
-
-
-      interactButton.disabled =
-        true;
-
-
-      interactButton.textContent =
-        "Thinking...";
-
-
-
-      setStatus(
-
-        mode === "start"
-
-          ? "Starting the conversation..."
-
-          : "Conversation partner is responding..."
-
-      );
-
-
-
-      try {
-
+        const selected = document.createElement("button");
+        selected.type = "button";
+        selected.className = "dictionary_word_button active";
+        selected.textContent = context.clickedText;
+        selected.title = "Selected English breakdown word";
+        wordsBox.appendChild(selected);
 
         /*
-        Load interactPlus.js.
+          Breakdown dictionary lookup is deliberately English-only.
+          The breakdown renderer splits phrases such as "the shop" into
+          individual buttons, so the selected word can be matched directly
+          against the static dictionary without guessing from Arabic or
+          transliteration.
         */
-
-        const module =
-
-          await loadOptionalModule(
-
-            "interactPlus.js",
-
-            "ConversateInteractPlus"
-
-          );
-
-
-
-        if (
-
-          !module
-
-          ||
-
-          typeof module.interact !==
-            "function"
-
-        ) {
-
-
-          setStatus(
-
-            "interactPlus.js has not been created yet.",
-
-            "error"
-
-          );
-
-
-          return;
-
-        }
-
-
-
-        /*
-        ==================================================
-        GENERATE CONVERSATION PARTNER RESPONSE
-        ==================================================
-        */
-
-        let results =
-
-          await module
-            .interact({
-
-              room:
-                room,
-
-              mode:
-                mode,
-
-              signal:
-                controller.signal,
-
-              onStatus:
-
-                function(message) {
-
-                  if (
-
-                    activeController ===
-                      controller
-
-                    &&
-
-                    message
-
-                    &&
-
-                    message !==
-                      "Complete."
-
-                  ) {
-
-                    setStatus(
-                      message
-                    );
-
-                  }
-
-                }
-
-            });
-
-
-
-        if (
-          activeController !==
-          controller
-        ) {
-
-          return;
-
-        }
-
-
-
-        /*
-        ==================================================
-        INTERACTION TEXT
-
-        This should normally be in the
-        helper/source language internally.
-
-        results5.js converts it to the
-        practice language for display.
-        ==================================================
-        */
-
-        const interactionText =
-
-          String(
-
-            results?.interactionText ||
-
-            results?.request?.text ||
-
-            results?.text ||
-
-            ""
-
-          ).trim();
-
-
-
-        if (
-          !interactionText
-        ) {
-
-
-          throw new Error(
-            "No conversation response was generated."
-          );
-
-        }
-
-
-
-        /*
-        ==================================================
-        SAFETY FALLBACK
-
-        If interactPlus.js returned only
-        plain text instead of translation
-        flows, run it through results5.js here.
-        ==================================================
-        */
-
-        if (
-
-          !Array.isArray(
-            results?.targetFlow
-          )
-
-          ||
-
-          !results.targetFlow.length
-
-        ) {
-
-
-          setStatus(
-            "Preparing the conversation breakdown..."
-          );
-
-
-
-          const translated =
-
-            await window
-              .LingoGPTResults
-              .generateResults({
-
-                text:
-                  interactionText,
-
-                sourceLanguage:
-                  room.source_language,
-
-                targetLanguage:
-                  room.target_language,
-
-                signal:
-                  controller.signal,
-
-                onStatus:
-
-                  function(message) {
-
-                    if (
-
-                      activeController ===
-                        controller
-
-                      &&
-
-                      message !==
-                        "Complete."
-
-                    ) {
-
-                      setStatus(
-                        message
-                      );
-
-                    }
-
-                  }
-
-              });
-
-
-
-          results = {
-
-            ...results,
-
-            ...translated,
-
-            interactionText:
-              interactionText
-
-          };
-
-        }
-
-
-
-        /*
-        ==================================================
-        SAVE REAL AI CONVERSATION MESSAGE
-        ==================================================
-        */
-
-        const chatData = {
-
-
-          chat_idx:
-            createId(
-              "chat"
-            ),
-
-
-          message_type:
-            "interaction",
-
-
-          is_interaction:
-            true,
-
-
-          interaction_type:
-
-            mode === "start"
-
-              ? "opening"
-
-              : "automatic",
-
-
-
-          /*
-          Canonical AI response.
-          */
-
-          interaction_text:
-            interactionText,
-
-
-
-          source_language:
-
-            results.detectedLanguage ||
-
-            room.source_language,
-
-
-
-          target_language:
-
-            results.targetLanguage ||
-
-            room.target_language,
-
-
-
-          target_flow:
-
-            Array.isArray(
-              results.targetFlow
-            )
-
-              ? results.targetFlow
-
-              : [],
-
-
-
-          source_flow:
-
-            Array.isArray(
-              results.sourceFlow
-            )
-
-              ? results.sourceFlow
-
-              : [],
-
-
-
-          groups:
-
-            Array.isArray(
-              results.groups
-            )
-
-              ? results.groups
-
-              : [],
-
-
-
-          display_flow:
-            "target",
-
-
-
-          prompts_and_answers: [
-
-            {
-
-              user_prompt:
-                interactionText,
-
-              gpt_api_answer:
-                results
-
-            }
-
-          ],
-
-
-
-          generated_at:
-
-            results.generatedAt ||
-
-            new Date()
-              .toISOString()
-
-        };
-
-
-
-        await window
-          .ConversateFirebase
-          .saveChat(
-
-            currentRoomIdx,
-
-            chatData
-
-          );
-
-
-
-        await refreshCurrentRoom();
-
-
-
-        setStatus("");
-
-
-        renderChat();
-
-
-      } catch (error) {
-
-
-        if (
-          error.name !==
-          "AbortError"
-        ) {
-
-
-          console.error(
-            error
-          );
-
-
-          setStatus(
-
-            error.message ||
-
-            "The conversation partner could not respond.",
-
-            "error"
-
-          );
-
-        }
-
-
-      } finally {
-
-
-        if (
-          activeController ===
-          controller
-        ) {
-
-
-          activeController =
-            null;
-
-
-          sendButton.disabled =
-            false;
-
-
-          interactButton.disabled =
-            false;
-
-
-          interactButton.textContent =
-            "InteractPlus";
-
-        }
-
+        renderCategoryChoices(context.clickedText);
+
+        tray.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest"
+        });
       }
 
-    }
-
-
-
-    /*
-    ==================================================
-    INTERACTPLUS BUTTON
-
-    EMPTY ROOM:
-      Starts conversation.
-
-    NON-EMPTY ROOM:
-      Generates another conversation response.
-
-    Normal user messages automatically
-    trigger a reply without this button.
-    ==================================================
-    */
-
-    async function interactPlus() {
-
-
-      const room =
-        getRoom();
-
-
-
-      if (
-        !room
-      ) {
-
-        return;
-
-      }
-
-
-
-      const emptyConversation =
-
-        !Array.isArray(
-          room.room_data
-        )
-
-        ||
-
-        room.room_data.length ===
-          0;
-
-
-
-      await generateInteractionResponse(
-
-        emptyConversation
-
-          ? "start"
-
-          : "continue"
-
-      );
-
-    }
-
-
-
-    /*
-    ==================================================
-    COMPOSER LANGUAGES
-    ==================================================
-    */
-
-    function setComposerLanguages() {
-
-
-      const room =
-        getRoom();
-
-
-
-      if (
-        !room
-      ) {
-
-        return;
-
-      }
-
-
-
-      populateSelect(
-
-        "sourceLang",
-
-        room.source_language ||
-
-        "English"
-
-      );
-
-
-
-      populateSelect(
-
-        "targetLang",
-
-        room.target_language ||
-
-        "Arabic"
-
-      );
-
-    }
-
-
-
-    /*
-    ==================================================
-    RESIZE TEXTAREA
-    ==================================================
-    */
-
-    function resizeComposer() {
-
-
-      const textarea =
-        document.getElementById(
-          "sourceText"
-        );
-
-
-      textarea.style.height =
-        "44px";
-
-
-      textarea.style.height =
-
-        Math.min(
-
-          textarea.scrollHeight,
-
-          120
-
-        )
-
-        +
-
-        "px";
-
-    }
-
-
-
-    /*
-    ==================================================
-    START PAGE
-    ==================================================
-    */
-
-    async function startPage() {
-
-
-      setStatus(
-        "Loading conversation..."
-      );
-
-
-
-      try {
-
-
-        /*
-        ==================================================
-        1. SAME ACCOUNT
-
-        account_Details
-
-        2. CONVERSATE DATA
-
-        conversate_Data
-
-        3. LOCAL CACHE
-
-        conversate_user_data
-        ==================================================
-        */
-
-        const synced =
-
-          await window
-            .ConversateFirebase
-            .sync();
-
-
-
-        if (
-
-          !synced
-
-          ||
-
-          !synced.user
-
-        ) {
-
-
-          window.location.replace(
-            "loginregister.html"
-          );
-
-
-          return;
-
-        }
-
-
-
-        currentRoomIdx =
-
-          window
-            .ConversateFirebase
-            .getCurrentRoomIdx();
-
-
-
-        if (
-          !currentRoomIdx
-        ) {
-
-
-          window.location.replace(
-            "welcome.html"
-          );
-
-
-          return;
-
-        }
-
-
-
-        currentRoom =
-
-          await window
-            .ConversateFirebase
-            .getCurrentRoom();
-
-
-
-        if (
-          !currentRoom
-        ) {
-
-
-          window.location.replace(
-            "welcome.html"
-          );
-
-
-          return;
-
-        }
-
-
-
-        if (
-          !Array.isArray(
-            currentRoom.room_data
-          )
-        ) {
-
-
-          currentRoom.room_data =
-            [];
-
-        }
-
-
-
-        setComposerLanguages();
-
-
-        renderChat();
-
-
-        resizeComposer();
-
-
-        setStatus("");
-
-
-      } catch (error) {
-
-
-        console.error(
-          error
-        );
-
-
-        setStatus(
-
-          error.message ||
-
-          "Could not load this conversation.",
-
-          "error"
-
-        );
-
-      }
-
-    }
-
-
-
-    /*
-    ==================================================
-    EVENTS
-    ==================================================
-    */
-
-    document.getElementById(
-      "backButton"
-    ).addEventListener(
-
-      "click",
-
-      function() {
-
-
-        window.location.href =
-          "welcome.html";
-
-      }
-
-    );
-
-
-
-    document.getElementById(
-      "sendButton"
-    ).addEventListener(
-
-      "click",
-
-      sendConversationMessage
-
-    );
-
-
-
-    document.getElementById(
-      "interactPlusButton"
-    ).addEventListener(
-
-      "click",
-
-      interactPlus
-
-    );
-
-
-
-    document.getElementById(
-      "cancelEditButton"
-    ).addEventListener(
-
-      "click",
-
-      cancelEdit
-
-    );
-
-
-
-    document.getElementById(
-      "sourceText"
-    ).addEventListener(
-
-      "input",
-
-      resizeComposer
-
-    );
-
-
-
-    /*
-    Enter = send
-
-    Shift + Enter =
-    new line.
-    */
-
-    document.getElementById(
-      "sourceText"
-    ).addEventListener(
-
-      "keydown",
-
-      function(event) {
-
-
-        if (
-
-          event.key ===
-            "Enter"
-
-          &&
-
-          !event.shiftKey
-
-        ) {
-
-
-          event.preventDefault();
-
-
-          sendConversationMessage();
-
-        }
-
-      }
-
-    );
-
-
-
-    /*
-    ==================================================
-    START
-    ==================================================
-    */
-
-    startPage();
-
-
+      globalThis.ConversateDictionaryUI = Object.freeze({
+        openBreakdown,
+        closeBreakdown: closeBreakdownDictionary
+      });
+
+      input.addEventListener("input", function () {
+        breakdownContext = null;
+        renderWords();
+      });
+
+      input.addEventListener("focus", function () {
+        breakdownContext = null;
+        renderWords();
+      });
+
+      renderWords();
+    })();
   </script>
 
-<script src="audio.js"></script>
-<script src="chatAudio.js"></script>
-<script src="addElement_teach.js"></script>
-</body>
 
+  <script>
+    (function () {
+      "use strict";
+
+      const STORAGE_KEY = "conversate_text_settings";
+
+      const defaults = {
+        translationSize: 32,
+        translationWeight: 800,
+        transliterationSize: 15,
+        transliterationWeight: 850,
+        sourceSize: 16,
+        sourceWeight: 650,
+        breakdownSize: 18,
+        breakdownWeight: 850
+      };
+
+      const cssVariables = {
+        translationSize: "--cp-translation-size",
+        translationWeight: "--cp-translation-weight",
+        transliterationSize: "--cp-transliteration-size",
+        transliterationWeight: "--cp-transliteration-weight",
+        sourceSize: "--cp-source-size",
+        sourceWeight: "--cp-source-weight",
+        breakdownSize: "--cp-breakdown-size",
+        breakdownWeight: "--cp-breakdown-weight"
+      };
+
+      const panel = document.getElementById("textSettingsPanel");
+      const openButton = document.getElementById("textSettingsButton");
+      const closeButton = document.getElementById("closeTextSettings");
+      const doneButton = document.getElementById("doneTextSettings");
+      const resetButton = document.getElementById("resetTextSettings");
+
+      if (!panel || !openButton || !closeButton || !doneButton || !resetButton) {
+        return;
+      }
+
+      function readSavedSettings() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+          return Object.assign({}, defaults, saved && typeof saved === "object" ? saved : {});
+        } catch (_) {
+          return Object.assign({}, defaults);
+        }
+      }
+
+      let settings = readSavedSettings();
+
+      function valueElement(key) {
+        return document.getElementById(key + "Value");
+      }
+
+      function sliderElement(key) {
+        return document.getElementById(key);
+      }
+
+      function formatValue(key, value) {
+        return key.endsWith("Size") ? value + " px" : String(value);
+      }
+
+      function applySetting(key, value) {
+        const numeric = Number(value);
+        settings[key] = numeric;
+
+        const cssName = cssVariables[key];
+        if (cssName) {
+          document.documentElement.style.setProperty(
+            cssName,
+            key.endsWith("Size") ? numeric + "px" : String(numeric)
+          );
+        }
+
+        const output = valueElement(key);
+        if (output) {
+          output.value = formatValue(key, numeric);
+          output.textContent = formatValue(key, numeric);
+        }
+      }
+
+      function syncControls() {
+        Object.keys(defaults).forEach(function (key) {
+          const slider = sliderElement(key);
+          const value = Number(settings[key] ?? defaults[key]);
+
+          if (slider) {
+            slider.value = String(value);
+          }
+
+          applySetting(key, value);
+        });
+      }
+
+      function saveSettings() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+      }
+
+      function openPanel() {
+        panel.hidden = false;
+        document.body.classList.add("text_settings_open");
+        closeButton.focus();
+      }
+
+      function closePanel() {
+        panel.hidden = true;
+        document.body.classList.remove("text_settings_open");
+        openButton.focus();
+      }
+
+      Object.keys(defaults).forEach(function (key) {
+        const slider = sliderElement(key);
+        if (!slider) return;
+
+        slider.addEventListener("input", function () {
+          applySetting(key, slider.value);
+          saveSettings();
+        });
+      });
+
+      openButton.addEventListener("click", openPanel);
+      closeButton.addEventListener("click", closePanel);
+      doneButton.addEventListener("click", closePanel);
+
+      resetButton.addEventListener("click", function () {
+        settings = Object.assign({}, defaults);
+        syncControls();
+        saveSettings();
+      });
+
+      panel.addEventListener("click", function (event) {
+        if (event.target === panel) {
+          closePanel();
+        }
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && !panel.hidden) {
+          closePanel();
+        }
+      });
+
+      syncControls();
+    })();
+  </script>
+
+</body>
 </html>
